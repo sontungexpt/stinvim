@@ -66,9 +66,7 @@ M["nvim-tree.lua"] = {
 		map_to = function()
 			local filetype = api.nvim_buf_get_option(0, "filetype")
 			-- local buftype = api.nvim_buf_get_option(0, "buftype")
-			if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
-				return
-			end
+			if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then return end
 			api.nvim_command("NvimTreeToggle")
 		end,
 		desc = "Toggle NvimTree",
@@ -205,9 +203,7 @@ M["lspsaga.nvim"] = {
 		map_to = function()
 			local status_ok, ufo = pcall(require, "ufo")
 			local winid = status_ok and ufo.peekFoldedLinesUnderCursor() or nil
-			if not winid then
-				api.nvim_command("Lspsaga hover_doc")
-			end
+			if not winid then api.nvim_command("Lspsaga hover_doc") end
 		end,
 	},
 	{
@@ -271,19 +267,22 @@ M["url-open"] = {
 --- @tparam boolean release_memmory
 --- @usage require("core.plugmap").load("telescope")
 M.load = function(plug_name, release_memory)
-	release_memory = release_memory or false
-
-	for _, map_opts in ipairs(M[plug_name]) do
-		if map_opts.desc then
-			map_opts.opts = map_opts.opts or {}
-			map_opts.opts.desc = map_opts.desc
+	local plug = M[plug_name]
+	if type(plug) == "table" then
+		for _, map_opts in ipairs(plug) do
+			if map_opts.desc then
+				map_opts.opts = map_opts.opts or {}
+				map_opts.opts.desc = map_opts.desc
+			end
+			map(map_opts.mode, map_opts.key, map_opts.map_to, map_opts.opts)
 		end
-		map(map_opts.mode, map_opts.key, map_opts.map_to, map_opts.opts)
+	elseif type(plug) == "function" then
+		plug()
+	else
+		require("utils.notify").error("Error when load mapping for " .. plug_name)
 	end
 
-	if release_memory then
-		M[plug_name] = nil
-	end
+	if release_memory then M[plug_name] = nil end
 end
 
 return M

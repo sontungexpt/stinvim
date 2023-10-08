@@ -19,9 +19,7 @@ LazyLoader.load_on_file_open = function(plugin)
 					vim.schedule(function()
 						require("lazy").load { plugins = plugin }
 
-						if plugin == "nvim-lspconfig" then
-							api.nvim_command("silent! do FileType")
-						end
+						if plugin == "nvim-lspconfig" then api.nvim_command("silent! do FileType") end
 					end, 0)
 				else
 					require("lazy").load { plugins = plugin }
@@ -37,10 +35,8 @@ LazyLoader.load_on_repo_open = function(plugin)
 		callback = function()
 			fn.system("git -C " .. '"' .. fn.expand("%:p:h") .. '"' .. " rev-parse")
 			if vim.v.shell_error == 0 then
-				api.nvim_del_augroup_by_name("BeLazyLoadOnGitRepo" .. plugin)
-				vim.schedule(function()
-					require("lazy").load { plugins = plugin }
-				end)
+				api.nvim_del_augroup_by_name("BeLazyLoadOnGitRepoOpen" .. plugin)
+				vim.schedule(function() require("lazy").load { plugins = plugin } end)
 			end
 		end,
 	})

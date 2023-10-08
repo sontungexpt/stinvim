@@ -3,8 +3,8 @@ local no_actions = function(prompt_bufnr) print("No actions available!") end
 local options = {
 	extensions_list = {
 		"media_files",
-		"projects",
 		"fzy_native",
+		-- "projects",
 		-- "zoxide",
 		-- "neoclip",
 	},
