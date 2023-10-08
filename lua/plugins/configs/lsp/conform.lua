@@ -3,8 +3,6 @@ local prettier = { "prettierd", "prettier" }
 local options = {
 	formatters_by_ft = {
 		lua = { "stylua" },
-		luau = { "stylua" },
-
 		python = { "autopep8" },
 
 		-- webdev
@@ -22,15 +20,19 @@ local options = {
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 		cmake = { "clang_format" },
-
 		rust = { "rustfmt" },
 
 		sh = { "shfmt" },
-		bash = { "shfmt" },
-		zsh = { "shfmt" },
 
 		toml = { "taplo" },
 	},
+  format_on_save = {
+    timeout_ms = 500,
+    lsp_fallback = true,
+  },
+  format_after_save = {
+    lsp_fallback = true,
+  },
 }
 
 return options

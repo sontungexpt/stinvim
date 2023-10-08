@@ -3,18 +3,18 @@ local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
 local plug_loadmap = require("core.plugmap").load
 
 local plugins = {
-  --------------------------------------------- Theme ---------------------------------------------
+	--------------------------------------------------- Theme ---------------------------------------------------
 	{
 		"folke/tokyonight.nvim",
 		priority = 1000,
 		lazy = false,
-		opts =  require("plugins.configs.tokyonight"),
+		opts = require("plugins.configs.tokyonight"),
 		config = function(_, opts)
-		  require("tokyonight").setup(opts)
+			require("tokyonight").setup(opts)
 			vim.api.nvim_command([[colorscheme tokyonight]])
-			vim.api.nvim_command([[let g:lightline = {'colorscheme': 'tokyonight'}]])
 		end,
 	},
+
 	--------------------------------------------------- Syntax ---------------------------------------------------
 	{
 		"nvim-treesitter/nvim-treesitter",
@@ -44,6 +44,7 @@ local plugins = {
 	{
 		"sontungexpt/url-open",
 		branch = "mini",
+		init = function() plug_loadmap("url-open") end,
 		cmd = "URLOpenUnderCursor",
 		init = function() load_on_file_open("url-open") end,
 		config = function(_, opts) require("url-open").setup {} end,
@@ -153,7 +154,7 @@ local plugins = {
 			"nvim-telescope/telescope-fzy-native.nvim",
 		},
 		init = function() plug_loadmap("telescope.nvim") end,
-		opts = function() return require("plugins.configs.telescope")end,
+		opts = function() return require("plugins.configs.telescope") end,
 		config = function(_, opts)
 			local telescope = require("telescope")
 			telescope.setup(opts)
@@ -167,12 +168,12 @@ local plugins = {
 	{
 		"numToStr/Comment.nvim",
 		dependencies = {
-      {
-        "JoosepAlviste/nvim-ts-context-commentstring",
-        dependencies = {
-          "nvim-treesitter/nvim-treesitter",
-        },
-      }
+			{
+				"JoosepAlviste/nvim-ts-context-commentstring",
+				dependencies = {
+					"nvim-treesitter/nvim-treesitter",
+				},
+			},
 		},
 		keys = {
 			{ "gcc", mode = "n", desc = "Comment toggle current line" },
@@ -206,7 +207,7 @@ local plugins = {
 		opts = require("plugins.configs.git.gitsigns"),
 		config = function(_, opts)
 			require("gitsigns").setup(opts)
-			vim.api.nvim_command([[set statusline+=%{get(b:,'gitsigns_status','')}]])
+			-- vim.api.nvim_command([[set statusline+=%{get(b:,'gitsigns_status','')}]])
 		end,
 	},
 
@@ -222,7 +223,7 @@ local plugins = {
 	{
 		"neovim/nvim-lspconfig",
 		init = function() load_on_file_open("nvim-lspconfig") end,
-		-- config = function() require("plugins.configs.lsp.nvim-lspconfig") end,
+		config = function() require("plugins.configs.lsp.lspconfig") end,
 	},
 
 	{
@@ -250,7 +251,7 @@ local plugins = {
 			"MasonUpdate",
 			"MasonLog",
 		},
-		opts = function() return require("plugins.configs.mason")end,
+		opts = function() return require("plugins.configs.mason") end,
 		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
@@ -279,42 +280,42 @@ local plugins = {
 
 	{
 		"stevearc/conform.nvim",
-		event ="BufWritePre",
-		opts = function() return require("plugins.configs.lsp.conform") end,
+		event = { "BufWritePre" },
+		opts = require("plugins.configs.lsp.conform"),
 		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("conform").setup(opts) end,
 	},
 
 	--------------------------------------------------- Debugger  ---------------------------------------------------
-	-- {
-	-- 	"rcarriga/nvim-dap-ui",
-	-- 	dependencies = {
-	-- 		{
-	-- 			"mfussenegger/nvim-dap",
-	-- 			dependencies = {
-	-- 				{
-	-- 					"theHamsta/nvim-dap-virtual-text",
-	-- 					config = function() require("nvim-dap-virtual-text").setup {} end,
-	-- 					-- config = function() require("dap-virtual-text") end,
-	-- 				},
-	-- 			},
-	-- 			config = function() require("plugins.configs.dap") end,
-	-- 		},
-	-- 	},
-	-- 	keys = {
-	-- 		{
-	-- 			"<leader>du",
-	-- 			function() require("dapui").toggle {} end,
-	-- 			desc = "Dap UI",
-	-- 		},
-	-- 		{
-	-- 			"<leader>db",
-	-- 			function() require("dap").toggle_breakpoint() end,
-	-- 			desc = "Dap Breakpoint",
-	-- 		},
-	-- 	},
-	-- 	config = function() require("plugins.configs.dap.dapui") end,
-	-- },
+	{
+		"rcarriga/nvim-dap-ui",
+		dependencies = {
+			{
+				"mfussenegger/nvim-dap",
+				dependencies = {
+					{
+						"theHamsta/nvim-dap-virtual-text",
+						config = function() require("nvim-dap-virtual-text").setup {} end,
+						-- config = function() require("dap-virtual-text") end,
+					},
+				},
+				config = function() require("plugins.configs.dap") end,
+			},
+		},
+		keys = {
+			{
+				"<leader>du",
+				function() require("dapui").toggle {} end,
+				desc = "Dap UI",
+			},
+			{
+				"<leader>db",
+				function() require("dap").toggle_breakpoint() end,
+				desc = "Dap Breakpoint",
+			},
+		},
+		config = function() require("plugins.configs.dap.dapui") end,
+	},
 }
 
 require("lazy").setup(plugins, require("plugins.configs.lazy-nvim"))

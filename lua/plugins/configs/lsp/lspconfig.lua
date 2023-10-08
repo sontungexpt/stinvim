@@ -3,7 +3,7 @@ local status_ok, lspconfig = pcall(require, "lspconfig")
 if not status_ok then return end
 
 local capabilities = require("plugins.configs.lsp.general-confs").capabilities
-local on_attach = require("plugins.configs.lsp.general-configs").on_attach
+local on_attach = require("plugins.configs.lsp.general-confs").on_attach
 
 local lsp_servers = {
 
