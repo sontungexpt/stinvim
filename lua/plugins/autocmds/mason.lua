@@ -2,7 +2,7 @@ local api = vim.api
 local fn = vim.fn
 local utils = require("utils")
 local schedule = vim.schedule
-local mason_configs = require("plugins.configs.mason")
+local mason_configs = require("plugins.configs.lsp.mason")
 
 local M = {}
 

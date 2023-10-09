@@ -85,6 +85,8 @@ local options = {
 			"^dist/",
 			"^target/",
 			"^vendor/",
+			"^lazy%-lock%.json$",
+			"^package%-lock%.json$",
 		},
 		path_display = { "smart" },
 		winblend = 0,

@@ -41,6 +41,8 @@ local plugins = {
 
 	------------------------------------ Editor ------------------------------------
 	{
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/stcursorword",
+		-- dev = true,
 		"sontungexpt/stcursorword",
 		init = function() load_on_file_open("stcursorword") end,
 		config = function(_, opts) require("stcursorword").setup {} end,
@@ -131,6 +133,8 @@ local plugins = {
 	},
 
 	{
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/nvim-highlight-colors",
+		-- dev = true,
 		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
 		init = function() load_on_file_open("nvim-highlight-colors") end,
@@ -304,7 +308,7 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
-		opts = require("plugins.configs.mason"),
+		opts = require("plugins.configs.lsp.mason"),
 		config = function(_, opts) require("mason").setup(opts) end,
 	},
 

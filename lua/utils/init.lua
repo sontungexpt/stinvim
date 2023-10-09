@@ -50,7 +50,7 @@ end
 --- Execute a command by calling `vim.api.nvim_command` function
 --- @tparam string command: The command to execute
 --- @tparam table msg: The message to print on success or error
-M.execute_cmd = function(command, msg, quiet)
+M.exec_cmd = function(command, msg, quiet)
 	local success, error_message = pcall(api.nvim_command, command)
 	if not quiet then
 		if success then
