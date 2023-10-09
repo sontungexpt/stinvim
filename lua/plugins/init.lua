@@ -306,6 +306,12 @@ local plugins = {
 	},
 
 	{
+		"mfussenegger/nvim-jdtls",
+		ft = "java",
+		-- config is in ftplugin/java.lua
+	},
+
+	{
 		"glepnir/lspsaga.nvim",
 		event = "LspAttach",
 		dependencies = {
