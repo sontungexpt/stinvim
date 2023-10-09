@@ -3,15 +3,10 @@ local M = {}
 M.on_attach = function(bufnr)
 	local api = require("nvim-tree.api")
 	local map = vim.keymap.set
-	local del = vim.keymap.del
 
 	local function opts(desc)
 		return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
 	end
-	map("n", "O", "", { buffer = bufnr })
-	del("n", "O", { buffer = bufnr })
-	map("n", "<2-RightMouse>", "", { buffer = bufnr })
-	del("n", "<2-RightMouse>", { buffer = bufnr })
 
 	map("n", "<CR>", api.node.open.edit, opts("Open"))
 	map("n", "o", api.node.open.edit, opts("Open"))
@@ -51,99 +46,30 @@ M.on_attach = function(bufnr)
 end
 
 M.options = {
-	auto_reload_on_write = true,
 	disable_netrw = true,
-	hijack_netrw = true,
 	hijack_cursor = false, -- Keeps the cursor on the first letter of the filename when moving in the tree.
 	hijack_unnamed_buffer_when_opening = true,
-	sort_by = "name",
-	root_dirs = {},
-	prefer_startup_root = false,
 	sync_root_with_cwd = true,
 	reload_on_bufenter = true,
 	respect_buf_cwd = true,
 	on_attach = M.on_attach,
 	select_prompts = false,
 	view = {
-		centralize_selection = false,
 		cursorline = true,
-		debounce_delay = 15,
 		width = 28,
 		side = "left",
 		adaptive_size = false,
-		preserve_window_proportions = true,
 		number = false,
 		relativenumber = false,
 		signcolumn = "yes",
 	},
 	renderer = {
-		add_trailing = false,
-		group_empty = false,
-		highlight_git = false,
-		full_name = false,
-		highlight_opened_files = "none",
-		highlight_modified = "none",
-		root_folder_label = ":~:s?$?/..?",
-		indent_width = 2,
-		indent_markers = {
-			enable = false,
-			inline_arrows = true,
-			icons = {
-				corner = "└",
-				edge = "│",
-				item = "│",
-				bottom = "─",
-				none = " ",
-			},
-		},
-		icons = {
-			webdev_colors = true,
-			git_placement = "before",
-			modified_placement = "after",
-			padding = " ",
-			symlink_arrow = " ➛ ",
-			show = {
-				file = true,
-				folder = true,
-				folder_arrow = true,
-				git = true,
-				modified = true,
-			},
-		},
-		special_files = {
-			"README.md",
-			"LICENSE",
-			"Cargo.toml",
-			"Makefile",
-			"package.json",
-			"package-lock.json",
-		},
-		symlink_destination = true,
-	},
-	hijack_directories = {
-		enable = true,
-		auto_open = true,
+		special_files = {}, -- add highlight if is special file
 	},
 	update_focused_file = {
 		enable = true,
 		update_root = true,
 		ignore_list = {},
-	},
-	diagnostics = {
-		enable = false,
-		show_on_dirs = false,
-		show_on_open_dirs = true,
-		debounce_delay = 50,
-		severity = {
-			min = vim.diagnostic.severity.HINT,
-			max = vim.diagnostic.severity.ERROR,
-		},
-		icons = {
-			hint = "󰌵 ",
-			info = " ",
-			warning = " ",
-			error = " ",
-		},
 	},
 	filters = {
 		dotfiles = false,
@@ -178,16 +104,6 @@ M.options = {
 		show_on_open_dirs = true,
 	},
 	actions = {
-		use_system_clipboard = true,
-		change_dir = {
-			enable = true,
-			global = false,
-			restrict_above_cwd = false,
-		},
-		expand_all = {
-			max_folder_discovery = 300,
-			exclude = {},
-		},
 		file_popup = {
 			open_win_config = {
 				col = 1,
@@ -198,58 +114,18 @@ M.options = {
 			},
 		},
 		open_file = {
-			quit_on_open = false,
-			resize_window = true,
 			window_picker = {
 				enable = false,
-				picker = "default",
-				chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-				exclude = {
-					filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame", "exe" },
-					buftype = { "nofile", "terminal", "help" },
-				},
 			},
-		},
-		remove_file = {
-			close_window = true,
 		},
 	},
 	trash = {
-		--cmd = "gio trash",
 		cmd = "trash-put",
-	},
-	live_filter = {
-		prefix = "[FILTER]: ",
-		always_show_folders = true,
-	},
-	tab = {
-		sync = {
-			open = false,
-			close = false,
-			ignore = {},
-		},
-	},
-	notify = {
-		threshold = vim.log.levels.INFO,
 	},
 	ui = {
 		confirm = {
 			remove = true,
 			trash = true,
-		},
-	},
-	log = {
-		enable = true,
-		truncate = false,
-		types = {
-			all = false,
-			config = false,
-			copy_paste = false,
-			dev = false,
-			diagnostics = false,
-			git = false,
-			profile = false,
-			watcher = false,
 		},
 	},
 }
