@@ -63,13 +63,20 @@ M.execute_cmd = function(command, msg, quiet)
 end
 
 M.is_plug_installed = function(plugin_name, custom_dir)
-	-- default to lazy directory if not specified
-	-- change this to your own lazy config directory if specified
 	custom_dir = custom_dir or "/lazy/"
 	custom_dir = vim.startswith(custom_dir, "/") and custom_dir or ("/" .. custom_dir)
 	custom_dir = vim.endswith(custom_dir, "/") and custom_dir or (custom_dir .. "/")
 
 	return fn.isdirectory(fn.stdpath("data") .. custom_dir .. plugin_name) == 1
+end
+
+M.load_and_exec = function(module_name, cb)
+	local status_ok, module = pcall(require, module_name)
+	if status_ok then
+		cb(module)
+	else
+		require("utils.notify").error("Module " .. module_name .. " not found")
+	end
 end
 
 return M
