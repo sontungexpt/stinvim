@@ -1,3 +1,4 @@
+require("plugins.autocmds")
 local load_on_file_open = require("utils.lazyloader").load_on_file_open
 local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
 
@@ -297,13 +298,11 @@ local plugins = {
 		build = ":MasonUpdate",
 		cmd = {
 			"Mason",
-			"MasonShowInstalledPackages",
-			"MasonShowEnsuredPackages",
+			"MasonLog",
+			"MasonUpdate",
 			"MasonInstall",
 			"MasonUninstall",
 			"MasonUninstallAll",
-			"MasonUpdate",
-			"MasonLog",
 		},
 		opts = require("plugins.configs.mason"),
 		config = function(_, opts) require("mason").setup(opts) end,
