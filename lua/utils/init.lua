@@ -79,4 +79,27 @@ M.load_and_exec = function(module_name, cb)
 	end
 end
 
+--- Copy all content to new file
+--- @treturn boolean : true successful | false failed
+M.copy_all_content = function(source, target)
+	local source_file = io.open(source, "r+")
+	if source_file then
+		local lines = {}
+		for line in source_file:lines() do
+			table.insert(lines, line)
+		end
+		source_file:close()
+		local content = table.concat(lines, "\n")
+
+		local target_file = io.open(target, "w")
+		if target_file then
+			target_file:write(content)
+			target_file:close()
+			return true
+		else
+			return false
+		end
+	end
+end
+
 return M
