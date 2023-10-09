@@ -1,13 +1,8 @@
 local handler = function(virtText, lnum, endLnum, width, truncate)
-	-- Avoid calling vim.fn.strdisplaywidth() multiple times for the same string.
 	local suffix = ("  %d "):format(endLnum - lnum)
 	local sufWidth = vim.fn.strdisplaywidth(suffix)
 	local targetWidth = width - sufWidth
-
-	-- Create a table to store the truncated text.
 	local newVirtText = {}
-
-	-- Iterate over the virtText table, truncating each chunk as needed.
 	local curWidth = 0
 	for _, chunk in ipairs(virtText) do
 		local chunkText = chunk[1]
@@ -18,24 +13,14 @@ local handler = function(virtText, lnum, endLnum, width, truncate)
 			table.insert(newVirtText, chunk)
 			curWidth = curWidth + chunkWidth
 		else
-			-- The chunk does not fit within the target width, so truncate it and add
-			-- it to the new table.
 			chunkText = truncate(chunkText, targetWidth - curWidth)
 			table.insert(newVirtText, { chunkText, chunk[2] })
 			curWidth = curWidth + vim.fn.strdisplaywidth(chunkText)
-
-			-- If the truncated chunk is not the last chunk, add padding to the
-			-- suffix.
-			if curWidth < targetWidth then
-				string.insert(suffix, " ", suffix:len() + 1)
-			end
+			if curWidth < targetWidth then string.insert(suffix, " ", suffix:len() + 1) end
 			break
 		end
 	end
-
-	-- Add the suffix to the new table.
 	table.insert(newVirtText, { suffix, "MoreMsg" })
-
 	return newVirtText
 end
 
@@ -69,12 +54,8 @@ local options = {
 			or function(bufnr)
 				return require("ufo")
 					.getFolds(bufnr, "lsp")
-					:catch(function(err)
-						return handleFallbackException(bufnr, err, "treesitter")
-					end)
-					:catch(function(err)
-						return handleFallbackException(bufnr, err, "indent")
-					end)
+					:catch(function(err) return handleFallbackException(bufnr, err, "treesitter") end)
+					:catch(function(err) return handleFallbackException(bufnr, err, "indent") end)
 			end
 	end,
 	fold_virt_text_handler = handler,

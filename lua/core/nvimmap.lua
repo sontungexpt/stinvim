@@ -1,5 +1,6 @@
 local map = require("utils.mapper").map
-local map_by_autocmd = require("utils.mapper").map_by_autocmd
+local autocmd = vim.api.nvim_create_autocmd
+local augroup = vim.api.nvim_create_augroup
 
 -- Remap for dealing with word wrap
 map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
@@ -80,8 +81,9 @@ map("v", "<A-Up>", ":m '<-2<CR>gv=gv")
 map("n", "<A-Down>", ":m .+1<CR>==")
 map("v", "<A-Down>", ":m '>+1<CR>gv=gv")
 
-map_by_autocmd("BufWinEnter", {
+autocmd("BufWinEnter", {
 	desc = "Make q close help, man, quickfix, dap floats",
+	group = augroup("QClosingSpecifiedBuf", { clear = true }),
 	callback = function(args)
 		local buftype = vim.api.nvim_get_option_value("buftype", { buf = args.buf })
 		if vim.tbl_contains({ "help", "nofile", "quickfix" }, buftype) then
@@ -90,7 +92,8 @@ map_by_autocmd("BufWinEnter", {
 	end,
 })
 
-map_by_autocmd("CmdwinEnter", {
+autocmd("CmdwinEnter", {
 	desc = "Make q close command history (q: and q?)",
+	group = augroup("QClosingCommandHistory", { clear = true }),
 	command = "nnoremap <silent><buffer><nowait> q :close<CR>",
 })

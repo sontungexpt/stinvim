@@ -2,24 +2,13 @@ local M = {}
 
 -- File to identify project root
 M.root_markers = {
-	-- rust
-	"Cargo.toml",
-
-	-- lua
-	"stylua.toml",
-
-	-- git
 	".git",
-
-	-- npm
-	"package.json",
-
-	-- nvim config
-	"lazy-lock.json",
-
-	-- java
-	"gradlew",
-	"mvnw",
+	"package.json", -- npm
+	"Cargo.toml", -- rust
+	"stylua.toml", -- lua
+	"lazy-lock.json", -- nvim config
+	"gradlew", -- java
+	"mvnw", -- java
 }
 
 return M

@@ -50,8 +50,7 @@ local options = {
 	PATH = "skip",
 	ui = {
 		check_outdated_packages_on_open = true,
-		-- Accepts same border values as |nvim_open_win()|.
-		border = "single",
+		border = "single", -- Accepts same border values as |nvim_open_win()|.
 		width = 0.8,
 		height = 0.9,
 		icons = {

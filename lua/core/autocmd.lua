@@ -57,16 +57,6 @@ autocmd("VimEnter", {
 	end,
 })
 
-autocmd({ "BufWritePost" }, {
-	desc = "When writing a buffer, :NvimReload if the buffer is a config file.",
-	group = augroup("ReloadConfigFile", { clear = true }),
-	pattern = {
-		fn.stdpath("config") .. "/lua/core/options.lua",
-		fn.stdpath("config") .. "/lua/core/nvimmap.lua",
-	},
-	command = "NvimReload",
-})
-
 -- Toggle search highlighting on insert mode
 autocmd({ "InsertEnter", "TermEnter" }, {
 	desc = "Set no search highlighting when entering insert mode, or terminal",

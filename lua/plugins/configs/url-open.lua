@@ -5,7 +5,6 @@ local options = {
 		all_urls = {
 			enabled = true,
 			fg = "#19ddff", -- "text" or "#rrggbb"
-			-- fg = "text", -- "text" or "#rrggbb"
 			bg = nil, -- nil or "#rrggbb"
 			underline = true,
 		},

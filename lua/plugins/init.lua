@@ -1,6 +1,5 @@
 local load_on_file_open = require("utils.lazyloader").load_on_file_open
 local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
-local plug_loadmap = require("core.plugmap").load
 
 local plugins = {
 	--------------------------------------------------- Theme ---------------------------------------------------
@@ -24,14 +23,19 @@ local plugins = {
 		init = function() load_on_file_open("nvim-treesitter") end,
 		cmd = {
 			"TSInstall",
-			"TSInstallFromGrammar",
 			"TSBufEnable",
 			"TSBufDisable",
 			"TSModuleInfo",
+			"TSInstallFromGrammar",
 		},
 		build = ":TSUpdate",
 		opts = require("plugins.configs.nvim-treesitter"),
 		config = function(_, opts) require("nvim-treesitter.configs").setup(opts) end,
+	},
+
+	{
+		"VebbNix/lf-vim",
+		ft = "lf",
 	},
 
 	------------------------------------ Editor ------------------------------------
@@ -44,7 +48,6 @@ local plugins = {
 	{
 		"sontungexpt/url-open",
 		branch = "mini",
-		init = function() plug_loadmap("url-open") end,
 		cmd = "URLOpenUnderCursor",
 		init = function() load_on_file_open("url-open") end,
 		config = function(_, opts) require("url-open").setup {} end,
@@ -58,15 +61,67 @@ local plugins = {
 	},
 
 	{
+		"akinsho/toggleterm.nvim",
+		cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec" },
+		keys = "<C-t>",
+		opts = require("plugins.configs.toggleterm"),
+		config = function(_, opts) require("toggleterm").setup(opts) end,
+	},
+
+	{
 		"kylechui/nvim-surround",
 		keys = { "ys", "ds", "cs" },
+		---@diagnostic disable-next-line: missing-fields
 		config = function() require("nvim-surround").setup {} end,
 	},
 
 	{
+		"windwp/nvim-autopairs",
+		opts = require("plugins.configs.nvim-autopairs"),
+		event = "InsertEnter",
+		config = function(_, opts)
+			---@diagnostic disable-next-line: different-requires
+			require("nvim-autopairs").setup(opts)
+			local cmp_status_ok, cmp = pcall(require, "cmp")
+			local cmp_autopairs_status_ok, cmp_autopairs = pcall(require, "nvim-autopairs.completion.cmp")
+			if cmp_status_ok and cmp_autopairs_status_ok then
+				cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done { map_char = { tex = "" } })
+			end
+		end,
+	},
+
+	-- {
+	-- 	"windwp/nvim-ts-autotag",
+	-- 	dependencies = {
+	-- 		"nvim-treesitter/nvim-treesitter",
+	-- 	},
+	-- 	ft = {
+	-- 		"html",
+	-- 		"vue",
+	-- 		"tsx",
+	-- 		"jsx",
+	-- 		"svelte",
+	-- 		"javascript",
+	-- 		"typescript",
+	-- 		"javascriptreact",
+	-- 		"typescriptreact",
+	-- 	},
+	-- },
+
+	-- {
+	-- 	"gelguy/wilder.nvim",
+	-- 	dependencies = {
+	-- 		"romgrk/fzy-lua-native",
+	-- 	},
+	-- 	build = ":UpdateRemotePlugins",
+	-- 	event = "CmdlineEnter",
+	-- 	config = function() require("plugins.configs.wilder") end,
+	-- },
+
+	{
 		"lukas-reineke/indent-blankline.nvim",
 		version = "2.20.8",
-		init = load_on_file_open("indent-blankline.nvim"),
+		init = function() load_on_file_open("indent-blankline.nvim") end,
 		opts = require("plugins.configs.indent-blankline"),
 		config = function(_, opts)
 			vim.wo.colorcolumn = "99999"
@@ -75,8 +130,9 @@ local plugins = {
 	},
 
 	{
-		"brenoprata10/nvim-highlight-colors",
+		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
+		init = function() load_on_file_open("nvim-highlight-colors") end,
 		opts = require("plugins.configs.highlight-colors"),
 		config = function(_, opts) require("nvim-highlight-colors").setup(opts) end,
 	},
@@ -132,7 +188,6 @@ local plugins = {
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-		init = function() plug_loadmap("nvim-tree.lua") end,
 		cmd = {
 			"NvimTreeToggle",
 			"NvimTreeFocus",
@@ -153,7 +208,6 @@ local plugins = {
 			"nvim-telescope/telescope-media-files.nvim",
 			"nvim-telescope/telescope-fzy-native.nvim",
 		},
-		init = function() plug_loadmap("telescope.nvim") end,
 		opts = function() return require("plugins.configs.telescope") end,
 		config = function(_, opts)
 			local telescope = require("telescope")
@@ -251,7 +305,7 @@ local plugins = {
 			"MasonUpdate",
 			"MasonLog",
 		},
-		opts = function() return require("plugins.configs.mason") end,
+		opts = require("plugins.configs.mason"),
 		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
@@ -268,11 +322,11 @@ local plugins = {
 
 			-- cmp sources plugins
 			{
-				"saadparwaiz1/cmp_luasnip",
-				"hrsh7th/cmp-nvim-lua",
-				"hrsh7th/cmp-nvim-lsp",
-				"hrsh7th/cmp-buffer",
 				"hrsh7th/cmp-path",
+				"hrsh7th/cmp-buffer",
+				"hrsh7th/cmp-nvim-lsp",
+				"hrsh7th/cmp-nvim-lua",
+				"saadparwaiz1/cmp_luasnip",
 			},
 		},
 		config = function() require("plugins.configs.cmp") end,
