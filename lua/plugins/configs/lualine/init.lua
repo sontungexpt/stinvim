@@ -1,4 +1,4 @@
-local no_seps = require("core.global-configs").ui.lualine.no_seps
+local no_seps = require("ui.lualine").no_seps
 
 -- Components
 local file = require("plugins.configs.lualine.components.file")

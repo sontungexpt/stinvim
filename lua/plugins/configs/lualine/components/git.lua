@@ -1,4 +1,4 @@
-local colors = require("core.global-configs").ui.colors
+local colors = require("ui.colors")
 
 local M = {}
 

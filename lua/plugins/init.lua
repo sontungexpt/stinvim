@@ -15,15 +15,15 @@ local plugins = {
 		end,
 	},
 
-	-- {
-	-- 	"nvim-lualine/lualine.nvim",
-	-- 	dependencies = {
-	-- 		"nvim-tree/nvim-web-devicons",
-	-- 	},
-	-- 	init = function() load_on_file_open("lualine.nvim") end,
-	-- 	opts = require("plugins.configs.lualine"),
-	-- 	config = function(_, opts) require("lualine").setup(opts) end,
-	-- },
+	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
+		init = function() load_on_file_open("lualine.nvim") end,
+		opts = require("plugins.configs.lualine"),
+		config = function(_, opts) require("lualine").setup(opts) end,
+	},
 
 	-- {
 	-- 	"akinsho/bufferline.nvim",

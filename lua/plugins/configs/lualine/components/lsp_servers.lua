@@ -1,12 +1,10 @@
-local colors = require("core.global-configs").ui.colors
+local colors = require("ui.colors")
 
 local lsp_servers = function()
 	if vim.o.columns > 70 then
 		local buf_clients = vim.lsp.buf_get_clients()
 
-		if not buf_clients or #buf_clients == 0 then
-			return "NO LSP  "
-		end
+		if not buf_clients or #buf_clients == 0 then return "NO LSP  " end
 
 		local server_names = {}
 
@@ -38,9 +36,7 @@ local lsp_servers = function()
 					-- methods = nil or {}
 					if #methods == 0 then
 						if name_only then
-							return vim.tbl_map(function(source)
-								return source.name
-							end, available_sources)
+							return vim.tbl_map(function(source) return source.name end, available_sources)
 						end
 						return available_sources
 					end
@@ -67,6 +63,15 @@ local lsp_servers = function()
 				vim.list_extend(server_names, null_ls_builtins)
 			end
 		end
+
+		if package.loaded["conform"] then
+			local has_conform, conform = pcall(require, "conform")
+			vim.list_extend(
+				server_names,
+				vim.tbl_map(function(formatter) return formatter.name end, conform.list_formatters(0))
+			)
+		end
+
 		return table.concat(server_names, ", ")
 	end
 	return ""
