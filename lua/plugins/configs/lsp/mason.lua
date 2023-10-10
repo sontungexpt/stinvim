@@ -14,6 +14,7 @@ local options = {
 		-- bash
 		"bash-language-server",
 		"shfmt",
+		"shellcheck",
 
 		-- toml
 		"taplo",
@@ -42,7 +43,6 @@ local options = {
 		"json-lsp",
 		"tailwindcss-language-server",
 	},
-	PATH = "skip",
 	ui = {
 		check_outdated_packages_on_open = true,
 		border = "single", -- Accepts same border values as |nvim_open_win()|.

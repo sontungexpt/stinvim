@@ -22,7 +22,7 @@ local options = {
 		cmake = { "clang_format" },
 		rust = { "rustfmt" },
 
-		sh = { "shfmt" },
+		sh = { "shfmt", "shellcheck" },
 
 		toml = { "taplo" },
 
