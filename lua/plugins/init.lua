@@ -1,4 +1,4 @@
-require("plugins.autocmds")
+require("plugins.extensions")
 local load_on_file_open = require("utils.lazyloader").load_on_file_open
 local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
 
@@ -326,6 +326,7 @@ local plugins = {
 	{
 		"williamboman/mason.nvim",
 		build = ":MasonUpdate",
+		init = function() require("plugins.extensions.mason").extend_command() end,
 		cmd = {
 			"Mason",
 			"MasonLog",

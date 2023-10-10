@@ -1,6 +1,6 @@
 This is the distro neovim for fullstack development.
 
-🚀 Performance for time startup: 24ms - 50ms
+🚀 Performance for time startup: 24ms - 50ms(about 50 plugins)
 
 ## Features
 
