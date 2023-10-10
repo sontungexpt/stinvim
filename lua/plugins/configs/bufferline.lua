@@ -42,9 +42,7 @@ local options = {
 		--   end
 		--   return ''
 		-- end,
-		diagnostics_indicator = function(count)
-			return "(" .. count .. ")"
-		end,
+		diagnostics_indicator = function(count) return "(" .. count .. ")" end,
 		offsets = {
 			{
 				filetype = "NvimTree",

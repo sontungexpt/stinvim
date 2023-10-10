@@ -5,7 +5,6 @@ local options = {
 		-- java
 		"jdtls",
 		"google-java-format",
-		"checkstyle",
 		"java-debug-adapter",
 
 		-- lua
@@ -15,7 +14,6 @@ local options = {
 		-- bash
 		"bash-language-server",
 		"shfmt",
-		"shellcheck",
 
 		-- toml
 		"taplo",
@@ -24,13 +22,11 @@ local options = {
 		"clangd",
 		"clang-format",
 		"cmake-language-server",
-		"cmakelang",
 		"codelldb",
 
 		-- python
 		"pyright",
 		"autopep8",
-		"flake8",
 
 		-- others
 		"codespell",
@@ -42,7 +38,6 @@ local options = {
 		"css-lsp",
 		"html-lsp",
 		"typescript-language-server",
-		-- "deno",
 		"emmet-ls",
 		"json-lsp",
 		"tailwindcss-language-server",

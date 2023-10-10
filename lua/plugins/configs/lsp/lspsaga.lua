@@ -8,7 +8,6 @@ local options = {
 		scroll_down = "<C-y>",
 		scroll_up = "<C-e>",
 	},
-	request_timeout = 2000,
 	finder = {
 		max_height = 0.5,
 		min_width = 30,
@@ -50,8 +49,6 @@ local options = {
 	},
 	hover = {
 		max_width = 0.6,
-		-- open_link = 'gx',
-		-- open_browser = 'microsoft-edge-stable',
 	},
 	diagnostic = {
 		on_insert = false,

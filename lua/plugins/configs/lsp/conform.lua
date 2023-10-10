@@ -25,14 +25,16 @@ local options = {
 		sh = { "shfmt" },
 
 		toml = { "taplo" },
+
+		java = { "google-java-format" },
 	},
-  format_on_save = {
-    timeout_ms = 500,
-    lsp_fallback = true,
-  },
-  format_after_save = {
-    lsp_fallback = true,
-  },
+	format_on_save = {
+		timeout_ms = 500,
+		lsp_fallback = true,
+	},
+	format_after_save = {
+		lsp_fallback = true,
+	},
 }
 
 return options

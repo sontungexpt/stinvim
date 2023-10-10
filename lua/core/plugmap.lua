@@ -140,43 +140,60 @@ M.map_on_startup = function()
 		end,
 	})
 
-	-- local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
+	--------------------------------------- dap ---------------------------------------
+	local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
 
-	-- -- dap
-	-- map("n", "<leader>du", function() require("dapui").toggle() end, { desc = "Toggle DAP UI" })
-	-- map("n", "<leader>db", ":lua require'dap'.toggle_breakpoint()<CR>", { desc = "Toggle breakpoint" })
-	-- map("n", "<leader>di", ":lua require'dap'.step_into()<CR>", { desc = "Step into" })
-	-- map("n", "<leader>do", ":lua require'dap'.step_over()<CR>", { desc = "Step over" })
-	-- map("n", "<leader>dc", function() continue_debugging() end, { desc = "Continue or start debugging" })
-	-- map(
-	-- 	"n",
-	-- 	"<leader>dd",
-	-- 	":lua require 'dap'.disconnect()<CR>:lua require'dap'.close()<CR>",
-	-- 	{ desc = "Disconnect from debugger" }
-	-- )
-	-- -- map("n", "<leader>dc", ":lua require'dap'.continue()<CR>")
-	-- map("n", "<F11>", ":lua require'dap'.step_into()<CR>", { desc = "Step into" })
-	-- map("n", "<F12>", ":lua require'dap'.step_over()<CR>", { desc = "Step over" })
-	-- map("n", "<F5>", function() continue_debugging() end, { desc = "Continue or start debugging" })
-	-- map(
-	-- 	"n",
-	-- 	"<F4>",
-	-- 	":lua require 'dap'.disconnect()<CR>:lua require'dap'.close()<CR>",
-	-- 	{ desc = "Disconnect from debugger" }
-	-- )
+	map("n", "<leader>du", function()
+		load_and_exec("dapui", function(dapui) dapui.toggle() end)
+	end, { desc = "Toggle DAP UI" })
+	map("n", "<leader>db", function()
+		load_and_exec("dap", function(dap) dap.toggle_breakpoint() end)
+	end, { desc = "Toggle breakpoint" })
+	map("n", "<leader>di", function()
+		load_and_exec("dap", function(dap) dap.step_into() end)
+	end, { desc = "Step into" })
+	map("n", "<leader>do", function()
+		load_and_exec("dap", function(dap) dap.step_over() end)
+	end, { desc = "Step over" })
+	map("n", "<leader>dc", function() continue_debugging() end, { desc = "Continue or start debugging" })
+	map("n", "<leader>dd", function()
+		load_and_exec("dap", function(dap)
+			dap.disconnect()
+			dap.close()
+		end)
+	end, { desc = "Disconnect from debugger" })
+	map("n", "<F11>", function()
+		load_and_exec("dap", function(dap) dap.step_into() end)
+	end, { desc = "Step into" })
+	map("n", "<F12>", function()
+		load_and_exec("dap", function(dap) dap.step_over() end)
+	end, { desc = "Step over" })
+	map("n", "<F5>", function() continue_debugging() end, { desc = "Continue or start debugging" })
+	map("n", "<F4>", function()
+		load_and_exec("dap", function(dap)
+			dap.disconnect()
+			dap.close()
+		end)
+	end, { desc = "Disconnect from debugger" })
+	map("n", "<Leader>dr", function()
+		load_and_exec("dap", function(dap) dap.repl.open() end)
+	end, { desc = "Open REPL" })
+	map("n", "<Leader>dl", function()
+		load_and_exec("dap", function(dap) dap.run_last() end)
+	end, { desc = "Run last" })
 
-	-- map("n", "<Leader>dr", ":lua require('dap').repl.open()<CR>", { desc = "Open REPL" })
-	-- map("n", "<Leader>dl", ":lua require('dap').run_last()<CR>", { desc = "Run last" })
-	-- map({ "n", "v" }, "<Leader>dh", ":lua require('dap.ui.widgets').hover()<CR>", { desc = "Hover" })
-	-- map({ "n", "v" }, "<Leader>dp", ":lua require('dap.ui.widgets').preview()<CR>", { desc = "Preview" })
-	-- map("n", "<Leader>df", function()
-	-- 	local widgets = require("dap.ui.widgets")
-	-- 	widgets.centered_float(widgets.frames)
-	-- end, { desc = "Frames" })
-	-- map("n", "<Leader>ds", function()
-	-- 	local widgets = require("dap.ui.widgets")
-	-- 	widgets.centered_float(widgets.scopes)
-	-- end, { desc = "Scopes" })
+	map({ "n", "v" }, "<Leader>dh", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.hover() end)
+	end, { desc = "Hover widgets" })
+	map({ "n", "v" }, "<Leader>dp", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.preview() end)
+	end, { desc = "Preview widgets" })
+	map("n", "<Leader>df", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
+	end, { desc = "Frames" })
+	map("n", "<Leader>ds", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
+	end, { desc = "Scopes" })
 end
 
 M.toggleterm = function(bufnr)
@@ -193,6 +210,46 @@ M.toggleterm = function(bufnr)
 	map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], { buffer = bufnr })
 	map("t", "<C-w>", [[<C-\><C-n><C-w>]], { buffer = bufnr })
 	map({ "n", "t" }, "<C-t>", [[<Cmd>exe v:count1 . "ToggleTerm"<CR>]], { buffer = bufnr })
+end
+
+M.gitsigns = function(bufnr)
+	local gs = package.loaded.gitsigns
+	local function map1(mode, key, map_to, opts)
+		opts.buffer = bufnr
+		map(mode, key, map_to, opts)
+	end
+
+	-- Navigation
+	map1("n", "]g", function()
+		if vim.wo.diff then return "]g" end
+		vim.schedule(function() gs.next_hunk() end)
+		return "<Ignore>"
+	end, { expr = true, desc = "Next hunk" })
+	map1("n", "[g", function()
+		if vim.wo.diff then return "[g" end
+		vim.schedule(function() gs.prev_hunk() end)
+		return "<Ignore>"
+	end, { expr = true, desc = "Prev hunk" })
+	map1("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
+	map1(
+		"v",
+		"<leader>gs",
+		function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end,
+		{ desc = "Stage hunk" }
+	)
+	map1("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
+	map1(
+		"v",
+		"<leader>gr",
+		function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end,
+		{ desc = "Reset hunk" }
+	)
+	map1("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
+	map1("n", "<leader>gR", gs.reset_buffer, { desc = "Reset buffer" })
+	map1("n", "<leader>gp", gs.preview_hunk, { desc = "Preview hunk" })
+	map1("n", "<leader>gb", gs.toggle_current_line_blame, { desc = "Blame line" })
+	map1("n", "<leader>gd", gs.diffthis, { desc = "Diff this" })
+	map1("n", "<leader>gD", function() gs.diffthis("~") end, { desc = "Diff this" })
 end
 
 return M

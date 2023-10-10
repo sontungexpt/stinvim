@@ -2,7 +2,7 @@ local status_ok, dap = pcall(require, "dap")
 if not status_ok then return end
 
 local path_helpers = require("plugins.configs.dap.paths")
-local colors = require("core.global-configs").ui.colors
+local colors = require("ui.colors")
 
 vim.fn.sign_define("DapBreakpoint", { text = " ", texthl = "DapBreakpoint" })
 vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = colors.red })
