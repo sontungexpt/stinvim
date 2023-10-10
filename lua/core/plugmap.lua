@@ -93,8 +93,8 @@ M.map_on_startup = function()
 			map({ "n", "v" }, "<leader>sa", "<cmd>Lspsaga code_action<CR>")
 
 			map("n", "gr", "<cmd>Lspsaga rename<CR>")
-			-- Rename all occurrences of the hovered word for the selected files
-			-- keymap("n", "gr", "<cmd>Lspsaga rename ++project<CR>")
+
+			-- map("n", "<leader>gr", "<cmd>Lspsaga rename ++project<CR>")
 
 			map("n", "gp", "<cmd>Lspsaga peek_definition<CR>")
 
@@ -122,13 +122,13 @@ M.map_on_startup = function()
 			map("n", "[e", function()
 				load_and_exec(
 					"lspsaga.diagnostic",
-					function(m) m:goto_prev { severity = vim.diagnostic.severity.ERROR } end
+					function(diagnostic) diagnostic:goto_prev { severity = vim.diagnostic.severity.ERROR } end
 				)
 			end)
 			map("n", "]e", function()
 				load_and_exec(
 					"lspsaga.diagnostic",
-					function(m) m:goto_next { severity = vim.diagnostic.severity.ERROR } end
+					function(diagnostic) diagnostic:goto_next { severity = vim.diagnostic.severity.ERROR } end
 				)
 			end)
 
