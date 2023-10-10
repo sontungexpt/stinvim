@@ -1,5 +1,4 @@
 require("core")
-pcall(require, "user")
 
 -- Install lazy neovim if not installed
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
