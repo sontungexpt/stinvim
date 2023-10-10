@@ -1,6 +1,6 @@
 local M = {}
 
-M.on_attach = function(bufnr)
+local on_attach = function(bufnr)
 	local api = require("nvim-tree.api")
 	local map = vim.keymap.set
 
@@ -45,14 +45,14 @@ M.on_attach = function(bufnr)
 	map("n", " ", api.marks.toggle, opts("Toggle Bookmark"))
 end
 
-M.options = {
+local options = {
 	disable_netrw = true,
 	hijack_cursor = false, -- Keeps the cursor on the first letter of the filename when moving in the tree.
 	hijack_unnamed_buffer_when_opening = true,
 	sync_root_with_cwd = true,
 	reload_on_bufenter = true,
 	respect_buf_cwd = true,
-	on_attach = M.on_attach,
+	on_attach = on_attach,
 	select_prompts = false,
 	view = {
 		cursorline = true,
@@ -130,4 +130,4 @@ M.options = {
 	},
 }
 
-return M.options
+return options

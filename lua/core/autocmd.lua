@@ -82,11 +82,11 @@ autocmd({ "FocusGained", "BufEnter", "TermResponse" }, {
 	desc = "Reload file if changed outside of nvim",
 })
 
-autocmd("FileType", {
-	pattern = { "markdown" },
-	desc = "Wrap text in markdown files",
-	command = "setlocal wrap",
-})
+-- autocmd("FileType", {
+-- 	pattern = { "markdown" },
+-- 	desc = "Wrap text in markdown files",
+-- 	command = "setlocal wrap",
+-- })
 
 autocmd("BufHidden", {
 	desc = "Delete [No Name] buffer when it's hidden",

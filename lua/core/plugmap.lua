@@ -77,7 +77,7 @@ M.map_on_startup = function()
 	map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
 
 	------------------------------ Markdown preview ------------------------------
-	map("n", "<Leader>pm", "<Cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle markdown preview" })
+	map("n", "<Leader>pm", "<Cmd>MarkdownPreviewToggle<CR>", 6, { desc = "Toggle markdown preview" })
 
 	------------------------------ wilder ------------------------------
 	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 5)
