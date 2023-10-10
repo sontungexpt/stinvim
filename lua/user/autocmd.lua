@@ -5,10 +5,10 @@ local autocmd = api.nvim_create_autocmd
 local augroup = api.nvim_create_augroup
 local user_utils = require("user.utils")
 
--- generate build file for scripts in scripts/stilux/systems
 autocmd({ "BufWritePost" }, {
 	group = augroup("ScriptBuilder", { clear = true }),
-	pattern = { "*.sh" },
+	desc = "Compile scripts in ~/scripts/stilux/systems",
+	pattern = { fn.expand("$HOME") .. "/scripts/stilux/systems/*" },
 	callback = function()
 		local function check_and_insert_lines(file_name)
 			local line1 = 'YAY="yay -S --answerclean All --noconfirm --needed"'
@@ -37,33 +37,28 @@ autocmd({ "BufWritePost" }, {
 			end
 		end
 
-		local curr_dir = fn.expand("%:p:h")
-		local sys_scripts_dir = fn.expand("$HOME") .. "/scripts/stilux/systems"
+		local file_path = fn.expand("%:p")
+		local file_name = fn.expand("%:t")
+		local sys_build_dir = fn.expand("$HOME") .. "/scripts/stilux/systems-build"
+		local copy_file_path = sys_build_dir .. "/" .. file_name
 
-		if curr_dir:match("^" .. sys_scripts_dir) then
-			local file_path = fn.expand("%:p")
-			local file_name = fn.expand("%:t")
-			local sys_build_dir = fn.expand("$HOME") .. "/scripts/stilux/systems-build"
-			local copy_file_path = sys_build_dir .. "/" .. file_name
+		local command = string.format(
+			"mkdir -p %s && cp %s %s && sed -i -e 's/\\(sudo \\)\\?yay -S\\( --needed\\)\\? \\(\\S.*\\)/eval \"$YAY \\3\"/g' %s && sed -i -e 's/\\(sudo \\)\\?pacman -S\\( --needed\\)\\? \\(\\S.*\\)/eval \"$PACMAN \\3\"/g' %s",
+			sys_build_dir,
+			file_path,
+			copy_file_path,
+			copy_file_path,
+			copy_file_path
+		)
 
-			local command = string.format(
-				"mkdir -p %s && cp %s %s && sed -i -e 's/\\(sudo \\)\\?yay -S\\( --needed\\)\\? \\(\\S.*\\)/eval \"$YAY \\3\"/g' %s && sed -i -e 's/\\(sudo \\)\\?pacman -S\\( --needed\\)\\? \\(\\S.*\\)/eval \"$PACMAN \\3\"/g' %s",
-				sys_build_dir,
-				file_path,
-				copy_file_path,
-				copy_file_path,
-				copy_file_path
-			)
-
-			fn.jobstart(command, {
-				on_exit = function(_, exit_code, _)
-					if exit_code == 0 then
-						vim.schedule(function() check_and_insert_lines(copy_file_path) end)
-					else
-						print("Error: " .. exit_code)
-					end
-				end,
-			})
-		end
+		fn.jobstart(command, {
+			on_exit = function(_, exit_code, _)
+				if exit_code == 0 then
+					vim.schedule(function() check_and_insert_lines(copy_file_path) end)
+				else
+					print("Error: " .. exit_code)
+				end
+			end,
+		})
 	end,
 })
