@@ -1,7 +1,7 @@
 local autocmd = vim.api.nvim_create_autocmd
 
 autocmd({ "BufEnter" }, {
-	pattern = "*.json",
+	pattern = { "*.json", "*.masonrc" },
 	command = "set filetype=jsonc",
 	desc = "Enable syntax for .json files",
 })
