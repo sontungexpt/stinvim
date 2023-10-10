@@ -1,6 +1,6 @@
 This is the distro neovim for fullstack development.
 
-🚀 Performance for time startup: 24ms - 50ms
+🚀 Performance for time startup: 24ms - 50ms(about 50 plugins)
 
 ## Features
 
@@ -35,8 +35,8 @@ This is the distro neovim for fullstack development.
     be load on startup)
 
   - One for some custom default nvim map (~/.config/nvim/lua/core/nvimmap.lua).
-    In this file if any keymap you want it run on startup please put you map in
-    map_on_startup function
+    In this file if any keymap you want it run on startup please put your map
+    function in map_on_startup function
 
 - We provide you a function to map
 
