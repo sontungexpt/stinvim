@@ -48,9 +48,11 @@ M.create_autocmds = function()
 		group = api.nvim_create_augroup("MasonSyncPackage", { clear = true }),
 		pattern = "VeryLazy",
 		callback = function()
-			if utils.is_plug_installed("mason", "/") and mason_configs.auto_sync then
-				if M.had_changed() then M.sync_packages() end
-			end
+			schedule(function()
+				if utils.is_plug_installed("mason", "/") and mason_configs.auto_sync then
+					if M.had_changed() then M.sync_packages() end
+				end
+			end)
 		end,
 	})
 end
