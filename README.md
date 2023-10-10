@@ -1,29 +1,31 @@
-This is the distro for neovim, you can easily customize it,
+This is the distro neovim for fullstack development.
+
+🚀 Performance for time startup: 24ms - 50ms
 
 ## Features
 
-| Plugin                                                                                                                   | Description                                                                                        |
-| ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| **[lazy](https://github.com/folke/lazy.nvim)**                                                                           | A plugin manager that loads plugins lazily to ensure fast startup times.                           |
-| **[nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)**                                                           | Support default lsp for (lua, python, web development, java, bash, c-c++ )                         |
-| **[mason](https://github.com/williamboman/mason.nvim)**                                                                  | Automatically installs LSP servers, formatters, linters, and debug adapters                        |
-| **[conform](https://github.com/stevearc/conform.nvim)**                                                                  | Fast formatter                                                                                     |
-| **[nvim-cmp](https://github.com/hrsh7th/nvim-cmp)**                                                                      | A lightweight completion plugin                                                                    |
-| **[url-open](https://github.com/sontungexpt/url-open)**                                                                  | Great plugin to open the url under cursor                                                          |
-| **[stcursorword](https://github.com/sontungexpt/stcursorword)**                                                          | Highlight all words similar to the word under the cursor                                           |
-| **[buffer-closer](https://github.com/sontungexpt/buffer-closer)**                                                        | Automatic close unused buffers                                                                     |
-| **[nvim-tree](https://github.com/nvim-tree/nvim-tree.lua)**                                                              | A fast and lightweight file explorer                                                               |
-| **[toggleterm](https://github.com/akinsho/toggleterm.nvim)**                                                             | Includes a terminal using toggleterm                                                               |
-| **[gitsigns](https://github.com/lewis6991/gitsigns.nvim), [git-conflict](https://github.com/akinsho/git-conflict.nvim)** | Integrates Git functionality with gitsigns and git-conflict plugins for a seamless Git experience. |
-| **[comment](https://github.com/numToStr/Comment.nvim)**                                                                  | A plugin for easily generating comments.                                                           |
-| **[dap](https://github.com/mfussenegger/nvim-dap), [dapui](https://github.com/rcarriga/nvim-dap-ui)**                    | Offers debugging capabilities with dap and dapui plugins.                                          |
-| **[treesitter](https://github.com/nvim-treesitter/nvim-treesitter)**                                                     | Provides syntax highlighting                                                                       |
-| **[autopairs](https://github.com/windwp/nvim-autopairs)**                                                                | Auto generate pairs                                                                                |
-| **[rainbow-delimiters](https://github.com/HiPhish/rainbow-delimiters.nvim)**                                             | Beautiful bracket highlighting                                                                     |
-| **[ccc](https://github.com/uga-rosa/ccc.nvim)**                                                                          | A color picker using ccc                                                                           |
-| **[bufferline](https://github.com/akinsho/bufferline.nvim)**                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         |
-| **[lualine](https://github.com/nvim-lualine/lualine.nvim)**                                                              | Displays a statusline                                                                              |
-| **[telescope](https://github.com/nvim-telescope/telescope.nvim)**                                                        | Provides a file finder using telescope, a fuzzy finder plugin for files, buffers, and more.        |
+| Plugin                                                                                                               | Description                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| [lazy](https://github.com/folke/lazy.nvim)                                                                           | A plugin manager that loads plugins lazily to ensure fast startup times.                           |
+| [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)                                                           | Support default lsp for (lua, python, web development, java, bash, c-c++ )                         |
+| [mason](https://github.com/williamboman/mason.nvim)                                                                  | Automatically installs LSP servers, formatters, linters, and debug adapters                        |
+| [conform](https://github.com/stevearc/conform.nvim)                                                                  | Fast formatter                                                                                     |
+| [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)                                                                      | A lightweight completion plugin                                                                    |
+| [url-open](https://github.com/sontungexpt/url-open)                                                                  | Great plugin to open the url under cursor                                                          |
+| [stcursorword](https://github.com/sontungexpt/stcursorword)                                                          | Highlight all words similar to the word under the cursor                                           |
+| [buffer-closer](https://github.com/sontungexpt/buffer-closer)                                                        | Automatic close unused buffers                                                                     |
+| [nvim-tree](https://github.com/nvim-tree/nvim-tree.lua)                                                              | A fast and lightweight file explorer                                                               |
+| [toggleterm](https://github.com/akinsho/toggleterm.nvim)                                                             | Includes a terminal using toggleterm                                                               |
+| [gitsigns](https://github.com/lewis6991/gitsigns.nvim), [git-conflict](https://github.com/akinsho/git-conflict.nvim) | Integrates Git functionality with gitsigns and git-conflict plugins for a seamless Git experience. |
+| [comment](https://github.com/numToStr/Comment.nvim)                                                                  | A plugin for easily generating comments.                                                           |
+| [dap](https://github.com/mfussenegger/nvim-dap), [dapui](https://github.com/rcarriga/nvim-dap-ui)                    | Offers debugging capabilities with dap and dapui plugins.                                          |
+| [treesitter](https://github.com/nvim-treesitter/nvim-treesitter)                                                     | Provides syntax highlighting                                                                       |
+| [autopairs](https://github.com/windwp/nvim-autopairs)                                                                | Auto generate pairs                                                                                |
+| [rainbow-delimiters](https://github.com/HiPhish/rainbow-delimiters.nvim)                                             | Beautiful bracket highlighting                                                                     |
+| [ccc](https://github.com/uga-rosa/ccc.nvim)                                                                          | A color picker using ccc                                                                           |
+| [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         |
+| [lualine](https://github.com/nvim-lualine/lualine.nvim)                                                              | Displays a statusline                                                                              |
+| [telescope](https://github.com/nvim-telescope/telescope.nvim)                                                        | Provides a file finder using telescope, a fuzzy finder plugin for files, buffers, and more.        |
 
 ## How to add more key map
 
@@ -127,7 +129,7 @@ pip install neovim
 
 ## Configuration
 
-This configuration is highly customizable and easy to configure. You can customize the configuration by modifying the init.lua file.
+This configuration is highly customizable and easy to configure.
 
 ## Contributions
 
