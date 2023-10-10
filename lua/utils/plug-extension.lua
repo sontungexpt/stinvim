@@ -2,7 +2,7 @@ local fn = vim.fn
 
 local M = {}
 
-M.touch_plug_autocmd = function()
+M.touch_plug_extension = function()
 	local filename = fn.input("Enter the filename: ", "", "file")
 
 	if filename == "" then
@@ -12,7 +12,7 @@ M.touch_plug_autocmd = function()
 
 	if not filename:match("%.lua$") then filename = fn.fnamemodify(filename, ":r") .. ".lua" end
 
-	local new_file_path = require("core.genconfs").plug_autocmds_dir .. "/" .. filename
+	local new_file_path = require("core.genconfs").plug_extension_dir .. "/" .. filename
 
 	if fn.filereadable(new_file_path) == 1 then
 		require("utils.notify").warn("File already exists: " .. filename)

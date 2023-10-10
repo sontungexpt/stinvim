@@ -4,8 +4,8 @@
 -- value[2]: table opts
 local commands = {
 	["NvimHotReload"] = { function() require("utils.reloader").hot_reload() end, { nargs = 0 } },
-	["NvimTouchPlugAutocmd"] = {
-		function() require("utils.plug-autocmd").touch_plug_autocmd() end,
+	["NvimTouchPlugExtension"] = {
+		function() require("utils.plug-extension").touch_plug_extension() end,
 		{ nargs = 0 },
 	},
 }

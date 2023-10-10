@@ -13,6 +13,6 @@ M.root_markers = {
 
 M.templates_dir = vim.fn.stdpath("config") .. "/templates"
 
-M.plug_autocmds_dir = vim.fn.stdpath("config") .. "/lua/plugins/autocmds"
+M.plug_extension_dir = vim.fn.stdpath("config") .. "/lua/plugins/extensions"
 
 return M
