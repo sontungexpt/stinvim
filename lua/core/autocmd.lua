@@ -4,13 +4,6 @@ local cmd = api.nvim_command
 local autocmd = api.nvim_create_autocmd
 local augroup = api.nvim_create_augroup
 
-autocmd({ "VimEnter" }, {
-	group = augroup("AutocdConfigFolderRoot", { clear = true }),
-	pattern = fn.stdpath("config") .. "/**",
-	command = "cd " .. fn.stdpath("config"),
-	desc = "Auto change directory to config folder",
-})
-
 autocmd({ "VimEnter", "VimLeave" }, {
 	pattern = "*",
 	command = "runtime! plugin/rplugin.vim",
