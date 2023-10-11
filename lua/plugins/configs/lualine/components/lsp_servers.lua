@@ -72,7 +72,7 @@ local lsp_servers = function()
 			)
 		end
 
-		return table.concat(server_names, ", ")
+		return table.concat(vim.fn.uniq(server_names), ", ")
 	end
 	return ""
 end

@@ -26,17 +26,12 @@ cmp.setup {
 	},
 	window = {
 		documentation = cmp.config.window.bordered(),
-		-- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
 		border = "single",
 	},
 	formatting = {
 		fields = { "kind", "abbr", "menu" },
-		--fields = {'menu', 'abbr', 'kind'},
 		format = function(entry, vim_item)
-			-- Kind icons
 			vim_item.kind = string.format("%s", require("ui.icons.lspkind")[vim_item.kind])
-			-- vim_item.kind = string.format('%s %s', kind_icons[vim_item.kind], vim_item.kind)
-			-- This concatenates the icons with the name of the item kind
 			vim_item.menu = ({
 				nvim_lsp = "λ ",
 				luasnip = " ",

@@ -12,19 +12,6 @@ local options = {
 		vim.api.nvim_command("startinsert")
 	end,
 	on_close = function(term) vim.api.nvim_command("stopinsert") end,
-	highlights = {
-		Normal = {
-			link = "Normal",
-		},
-		NormalFloat = {
-			link = "Normal",
-		},
-		FloatBorder = {
-			-- guifg = <VALUE-HERE>,
-			-- guibg = <VALUE-HERE>,
-			link = "FloatBorder",
-		},
-	},
 	hide_numbers = true,
 	autochdir = true,
 	shade_filetypes = {},
