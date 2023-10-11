@@ -61,6 +61,19 @@ This is the distro neovim for fullstack development.
 	require("utils.mapper").map("n" }, "gx", "<esc>:URLOpenUnderCursor<cr>", 2, { desc = "Open URL under cursor" })
 ```
 
+## Install LSP, debugger
+
+- We use mason plugin to automatically install lsps, debuggers, linters
+- To ensure a package is automatically synced on startup, you can create a `.masonrc.json` file in the project's root directory or add
+  packages to ensured_installed in ~/.config/nvim/lua/plugins/configs/lsp/mason.lua
+- If you want disable automatically synced mason packages on startup, you can change
+  `auto_sync = false` in ~/.config/nvim/lua/plugins/configs/lsp/mason.lua
+- Additionally, you can manually sync the package by using the command
+  `:MasonSyncPackages` in your neovim (NOTE: This command only work if you create .masonrc.json file)
+
+- Example .masonrc.json
+  ![.masonrc.json](./docs/readme/masonrc_preview.png)
+
 ## Requirements
 
 - xclip (for clipboard support)
