@@ -3,7 +3,7 @@ local no_seps = require("ui.lualine").no_seps
 
 -- https://www.nerdfonts.com/cheat-sheet
 local icons = {
-	["utf-8"] = "",
+	["utf-8"] = "󰉿",
 	["utf-16"] = "",
 	["utf-32"] = "",
 	["utf-8mb4"] = "",
