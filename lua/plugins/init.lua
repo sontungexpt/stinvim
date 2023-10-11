@@ -199,14 +199,13 @@ local plugins = {
 		end,
 	},
 
-	-- {
-	-- 	"zbirenbaum/copilot.lua",
-	-- 	build = ":Copilot",
-	-- 	cmd = "Copilot",
-	-- 	event = "InsertEnter",
-	-- 	opts = require("plugins.configs.copilot"),
-	-- 	config = function(_, opts) require("copilot").setup(opts) end,
-	-- },
+	{
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
+		opts = require("plugins.configs.copilot"),
+		config = function(_, opts) require("copilot").setup(opts) end,
+	},
 	--------------------------------------------------- File Explorer ---------------------------------------------------
 	{
 		"nvim-tree/nvim-tree.lua",
