@@ -3,19 +3,12 @@ local lsp = vim.lsp
 local M = {}
 
 M.on_attach = function(client, bufnr)
-	local function lspSymbol(name, icon)
-		local hl = "DiagnosticSign" .. name
+	for _, case in ipairs { "Error", "Info", "Hint", "Warn" } do
+		local hl = "DiagnosticSign" .. case
 		vim.fn.sign_define(hl, {
-			text = icon,
-			numhl = hl,
-			texthl = hl,
+			text = require("ui.icons.devicon")[hl],
 		})
 	end
-
-	lspSymbol("Error", " ")
-	lspSymbol("Info", " ")
-	lspSymbol("Hint", "󰌵 ")
-	lspSymbol("Warn", " ")
 
 	vim.diagnostic.config {
 		virtual_text = {

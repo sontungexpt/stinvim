@@ -1,12 +1,13 @@
 local status_ok, dap = pcall(require, "dap")
 if not status_ok then return end
 
+local devicons = require("ui.icons.devicon")
 local path_helpers = require("plugins.configs.dap.paths")
 local colors = require("ui.colors")
 
-vim.fn.sign_define("DapBreakpoint", { text = " ", texthl = "DapBreakpoint" })
+vim.fn.sign_define("DapBreakpoint", { text = devicons.DapBreakpoint, texthl = "DapBreakpoint" })
 vim.api.nvim_set_hl(0, "DapBreakpoint", { fg = colors.red })
-vim.fn.sign_define("DapStopped", { text = "󱞪 ", texthl = "DapStopped" })
+vim.fn.sign_define("DapStopped", { text = devicons.DapStopped, texthl = "DapStopped" })
 vim.api.nvim_set_hl(0, "DapStopped", { fg = colors.green })
 
 dap.adapters.codelldb = {
