@@ -23,9 +23,10 @@ This is the distro neovim for fullstack development.
 | [autopairs](https://github.com/windwp/nvim-autopairs)                                                                | Auto generate pairs                                                                                |
 | [rainbow-delimiters](https://github.com/HiPhish/rainbow-delimiters.nvim)                                             | Beautiful bracket highlighting                                                                     |
 | [ccc](https://github.com/uga-rosa/ccc.nvim)                                                                          | A color picker using ccc                                                                           |
-| [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         |
 | [lualine](https://github.com/nvim-lualine/lualine.nvim)                                                              | Displays a statusline                                                                              |
 | [telescope](https://github.com/nvim-telescope/telescope.nvim)                                                        | Provides a file finder using telescope, a fuzzy finder plugin for files, buffers, and more.        |
+
+<!-- | [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         | -->
 
 ## How to add more key map
 
@@ -116,7 +117,7 @@ Windows (git bash)
 
 You will also need to install the plugins. This configuration uses the lazy.nvim plugin manager to manage plugins. You can install the plugins by opening Neovim and running `:Lazy sync`
 
-Install providers: (If unnecessary, you can disable it in file ~/.config/nvim/lua/core/provider.lua)
+In this distro we enable two providers: nodejs and python so please install it or you can disable it in file ~/.config/nvim/lua/core/provider.lua
 
 ```bash
 # for nodejs
