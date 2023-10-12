@@ -104,3 +104,23 @@ autocmd("WinEnter", {
 	desc = "Enable cursorline, cursorcolumn when entering window and buffer is listed in buffer list",
 	command = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
 })
+
+local old_statusline = vim.opt.statusline:get()
+autocmd("TermEnter", {
+	callback = function()
+		old_statusline = vim.opt.statusline:get()
+		vim.opt.laststatus = 4
+		api.nvim_set_hl(0, "Statusline", { link = "Normal" })
+		api.nvim_set_hl(0, "StatuslineNC", { link = "Normal" })
+		vim.opt.statusline = string.rep("─", vim.api.nvim_win_get_width(0))
+	end,
+})
+
+autocmd("TermLeave", {
+	callback = function()
+		vim.opt.laststatus = 3
+		api.nvim_set_hl(0, "Statusline", { link = "StatusLine" })
+		api.nvim_set_hl(0, "StatuslineNC", { link = "StatusLineNC" })
+		vim.opt.statusline = old_statusline
+	end,
+})
