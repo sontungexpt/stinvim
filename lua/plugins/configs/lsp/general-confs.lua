@@ -7,6 +7,8 @@ M.on_attach = function(client, bufnr)
 		local hl = "DiagnosticSign" .. case
 		vim.fn.sign_define(hl, {
 			text = require("ui.icons.devicon")[hl],
+			numhl = hl,
+			texthl = hl,
 		})
 	end
 

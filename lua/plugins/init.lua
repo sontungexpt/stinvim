@@ -16,13 +16,15 @@ local plugins = {
 	},
 
 	{
-		"nvim-lualine/lualine.nvim",
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline/",
+		-- "sontungexpt/sttusline",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-		init = function() load_on_file_open("lualine.nvim") end,
-		opts = require("plugins.configs.lualine"),
-		config = function(_, opts) require("lualine").setup(opts) end,
+		init = function() load_on_file_open("sttusline") end,
+		opts = require("plugins.configs.sttusline"),
+		---@diagnostic disable-next-line: different-requires
+		config = function(_, opts) require("sttusline").setup(opts) end,
 	},
 
 	-- {
@@ -61,8 +63,6 @@ local plugins = {
 
 	------------------------------------ Editor ------------------------------------
 	{
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/stcursorword",
-		-- dev = true,
 		"sontungexpt/stcursorword",
 		init = function() load_on_file_open("stcursorword") end,
 		config = function(_, opts) require("stcursorword").setup {} end,
@@ -153,8 +153,6 @@ local plugins = {
 	},
 
 	{
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/nvim-highlight-colors",
-		-- dev = true,
 		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
 		init = function() load_on_file_open("nvim-highlight-colors") end,

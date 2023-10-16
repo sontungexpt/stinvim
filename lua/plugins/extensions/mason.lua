@@ -75,15 +75,15 @@ end
 
 -------------------- Auto commands --------------------
 M.create_autocmds = function()
-	api.nvim_create_autocmd("User", {
-		group = api.nvim_create_augroup("MasonSyncPackages", { clear = true }),
-		pattern = "VeryLazy",
-		callback = function()
-			schedule(function()
-				if mason_configs.auto_sync then M.sync_packages() end
-			end)
-		end,
-	})
+	if mason_configs.auto_sync then
+		api.nvim_create_autocmd("User", {
+			group = api.nvim_create_augroup("MasonSyncPackages", { clear = true }),
+			pattern = "VeryLazy",
+			callback = function(e)
+				schedule(function() M.sync_packages() end)
+			end,
+		})
+	end
 end
 
 return M
