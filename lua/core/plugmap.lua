@@ -74,7 +74,7 @@ M.map_on_startup = function()
 	map("n", "zm", ":lua require('ufo').closeFoldsWith()<CR>")
 
 	------------------------------ Bufferline ------------------------------
-	map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
+	-- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
 
 	------------------------------ Markdown preview ------------------------------
 	map("n", "<Leader>pm", "<Cmd>MarkdownPreviewToggle<CR>", 6, { desc = "Toggle markdown preview" })
