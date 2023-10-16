@@ -15,23 +15,15 @@ local plugins = {
 		end,
 	},
 
-	-- {
-	-- 	"nvim-lualine/lualine.nvim",
-	-- 	dependencies = {
-	-- 		"nvim-tree/nvim-web-devicons",
-	-- 	},
-	-- 	init = function() load_on_file_open("lualine.nvim") end,
-	-- 	opts = require("plugins.configs.lualine"),
-	-- 	config = function(_, opts) require("lualine").setup(opts) end,
-	-- },
 	{
-		dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline",
-		dev = true,
+		"sontungexpt/sttusline",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
 		init = function() load_on_file_open("sttusline") end,
-		config = function(_, opts) require("sttusline").setup {} end,
+		opts = require("plugins.configs.sttusline"),
+		---@diagnostic disable-next-line: different-requires
+		config = function(_, opts) require("sttusline").setup(opts) end,
 	},
 
 	-- {
