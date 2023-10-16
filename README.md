@@ -28,6 +28,14 @@ This is the distro neovim for fullstack development.
 
 <!-- | [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         | -->
 
+## Preview
+
+![preview1](./docs/readme/preview1.png)
+
+![preview2](./docs/readme/preview2.png)
+
+![preview3](./docs/readme/preview3.png)
+
 ## How to add more key map
 
 - We provide you two files for keymap.
