@@ -23,7 +23,7 @@ This is the distro neovim for fullstack development.
 | [autopairs](https://github.com/windwp/nvim-autopairs)                                                                | Auto generate pairs                                                                                |
 | [rainbow-delimiters](https://github.com/HiPhish/rainbow-delimiters.nvim)                                             | Beautiful bracket highlighting                                                                     |
 | [ccc](https://github.com/uga-rosa/ccc.nvim)                                                                          | A color picker using ccc                                                                           |
-| [lualine](https://github.com/nvim-lualine/lualine.nvim)                                                              | Displays a statusline                                                                              |
+| [sttusline](https://github.com/sontungexpt/sttusline)                                                                | A very lightweight, super fast and lazyloading statusline plugin for neovim written in lua         |
 | [telescope](https://github.com/nvim-telescope/telescope.nvim)                                                        | Provides a file finder using telescope, a fuzzy finder plugin for files, buffers, and more.        |
 
 <!-- | [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         | -->
