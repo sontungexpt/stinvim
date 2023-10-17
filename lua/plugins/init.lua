@@ -73,6 +73,7 @@ local plugins = {
 		branch = "mini",
 		cmd = "URLOpenUnderCursor",
 		init = function() load_on_file_open("url-open") end,
+		-- opts = require("plugins.configs.url-open"),
 		config = function(_, opts) require("url-open").setup {} end,
 	},
 
