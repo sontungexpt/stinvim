@@ -22,9 +22,7 @@ local plugins = {
 			"nvim-tree/nvim-web-devicons",
 		},
 		init = function() load_on_file_open("sttusline") end,
-		opts = require("plugins.configs.sttusline"),
-		---@diagnostic disable-next-line: different-requires
-		config = function(_, opts) require("sttusline").setup(opts) end,
+		config = function(_, opts) require("sttusline").setup() end,
 	},
 
 	-- {
