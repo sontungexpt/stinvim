@@ -2,12 +2,11 @@ local options = {
 	indent = {
 		char = "│",
 	},
-	exclude = {
-		filetypes = { "help", "alpha", "dashboard", "Trouble", "lazy", "NvimTree", "mason" },
-		buftypes = { "terminal" },
+	scope = {
+		show_start = false,
 	},
-	whitespace = {
-		remove_blankline_trail = true,
+	exclude = {
+		filetypes = { "alpha", "dashboard", "Trouble", "lazy", "NvimTree", "mason" },
 	},
 }
 
