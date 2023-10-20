@@ -140,13 +140,10 @@ local plugins = {
 
 	{
 		"lukas-reineke/indent-blankline.nvim",
-		version = "2.20.8",
+		main = "ibl",
 		init = function() load_on_file_open("indent-blankline.nvim") end,
 		opts = require("plugins.configs.indent-blankline"),
-		config = function(_, opts)
-			vim.wo.colorcolumn = "99999"
-			require("indent_blankline").setup(opts)
-		end,
+		config = function(_, opts) require("ibl").setup(opts) end,
 	},
 
 	{
