@@ -5,7 +5,9 @@ local M = {}
 
 --- Get the root directory of the project
 --- @return string: The root directory of the project
-M.find_root = function() return vim.fs.find(require("core.genconfs").root_markers, { upward = true })[1] end
+M.find_root = function()
+	return vim.fs.dirname(vim.fs.find(require("core.genconfs").root_markers, { upward = true })[1])
+end
 
 M.is_same_array = function(table1, table2) -- O(n)
 	if #table1 ~= #table2 then return false end
