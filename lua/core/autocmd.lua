@@ -104,3 +104,8 @@ autocmd("WinEnter", {
 	desc = "Enable cursorline, cursorcolumn when entering window and buffer is listed in buffer list",
 	command = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
 })
+
+autocmd({ "BufWritePre" }, {
+	desc = "Create missing directories before writing the buffer",
+	command = "silent! call mkdir(expand('%:p:h'), 'p')",
+})
