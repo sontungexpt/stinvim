@@ -197,7 +197,7 @@ local plugins = {
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
-		opts = require("plugins.configs.copilot"),
+		opts = function() return require("plugins.configs.copilot") end,
 		config = function(_, opts) require("copilot").setup(opts) end,
 	},
 	--------------------------------------------------- File Explorer ---------------------------------------------------

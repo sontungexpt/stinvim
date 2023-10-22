@@ -43,7 +43,9 @@ local options = {
 		cvs = false,
 		sh = true,
 	},
-	copilot_node_command = "node", -- Node.js version must be > 16.x
+	-- change this to your node binary path
+	copilot_node_command = vim.fn.expand("$HOME") .. "/.nvm/versions/node/v21.0.0/bin/node",
+	-- copilot_node_command = "node",
 	server_opts_overrides = {},
 }
 
