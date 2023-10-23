@@ -1,9 +1,4 @@
 local options = {
-	-- custome feature of copilot
-	-- run :Copilot auth if not authenticated when starting nvim
-	auto_check_auth = false,
-
-	-- main official features support by copilot.lua
 	panel = {
 		enabled = true,
 		auto_refresh = true,
