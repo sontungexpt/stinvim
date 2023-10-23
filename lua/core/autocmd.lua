@@ -39,7 +39,7 @@ autocmd("ModeChanged", {
 	desc = "Move to relative line number when in visual mode",
 })
 
-autocmd({ "BufEnter" }, {
+autocmd({ "BufReadPre" }, {
 	pattern = "*.env",
 	callback = function(args) vim.diagnostic.disable(args.buf) end,
 	desc = "Disable diagnostic for .env files",
