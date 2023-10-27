@@ -2,7 +2,7 @@ local api = vim.api
 local fn = vim.fn
 local utils = require("utils")
 local schedule = vim.schedule
-local mason_configs = require("plugins.configs.lsp.mason")
+local mason_config_module = "plugins.configs.mason"
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
 
 local M = {}
@@ -19,11 +19,12 @@ M.get_ensured_packages = function()
 	local rcfile = io.open(MASONRC_FILE, "r")
 	if rcfile then
 		local json = rcfile:read("*all")
-
 		rcfile:close()
 		return M.json_to_array(json)
 	else
-		return mason_configs.ensure_installed or {}
+		package.loaded[mason_config_module] = nil
+		local status_ok, config = pcall(require, mason_config_module)
+		return status_ok and config.ensure_installed or {}
 	end
 end
 
@@ -67,15 +68,12 @@ M.sync_packages = function()
 end
 
 M.extend_command = function()
-	-- only create command if has .masonrc.json file
-	if vim.fn.filereadable(MASONRC_FILE) == 1 then
-		vim.api.nvim_create_user_command("MasonSyncPackages", M.sync_packages, { nargs = 0 })
-	end
+	vim.api.nvim_create_user_command("MasonSyncPackages", M.sync_packages, { nargs = 0 })
 end
 
 -------------------- Auto commands --------------------
 M.create_autocmds = function()
-	if mason_configs.auto_sync then
+	if require(mason_config_module).auto_sync then
 		api.nvim_create_autocmd("User", {
 			group = api.nvim_create_augroup("MasonSyncPackages", { clear = true }),
 			pattern = "VeryLazy",
