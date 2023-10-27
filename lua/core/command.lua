@@ -12,5 +12,13 @@ local commands = {
 
 for cmd_name, v in pairs(commands) do
 	vim.api.nvim_create_user_command(cmd_name, v[1], v[2])
-	commands[cmd_name] = nil
 end
+
+local M = {}
+M.delete_all_commands = function()
+	for cmd_name, _ in pairs(commands) do
+		pcall(vim.api.nvim_del_user_command, cmd_name)
+	end
+end
+
+return M

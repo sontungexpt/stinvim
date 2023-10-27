@@ -6,12 +6,16 @@ M.hot_reload = function(quiet)
 		"core.command",
 		"core.option",
 		"core.nvimmap",
+		"core.genconfs",
 		"core.autocmd",
 		"core.autofiletype",
 		"core.plugmap",
 	}
 
 	local failed_modules = {}
+	require("core.command").delete_all_commands()
+	require("utils.mapper").remove_all_keymaps()
+
 	for _, module in ipairs(core_modules) do
 		package.loaded[module] = nil
 		local status_ok, m = pcall(require, module)

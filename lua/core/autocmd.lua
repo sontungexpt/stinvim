@@ -125,3 +125,18 @@ autocmd({ "BufWritePre" }, {
 	desc = "Create missing directories before writing the buffer",
 	command = "silent! call mkdir(expand('%:p:h'), 'p')",
 })
+
+autocmd("BufWritePost", {
+	group = group,
+	pattern = {
+		fn.stdpath("config") .. "/lua/core/autocmd.lua",
+		fn.stdpath("config") .. "/lua/core/autofiletype.lua",
+		fn.stdpath("config") .. "/lua/core/command.lua",
+		fn.stdpath("config") .. "/lua/core/nvimmap.lua",
+		fn.stdpath("config") .. "/lua/core/plugmap.lua",
+		fn.stdpath("config") .. "/lua/core/option.lua",
+		fn.stdpath("config") .. "/lua/core/genconfs.lua",
+	},
+	desc = "Hot reload when a config file is saved",
+	command = "NvimHotReload",
+})
