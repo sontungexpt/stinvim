@@ -17,7 +17,7 @@ local load_and_exec = require("utils").load_and_exec
 local M = {}
 M.map_on_startup = function()
 	------------------------------ url-open ------------------------------
-	map({ "n", "v" }, "gx", "<esc>:URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
+	map({ "n", "v" }, "gx", "<esc>:URLOpenUnderCursor<cr>", 6, { desc = "Open URL under cursor" })
 
 	------------------------------ nvimtree ------------------------------
 	map({ "n", "i", "v", "c" }, "<C-b>", function()
