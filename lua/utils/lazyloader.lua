@@ -20,7 +20,7 @@ LazyLoader.load_on_file_open = function(plugin)
 						require("lazy").load { plugins = plugin }
 
 						if plugin == "nvim-lspconfig" then api.nvim_command("silent! do FileType") end
-					end, 0)
+					end)
 				else
 					require("lazy").load { plugins = plugin }
 				end
