@@ -328,7 +328,7 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
-		opts = require("plugins.configs.lsp.mason"),
+		opts = require("plugins.configs.mason"),
 		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
