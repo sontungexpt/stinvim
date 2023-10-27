@@ -5,16 +5,16 @@ local M = {}
 ---@tparam function|string map_to : The key or function to be executed by the keymap.
 ---@tparam table|number opts : Options to be applied in vim.keymap.set.
 --- - Default opts = 1.
---- - opts = 1 for noremap and silent.
+--- - opts = 1 for noremap and silent and nowait.
 --- - opts = 2 for not noremap and silent.
 --- - opts = 3 for noremap and not silent.
 --- - opts = 4 for not noremap and not silent.
 --- - opts = 5 for expr and noremap and silent.
---- - opts = 6 for noremap and silent and nowait.
+--- - opts = 6 for noremap and silent and wait.
 --- - opts = 7 for noremap and silent and nowait and expr.
 ---@tparam table extend_opts: Extension or overriding of opts if opts is a number.
 M.map = function(mode, key, map_to, opts, extend_opts)
-	local opts1 = { noremap = true, silent = true }
+	local opts1 = { noremap = true, silent = true, nowait = true }
 	opts = opts or 1
 	if type(opts) == "table" then
 		opts = vim.tbl_deep_extend("force", opts1, opts)
@@ -33,7 +33,7 @@ M.map = function(mode, key, map_to, opts, extend_opts)
 	elseif opts == 5 then
 		opts = { expr = true, replace_keycodes = true, noremap = true, silent = true }
 	elseif opts == 6 then
-		opts = { noremap = true, silent = true, nowait = true }
+		opts = { noremap = true, silent = true, nowait = false }
 	elseif opts == 7 then
 		opts = { expr = true, replace_keycodes = true, noremap = true, silent = true, nowait = true }
 	else

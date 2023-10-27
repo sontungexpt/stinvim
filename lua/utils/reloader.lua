@@ -2,13 +2,28 @@ local M = {}
 
 M.hot_reload = function(quiet)
 	-- Reload options, mappings
-	local core_modules = { "core.command", "core.option", "core.nvimmap" }
+	local core_modules = {
+		"core.command",
+		"core.option",
+		"core.nvimmap",
+		"core.autocmd",
+		"core.autofiletype",
+		"core.plugmap",
+	}
 
 	local failed_modules = {}
 	for _, module in ipairs(core_modules) do
 		package.loaded[module] = nil
 		local status_ok, m = pcall(require, module)
-		if not status_ok then table.insert(failed_modules, m) end
+		if not status_ok then
+			table.insert(failed_modules, m)
+		else
+			if module == "core.plugmap" then
+				for _, func in pairs(m) do
+					if type(func) == "function" then func() end
+				end
+			end
+		end
 	end
 
 	vim.cmd.doautocmd("ColorScheme")

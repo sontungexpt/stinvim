@@ -4,12 +4,12 @@ local augroup = api.nvim_create_augroup
 
 ---
 -- default opts = 1
--- opts = 1 for noremap and silent
+-- opts = 1 for noremap and silent and nowait
 -- opts = 2 for not noremap and silent
 -- opts = 3 for noremap and not silent
 -- opts = 4 for not noremap and not silent
 -- opts = 5 for expr and noremap and silent
--- opts = 6 for noremap and silent and nowait
+-- opts = 6 for noremap and silent and wait
 -- opts = 7 for noremap and silent and nowait and expr
 local map = require("utils.mapper").map
 local load_and_exec = require("utils").load_and_exec
@@ -17,7 +17,7 @@ local load_and_exec = require("utils").load_and_exec
 local M = {}
 M.map_on_startup = function()
 	------------------------------ url-open ------------------------------
-	map({ "n", "v" }, "gx", "<esc>:URLOpenUnderCursor<cr>", 6, { desc = "Open URL under cursor" })
+	map({ "n", "v" }, "gx", "<esc>:URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
 
 	------------------------------ nvimtree ------------------------------
 	map({ "n", "i", "v", "c" }, "<C-b>", function()
