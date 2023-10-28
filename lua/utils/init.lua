@@ -62,8 +62,8 @@ end
 
 M.is_plug_installed = function(plugin_name, custom_dir)
 	custom_dir = custom_dir or "/lazy/"
-	custom_dir = vim.startswith(custom_dir, "/") and custom_dir or ("/" .. custom_dir)
-	custom_dir = vim.endswith(custom_dir, "/") and custom_dir or (custom_dir .. "/")
+	if not vim.startswith(custom_dir, "/") then custom_dir = "/" .. custom_dir end
+	if not vim.endswith(custom_dir, "/") then custom_dir = custom_dir .. "/" end
 
 	return fn.isdirectory(fn.stdpath("data") .. custom_dir .. plugin_name) == 1
 end
