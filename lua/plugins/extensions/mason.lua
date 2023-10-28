@@ -4,6 +4,7 @@ local utils = require("utils")
 local schedule = vim.schedule
 local mason_config_module = "plugins.configs.mason"
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
+local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
 local M = {}
 
@@ -29,16 +30,11 @@ M.get_ensured_packages = function()
 end
 
 M.get_installed_packages = function()
-	local installed_packages = {}
-	local package_path = fn.stdpath("data") .. "/mason/packages/"
-	if fn.isdirectory(package_path) == 1 then
-		local package_dirs = fn.glob(package_path .. "/*", true, true)
-		for _, package_dir in ipairs(package_dirs) do
-			local package_name = fn.fnamemodify(package_dir, ":t")
-			table.insert(installed_packages, package_name)
-		end
+	if fn.isdirectory(PACKAGE_DIR) == 1 then
+		local package_paths = fn.glob(PACKAGE_DIR .. "/*", true, true)
+		return vim.tbl_map(function(path) return fn.fnamemodify(path, ":t") end, package_paths)
 	end
-	return installed_packages
+	return {}
 end
 
 M.sync_packages = function()
@@ -73,9 +69,10 @@ end
 
 -------------------- Auto commands --------------------
 M.create_autocmds = function()
+	local group = api.nvim_create_augroup("MasonExtensions", { clear = true })
 	if require(mason_config_module).auto_sync then
 		api.nvim_create_autocmd("User", {
-			group = api.nvim_create_augroup("MasonSyncPackages", { clear = true }),
+			group = group,
 			pattern = "VeryLazy",
 			callback = function(e)
 				schedule(function() M.sync_packages() end)

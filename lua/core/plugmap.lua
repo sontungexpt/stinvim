@@ -17,7 +17,7 @@ local load_and_exec = require("utils").load_and_exec
 local M = {}
 M.map_on_startup = function()
 	------------------------------ url-open ------------------------------
-	map({ "n", "v" }, "gx", "<esc>:URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
+	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
 
 	------------------------------ nvimtree ------------------------------
 	map({ "n", "i", "v", "c" }, "<C-b>", function()
@@ -28,13 +28,13 @@ M.map_on_startup = function()
 	end, { desc = "Toggle NvimTree" })
 
 	------------------------------ Telescope ------------------------------
-	map({ "n", "i", "v" }, "<C-p>", "<esc>:Telescope find_files<cr>", { desc = "Find files" })
-	map("n", "<leader>fm", "<esc>:Telescope media_files<cr>", { desc = "Find media files" })
-	map("n", "<leader>fg", "<esc>:Telescope live_grep<cr>", { desc = "Find word" })
-	map("n", "<C-f>", "<esc>:Telescope live_grep<cr>", { desc = "Find word" })
-	map("n", "<leader>fb", "<esc>:Telescope buffers<cr>", { desc = "Find buffers" })
-	map("n", "<leader>fh", "<esc>:Telescope help_tags<cr>", { desc = "Find help tags" })
-	map("n", "<leader>fp", "<esc>:Telescope projects<cr>", { desc = "Find recent projects" })
+	map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
+	map("n", "<leader>fm", "<cmd>Telescope media_files<cr>", { desc = "Find media files" })
+	map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
+	map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
+	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
+	map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "Find recent projects" })
 
 	------------------------------ Git conflict ------------------------------
 	map("n", "<Leader>fc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
@@ -65,13 +65,13 @@ M.map_on_startup = function()
 	end, { desc = "Next error/ warning comment" })
 
 	------------------------------ ccc ------------------------------
-	map({ "n", "i", "v" }, "<A-c>", "<esc>:CccPick<cr>", { desc = "Pick color" })
+	map({ "n", "i", "v" }, "<A-c>", "<cmd>CccPick<cr>", { desc = "Pick color" })
 
 	------------------------------ ufo ------------------------------
-	map("n", "zR", ":lua require('ufo').openAllFolds()<CR>")
-	map("n", "zr", ":lua require('ufo').openFoldsExceptKinds()<CR>")
-	map("n", "zM", ":lua require('ufo').closeAllFolds()<CR>")
-	map("n", "zm", ":lua require('ufo').closeFoldsWith()<CR>")
+	map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>")
+	map("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>")
+	map("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>")
+	map("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>")
 
 	------------------------------ Bufferline ------------------------------
 	-- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
