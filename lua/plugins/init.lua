@@ -16,8 +16,9 @@ local plugins = {
 	},
 
 	{
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline/",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline",
 		"sontungexpt/sttusline",
+		branch = "table_version",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
