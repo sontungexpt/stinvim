@@ -21,6 +21,7 @@ g.loaded_netrwPlugin = 1
 
 -- Don't show mode since we have a statusline
 opts.showmode = require("utils").is_plug_installed("lualine.nvim") and false or true
+opts.laststatus = 3
 
 -- fold
 opts.foldenable = false -- Don't fold by default
