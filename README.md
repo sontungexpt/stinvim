@@ -26,6 +26,8 @@ This is the distro neovim for fullstack development.
 | [sttusline](https://github.com/sontungexpt/sttusline)                                                                | A very lightweight, super fast and lazyloading statusline plugin for neovim written in lua         |
 | [telescope](https://github.com/nvim-telescope/telescope.nvim)                                                        | Provides a file finder using telescope, a fuzzy finder plugin for files, buffers, and more.        |
 
+And many more plugins that you can see in [plugins/init.lua](./lua/plugins/init.lua)
+
 <!-- | [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         | -->
 
 ## Preview
@@ -55,12 +57,13 @@ This is the distro neovim for fullstack development.
     ---@tparam function|string map_to : The key or function to be executed by the keymap.
     ---@tparam table|number opts : Options to be applied in vim.keymap.set.
     --- - Default opts = 1.
-    --- - opts = 1 for noremap and silent.
+    --- - Default opts = 1.
+    --- - opts = 1 for noremap and silent and nowait.
     --- - opts = 2 for not noremap and silent.
     --- - opts = 3 for noremap and not silent.
     --- - opts = 4 for not noremap and not silent.
     --- - opts = 5 for expr and noremap and silent.
-    --- - opts = 6 for noremap and silent and nowait.
+    --- - opts = 6 for noremap and silent and wait.
     --- - opts = 7 for noremap and silent and nowait and expr.
     ---@tparam table extend_opts: Extension or overriding of opts if opts is a number.
     require("utils.mapper").map(mode, key, map_to, opts, extend_opts)
