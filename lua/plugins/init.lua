@@ -380,7 +380,8 @@ local plugins = {
 
 	{
 		"stevearc/conform.nvim",
-		event = { "BufWritePre" },
+		cmd = "ConformInfo",
+		event = "BufWritePre",
 		opts = require("plugins.configs.lsp.conform"),
 		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("conform").setup(opts) end,
