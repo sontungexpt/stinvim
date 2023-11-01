@@ -307,9 +307,33 @@ local plugins = {
 
 	{
 		"glepnir/lspsaga.nvim",
-		event = "LspAttach",
+		cmd = "Lspsaga",
+		keys = {
+			{
+				"[e",
+				function()
+					require("utils").load_and_exec(
+						"lspsaga.diagnostic",
+						function(diagnostic) diagnostic:goto_prev { severity = vim.diagnostic.severity.ERROR } end
+					)
+				end,
+				desc = "Lspsaga diagnostic goto prev error",
+			},
+			{
+				"]e",
+				function()
+					require("utils").load_and_exec(
+						"lspsaga.diagnostic",
+						function(diagnostic) diagnostic:goto_next { severity = vim.diagnostic.severity.ERROR } end
+					)
+				end,
+				desc = "Lspsaga diagnostic goto next error",
+			},
+		},
 		dependencies = {
+			{ "neovim/nvim-lspconfig" },
 			{ "nvim-tree/nvim-web-devicons" },
+
 			--Please make sure you install markdown and markdown_inline parser
 			{ "nvim-treesitter/nvim-treesitter" },
 		},
