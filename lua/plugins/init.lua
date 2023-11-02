@@ -170,6 +170,30 @@ local plugins = {
 	},
 
 	{
+		"aklt/plantuml-syntax",
+		ft = "plantuml",
+		event = "BufReadPost *.wsd,*.pu,*.puml,*.plantuml",
+	},
+
+	{
+		"https://gitlab.com/itaranto/plantuml.nvim",
+		event = "BufWritePre *.wsd,*.pu,*.puml,*.plantuml",
+		cmd = "PlantUml",
+		config = function()
+			require("plantuml").setup {
+				renderer = {
+					type = "image",
+					options = {
+						prog = "feh",
+						dark_mode = true,
+					},
+				},
+				render_on_write = true,
+			}
+		end,
+	},
+
+	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
 		opts = require("plugins.configs.whichkey"),

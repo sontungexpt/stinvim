@@ -20,7 +20,14 @@ local lsp_servers = {
 	-- cpp
 	{
 		name = "clangd",
+		config = {
+			on_attach = function(client, bufnr)
+				on_attach(client, bufnr)
+				client.server_capabilities.semanticTokensProvider = nil
+			end,
+		},
 	},
+
 	{
 		name = "cmake",
 	},

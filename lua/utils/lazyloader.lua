@@ -30,7 +30,7 @@ LazyLoader.load_on_file_open = function(plugin)
 end
 
 LazyLoader.load_on_repo_open = function(plugin)
-	api.nvim_create_autocmd({ "BufRead" }, {
+	api.nvim_create_autocmd({ "BufReadPost" }, {
 		group = api.nvim_create_augroup("BeLazyLoadOnGitRepoOpen" .. plugin, { clear = true }),
 		callback = function()
 			fn.system("git -C " .. '"' .. fn.expand("%:p:h") .. '"' .. " rev-parse")
