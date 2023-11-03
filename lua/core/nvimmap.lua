@@ -9,6 +9,20 @@ map({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 5)
 map({ "n", "v" }, "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
 map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 5)
 
+-- Delete empty lines without writing to registers
+map(
+	"n",
+	"dd",
+	function() return vim.api.nvim_get_current_line():match("^%s*$") and '"_dd' or "dd" end,
+	7
+)
+
+-- When you press i, automatically indent to the appropriate position
+map("n", "i", function() return #vim.fn.getline(".") == 0 and "_cc" or "i" end, 7)
+
+-- --Back to insert mode
+map("v", "i", "<esc>i")
+
 -- same with P key
 -- map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
 
@@ -18,9 +32,6 @@ map("v", "<S-Tab>", "<gv")
 
 --Back to normal mode
 map({ "i", "c" }, "jj", "<esc>", 2)
-
---Back to insert mode
-map("v", "i", "<esc>i")
 
 --Save file as the traditional way
 map({ "n", "i", "v", "c" }, "<C-s>", "<cmd>w<cr>", 2)
