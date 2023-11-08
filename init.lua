@@ -1,3 +1,4 @@
+local require = require
 require("core")
 
 -- Install lazy neovim if not installed

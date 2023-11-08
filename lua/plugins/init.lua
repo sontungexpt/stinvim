@@ -1,3 +1,4 @@
+local require = require
 require("plugins.extensions")
 local load_on_file_open = require("utils.lazyloader").load_on_file_open
 local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
