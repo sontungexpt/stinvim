@@ -1,3 +1,4 @@
+local require = require
 require("core.provider")
 require("core.command")
 require("core.option")

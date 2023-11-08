@@ -1,3 +1,4 @@
+local require = require
 require("core")
 require("user")
 
