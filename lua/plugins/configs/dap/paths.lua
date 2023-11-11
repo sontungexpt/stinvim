@@ -7,7 +7,7 @@ M.get_adapter_mason_path = function(adapter_name, custom_path)
 end
 
 M.get_rust_debug_filepath = function()
-	local project_dir = require("core.utils").find_project_root()
+	local project_dir = require("utils").find_root()
 
 	-- check if project_dir end with / then remove it
 	if vim.endswith(project_dir, "/") then project_dir = project_dir:sub(1, -2) end
