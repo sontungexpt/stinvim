@@ -51,6 +51,7 @@ local options = {
 		layout_strategy = "horizontal",
 		mappings = {
 			i = {
+				["<C-p>"] = require("telescope.actions").close, -- support to toggle telescope
 				["<esc>"] = require("telescope.actions").close,
 				["<C-q>"] = require("telescope.actions").close,
 				["<A-q>"] = require("telescope.actions").close,
@@ -65,6 +66,7 @@ local options = {
 				-- ["<C-b>"] = no_actions,
 			},
 			n = {
+				["<C-p>"] = require("telescope.actions").close, -- support to toggle telescope
 				["q"] = require("telescope.actions").close,
 				["<esc>"] = require("telescope.actions").close,
 				["<C-q>"] = require("telescope.actions").close,
