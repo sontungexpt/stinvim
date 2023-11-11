@@ -74,15 +74,15 @@ local plugins = {
 		cmd = "URLOpenUnderCursor",
 		init = function() load_on_file_open("url-open") end,
 		-- opts = require("plugins.configs.url-open"),
-		config = function(_, opts) require("url-open").setup {} end,
+		config = function(_, opts) require("url-open").setup() end,
 	},
 
-	{
-		"sontungexpt/buffer-closer",
-		cmd = "BufferCloserRetire",
-		event = { "BufAdd", "FocusLost", "FocusGained" },
-		config = function(_, opts) require("buffer-closer").setup {} end,
-	},
+	-- {
+	-- 	"sontungexpt/buffer-closer",
+	-- 	cmd = "BufferCloserRetire",
+	-- 	event = { "BufAdd", "FocusLost", "FocusGained" },
+	-- 	config = function(_, opts) require("buffer-closer").setup {} end,
+	-- },
 
 	{
 		"akinsho/toggleterm.nvim",
@@ -214,7 +214,7 @@ local plugins = {
 		dependencies = "kevinhwang91/promise-async",
 		opts = require("plugins.configs.nvim-ufo"),
 		config = function(_, opts)
-			vim.o.foldenable = true -- enable folding when plugin is loaded
+			vim.opt.foldenable = true -- enable folding when plugin is loaded
 			require("ufo").setup(opts)
 		end,
 	},
