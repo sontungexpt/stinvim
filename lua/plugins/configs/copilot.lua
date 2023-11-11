@@ -1,3 +1,14 @@
+-- local function get_node_path()
+-- 	local node_dir = vim.fn.expand("$HOME") .. "/.nvm/versions/node"
+
+-- 	if vim.fn.isdirectory(node_dir) == 0 then return "node" end
+
+-- 	-- get the latest version of node
+-- 	local node_version = vim.fn.system("ls -v " .. node_dir .. " | tail -n 1")
+
+-- 	if vim.fn.empty(node_version) == 1 then return "node" end
+-- 	return node_dir .. "/" .. node_version .. "/bin/node"
+-- end
 local options = {
 	panel = {
 		enabled = true,

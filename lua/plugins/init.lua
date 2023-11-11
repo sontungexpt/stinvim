@@ -186,7 +186,7 @@ local plugins = {
 					type = "image",
 					options = {
 						prog = "feh",
-						dark_mode = true,
+						dark_mode = false,
 					},
 				},
 				render_on_write = true,
@@ -221,6 +221,7 @@ local plugins = {
 
 	{
 		"zbirenbaum/copilot.lua",
+		-- "sontungexpt/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
 		opts = function() return require("plugins.configs.copilot") end,
