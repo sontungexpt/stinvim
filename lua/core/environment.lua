@@ -20,7 +20,7 @@ end
 
 local environments = {
 	fn.stdpath("data") .. "/mason/bin", -- add binaries installed by mason.nvim to path
-	env.PATH:find("node/.+/bin") == nil and get_node_bin() or nil, -- add node binaries to path if not already there
+	env.PATH:find("node") == nil and get_node_bin() or nil, -- add node binaries to path if not already there
 }
 
 env.PATH = table.concat(environments, sep) .. sep .. env.PATH
