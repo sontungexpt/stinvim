@@ -6,7 +6,6 @@ local LazyLoader = {}
 LazyLoader.load_on_file_open = function(plugin)
 	api.nvim_create_autocmd({ "BufRead", "BufWinEnter", "BufNewFile" }, {
 		group = api.nvim_create_augroup("BeLazyOnFileOpen" .. plugin, {}),
-		once = true,
 		callback = function()
 			local file = fn.expand("%")
 			local condition = file ~= "NvimTree_1" and file ~= "[lazy]" and file ~= ""
