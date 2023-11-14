@@ -61,6 +61,7 @@ local config = {
 			},
 		},
 	},
+	on_attach = require("plugins.configs.lsp.general-confs").on_attach,
 	init_options = {
 		bundles = {
 			fn.glob(
