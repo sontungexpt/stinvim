@@ -19,7 +19,7 @@ LazyLoader.load_on_file_open = function(plugin)
 					vim.schedule(function()
 						require("lazy").load { plugins = plugin }
 						if plugin == "nvim-lspconfig" then vim.cmd.doautocmd("FileType") end
-					end)
+					end, 0)
 				else
 					require("lazy").load { plugins = plugin }
 				end
