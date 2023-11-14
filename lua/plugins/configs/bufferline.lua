@@ -1,5 +1,4 @@
-local utils = require("core.utils")
-local colors = utils.load_config().ui.colors
+local colors = require("ui.colors")
 
 local options = {
 	options = {
@@ -9,9 +8,7 @@ local options = {
 		numbers = "none",
 		close_command = "bdelete %d",
 		right_mouse_command = function(bufnr)
-			local status_ok = utils.is_plugin_installed("focus.nvim") and vim.fn.exists("FocusSplitRight") ~= 0
-
-			vim.api.nvim_command(status_ok and "FocusSplitRight" or "vsplit")
+			vim.api.nvim_command("vsplit")
 			vim.api.nvim_command("buffer " .. bufnr)
 		end,
 		left_mouse_command = "buffer %d",
