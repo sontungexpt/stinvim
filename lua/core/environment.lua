@@ -3,13 +3,14 @@ local env = vim.env
 local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
 local sep = is_windows and ";" or ":"
 
-local function get_node_bin()
+-- if nvm is installed, add node binaries to path
+local function get_nvm_node_bin()
 	local nvm_dir = fn.expand("$NVM_DIR")
 	local node_dir = fn.empty(nvm_dir) == 0 and nvm_dir .. "/versions/node"
 		or is_windows and fn.expand("$HOME") .. "/AppData/Local/nvm/versions/node"
 		or fn.expand("$HOME") .. "/.nvm/versions/node"
 
-	if fn.isdirectory(node_dir) == 0 then return "" end
+	if fn.isdirectory(node_dir) == 0 then return nil end
 
 	local node_version = is_windows
 			and fn.system("dir /b /ad /o-n " .. node_dir .. ' | findstr /r /b /c:"v"'):gsub("\n", "")
@@ -20,7 +21,7 @@ end
 
 local environments = {
 	fn.stdpath("data") .. "/mason/bin", -- add binaries installed by mason.nvim to path
-	env.PATH:find("node") == nil and get_node_bin() or nil, -- add node binaries to path if not already there
+	env.PATH:find("node") == nil and get_nvm_node_bin() or nil, -- add node binaries to path if not already there
 }
 
 env.PATH = table.concat(environments, sep) .. sep .. env.PATH
