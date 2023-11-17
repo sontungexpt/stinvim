@@ -41,7 +41,7 @@ M.find_unique_items = function(source, target)
 	end
 
 	for _, value in ipairs(source) do
-		if not counts[value] then table.insert(not_exists, value) end
+		if not counts[value] then not_exists[#not_exists + 1] = value end
 	end
 
 	return not_exists
