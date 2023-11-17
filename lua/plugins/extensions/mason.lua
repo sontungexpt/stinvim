@@ -11,7 +11,7 @@ local M = {}
 M.json_to_array = function(json_str)
 	local array = {}
 	for value in json_str:gmatch('"([^"]+)"') do
-		table.insert(array, value)
+		array[#array + 1] = value
 	end
 	return array
 end
