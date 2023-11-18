@@ -39,7 +39,6 @@ local options = {
 		sh = true,
 	},
 	-- change this to your node binary path
-	-- copilot_node_command = vim.fn.expand("$HOME") .. "/.nvm/versions/node/v21.0.0/bin/node",
 	copilot_node_command = "node",
 	server_opts_overrides = {},
 }
