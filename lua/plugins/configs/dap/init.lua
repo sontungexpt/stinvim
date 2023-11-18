@@ -41,7 +41,7 @@ dap.configurations.rust = {
 		type = "codelldb",
 		name = "Debug Rust",
 		request = "launch",
-		program = function() return path_helpers.get_rust_debug_filepath() end,
+		program = path_helpers.get_rust_debug_filepath,
 		cwd = "${workspaceFolder}",
 		stopOnEntry = false,
 	},
