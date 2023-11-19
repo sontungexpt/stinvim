@@ -5,7 +5,8 @@ local fn = vim.fn
 local root_markers = { ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }
 
 local project_name = fn.fnamemodify(require("jdtls.setup").find_root(root_markers), ":p:h:t")
-local workspace_dir = fn.stdpath("data") .. "/site/java/workspace-root/" .. project_name
+-- local workspace_dir = fn.stdpath("data") .. "/site/java/workspace-root/" .. project_name
+local workspace_dir = fn.stdpath("cache") .. "/site/java/workspace-root/" .. project_name
 
 if fn.isdirectory(workspace_dir) == 0 then fn.mkdir(workspace_dir, "p") end
 
