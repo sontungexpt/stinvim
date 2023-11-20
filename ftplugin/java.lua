@@ -23,9 +23,16 @@ elseif os == "Windows" then
 	os = "win"
 end
 
+local get_java_path = function()
+	return fn.filereadable("/usr/lib/jvm/java-17-openjdk/bin/java") == 1
+			and "/usr/lib/jvm/java-17-openjdk/bin/java"
+		or fn.exepath("java")
+end
+
 local config = {
 	cmd = {
-		"/usr/lib/jvm/java-17-openjdk/bin/java", -- or '/path/to/java17_or_newer/bin/java'
+		get_java_path(),
+		-- "/usr/lib/jvm/java-17-openjdk/bin/java", -- or '/path/to/java17_or_newer/bin/java'
 		"-Declipse.application=org.eclipse.jdt.ls.core.id1",
 		"-Dosgi.bundles.defaultStartLevel=4",
 		"-Declipse.product=org.eclipse.jdt.ls.core.product",
