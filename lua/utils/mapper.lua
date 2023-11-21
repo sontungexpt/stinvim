@@ -41,9 +41,7 @@ M.map = function(mode, key, map_to, opts, extend_opts)
 		opts = opts1
 	end
 
-	if extend_opts ~= nil and type(extend_opts) == "table" then
-		opts = vim.tbl_deep_extend("force", opts, extend_opts)
-	end
+	if type(extend_opts) == "table" then opts = vim.tbl_deep_extend("force", opts, extend_opts) end
 
 	set_keymap(mode, key, map_to, opts)
 end
