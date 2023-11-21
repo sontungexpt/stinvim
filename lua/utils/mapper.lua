@@ -1,3 +1,4 @@
+local set_keymap = vim.keymap.set
 local M = {}
 
 ---@tparam table|string mode : Table mode used for applying the key map if only one mode you can use string
@@ -18,7 +19,7 @@ M.map = function(mode, key, map_to, opts, extend_opts)
 	opts = opts or 1
 	if type(opts) == "table" then
 		opts = vim.tbl_deep_extend("force", opts1, opts)
-		vim.keymap.set(mode, key, map_to, opts)
+		set_keymap(mode, key, map_to, opts)
 		return
 	end
 
@@ -44,7 +45,7 @@ M.map = function(mode, key, map_to, opts, extend_opts)
 		opts = vim.tbl_deep_extend("force", opts, extend_opts)
 	end
 
-	vim.keymap.set(mode, key, map_to, opts)
+	set_keymap(mode, key, map_to, opts)
 end
 
 return M
