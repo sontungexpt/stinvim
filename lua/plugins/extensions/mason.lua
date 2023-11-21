@@ -8,7 +8,7 @@ local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
 local M = {}
 
-M.json_to_array = function(json_str)
+local json_to_array = function(json_str)
 	local array = {}
 	for value in json_str:gmatch('"([^"]+)"') do
 		array[#array + 1] = value
@@ -16,12 +16,12 @@ M.json_to_array = function(json_str)
 	return array
 end
 
-M.get_ensured_packages = function()
+local get_ensured_packages = function()
 	local rcfile = io.open(MASONRC_FILE, "r")
 	if rcfile then
 		local json = rcfile:read("*all")
 		rcfile:close()
-		return M.json_to_array(json)
+		return json_to_array(json)
 	else
 		package.loaded[mason_config_module] = nil
 		local status_ok, config = pcall(require, mason_config_module)
@@ -29,7 +29,7 @@ M.get_ensured_packages = function()
 	end
 end
 
-M.get_installed_packages = function()
+local get_installed_packages = function()
 	if fn.isdirectory(PACKAGE_DIR) == 1 then
 		local package_paths = fn.glob(PACKAGE_DIR .. "/*", true, true)
 		return vim.tbl_map(function(path) return fn.fnamemodify(path, ":t") end, package_paths)
@@ -37,10 +37,10 @@ M.get_installed_packages = function()
 	return {}
 end
 
-M.sync_packages = function()
+local sync_packages = function()
 	if utils.is_plug_installed("mason", "/") then
-		local installed_packages = M.get_installed_packages()
-		local ensured_packages = M.get_ensured_packages()
+		local installed_packages = get_installed_packages()
+		local ensured_packages = get_ensured_packages()
 
 		-- had changed
 		if not utils.is_same_array(ensured_packages, installed_packages) then
@@ -64,7 +64,7 @@ M.sync_packages = function()
 end
 
 M.extend_command = function()
-	vim.api.nvim_create_user_command("MasonSyncPackages", M.sync_packages, { nargs = 0 })
+	vim.api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
 end
 
 -------------------- Auto commands --------------------
@@ -74,9 +74,7 @@ M.create_autocmds = function()
 		api.nvim_create_autocmd("User", {
 			group = group,
 			pattern = "VeryLazy",
-			callback = function(e)
-				schedule(function() M.sync_packages() end)
-			end,
+			callback = function() schedule(sync_packages) end,
 		})
 	end
 end
