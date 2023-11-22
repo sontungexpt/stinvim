@@ -61,6 +61,11 @@ local plugins = {
 		ft = "lf",
 	},
 
+	{
+		"elkowar/yuck.vim",
+		ft = "yuck",
+	},
+
 	------------------------------------ Editor ------------------------------------
 	{
 		"sontungexpt/stcursorword",
