@@ -28,9 +28,6 @@ local options = {
 	autopairs = {
 		enable = true,
 	},
-	context_commentstring = {
-		enable = true,
-	},
 }
 
 return options

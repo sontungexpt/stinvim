@@ -19,6 +19,8 @@ opts.shortmess:append("sI")
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
 
+g.skip_ts_context_commentstring_module = true
+
 -- Don't show mode since we have a statusline
 opts.showmode = require("utils").is_plug_installed("lualine.nvim") and false or true
 opts.laststatus = 3
