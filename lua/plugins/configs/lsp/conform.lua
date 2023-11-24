@@ -4,6 +4,7 @@ local options = {
 	formatters_by_ft = {
 		lua = { "stylua" },
 		python = { "autopep8" },
+		xml = { "xmlformat" },
 
 		-- webdev
 		javascript = { prettier },

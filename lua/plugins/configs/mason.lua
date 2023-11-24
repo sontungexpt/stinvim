@@ -44,6 +44,7 @@ local options = {
 		"emmet-ls",
 		"json-lsp",
 		"tailwindcss-language-server",
+		"xmlformatter",
 	},
 	ui = {
 		check_outdated_packages_on_open = true,

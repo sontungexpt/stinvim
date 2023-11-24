@@ -22,5 +22,6 @@
   "typescript-language-server",
   "emmet-ls",
   "json-lsp",
-  "tailwindcss-language-server"
+  "tailwindcss-language-server",
+  "xmlformatter"
 ]
