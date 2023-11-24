@@ -38,6 +38,7 @@ local config = {
 		"-Declipse.product=org.eclipse.jdt.ls.core.product",
 		"-Dlog.protocol=true",
 		"-Dlog.level=ALL",
+		"-javaagent:" .. install_path .. "/lombok.jar",
 		"-Xmx1g",
 		"--add-modules=ALL-SYSTEM",
 		"--add-opens",
