@@ -28,8 +28,10 @@ map("v", "i", "<esc>i")
 -- map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
 
 -- Indent lines with tab in visual mode
-map("v", "<Tab>", ">gv")
-map("v", "<S-Tab>", "<gv")
+map("x", "<Tab>", ">gv|")
+map("x", "<S-Tab>", "<gv")
+map("n", "<Tab>", ">>_")
+map("n", "<S-Tab>", "<<_")
 
 --Back to normal mode
 map({ "i", "c" }, "jj", "<esc>", 2)
