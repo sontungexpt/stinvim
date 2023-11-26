@@ -1,8 +1,9 @@
 local vim = vim
 local map = require("utils.mapper").map
-local autocmd = vim.api.nvim_create_autocmd
-local augroup = vim.api.nvim_create_augroup
-local group = vim.api.nvim_create_augroup("STINVIM_CORE_NVIMMAP", { clear = true })
+local api = vim.api
+local autocmd = api.nvim_create_autocmd
+local augroup = api.nvim_create_augroup
+local group = api.nvim_create_augroup("STINVIM_CORE_NVIMMAP", { clear = true })
 
 -- Remap for dealing with word wrap
 map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
@@ -11,12 +12,7 @@ map({ "n", "v" }, "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
 map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 5)
 
 -- Delete empty lines without writing to registers
-map(
-	"n",
-	"dd",
-	function() return vim.api.nvim_get_current_line():match("^%s*$") and '"_dd' or "dd" end,
-	7
-)
+map("n", "dd", function() return api.nvim_get_current_line():match("^%s*$") and '"_dd' or "dd" end, 7)
 
 -- When you press i, automatically indent to the appropriate position
 map("n", "i", function() return #vim.fn.getline(".") == 0 and "_cc" or "i" end, 7)
@@ -100,7 +96,7 @@ autocmd("BufWinEnter", {
 	desc = "Make q close help, man, quickfix, dap floats",
 	group = group,
 	callback = function(args)
-		local buftype = vim.api.nvim_get_option_value("buftype", { buf = args.buf })
+		local buftype = api.nvim_get_option_value("buftype", { buf = args.buf })
 		if vim.tbl_contains({ "help", "nofile", "quickfix" }, buftype) then
 			map("n", "q", "<cmd>close<cr>", { buffer = args.buf, nowait = true })
 		end
