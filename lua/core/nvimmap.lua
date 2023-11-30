@@ -89,6 +89,28 @@ map("v", "<A-Up>", "<cmd>m '<-2<CR>gv=gv")
 map("n", "<A-Down>", "<cmd>m .+1<CR>==")
 map("v", "<A-Down>", "<cmd>m '>+1<CR>gv=gv")
 
+--Auto close brackets, quotes in command mode
+local function map_autoclose_bracket(open_bracket, close_bracket)
+	map(
+		"c",
+		open_bracket,
+		function()
+			vim.api.nvim_feedkeys(
+				vim.api.nvim_replace_termcodes(open_bracket .. close_bracket .. "<left>", true, true, true),
+				"n",
+				true
+			)
+		end
+	)
+end
+map_autoclose_bracket("(", ")")
+map_autoclose_bracket("[", "]")
+map_autoclose_bracket("{", "}")
+map_autoclose_bracket("<", ">")
+map_autoclose_bracket("'", "'")
+map_autoclose_bracket('"', '"')
+map_autoclose_bracket("`", "`")
+
 autocmd("BufWinEnter", {
 	desc = "Make q close help, man, quickfix, dap floats",
 	group = group,
