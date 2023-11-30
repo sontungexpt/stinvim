@@ -17,9 +17,6 @@ map("n", "dd", function() return api.nvim_get_current_line():match("^%s*$") and 
 -- When you press i, automatically indent to the appropriate position
 map("n", "i", function() return #vim.fn.getline(".") == 0 and "_cc" or "i" end, 7)
 
--- Back to insert mode from visual mode
-map("v", "i", "<esc>i")
-
 -- same with P key
 -- map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
 
