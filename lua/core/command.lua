@@ -3,14 +3,13 @@
 -- value[1]: function to do
 -- value[2]: table opts
 local commands = {
-	["NvimHotReload"] = { function() require("utils.reloader").hot_reload() end, { nargs = 0 } },
+	["NvimHotReload"] = { require("utils.reloader").hot_reload },
 	["NvimTouchPlugExtension"] = {
-		function() require("utils.plug-extension").touch_plug_extension() end,
-		{ nargs = 0 },
+		require("utils.plug-extension").touch_plug_extension,
 	},
 }
 
 for cmd_name, v in pairs(commands) do
-	vim.api.nvim_create_user_command(cmd_name, v[1], v[2])
+	vim.api.nvim_create_user_command(cmd_name, v[1], v[2] or { nargs = 0 })
 	commands[cmd_name] = nil
 end
