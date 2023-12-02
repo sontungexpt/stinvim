@@ -2,9 +2,10 @@ local status, jdtls = pcall(require, "jdtls")
 if not status then return end
 
 local fn = vim.fn
+local find_root = require("jdtls.setup").find_root
 local root_markers = { ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }
 
-local project_name = fn.fnamemodify(require("jdtls.setup").find_root(root_markers), ":p:h:t")
+local project_name = fn.fnamemodify(find_root(root_markers), ":p:h:t")
 -- local workspace_dir = fn.stdpath("data") .. "/site/java/workspace-root/" .. project_name
 local workspace_dir = fn.stdpath("cache") .. "/site/java/workspace-root/" .. project_name
 
@@ -53,8 +54,32 @@ local config = {
 		workspace_dir,
 	},
 	capabilities = require("plugins.configs.lsp.general-confs").capabilities(true),
-	root_dir = require("jdtls.setup").find_root(root_markers),
+	on_attach = require("plugins.configs.lsp.general-confs").on_attach,
+	root_dir = find_root(root_markers),
 	settings = {
+		eclipse = {
+			downloadSources = true,
+		},
+		maven = {
+			downloadSources = true,
+		},
+		implementationsCodeLens = {
+			enabled = true,
+		},
+		referencesCodeLens = {
+			enabled = true,
+		},
+		references = {
+			includeDecompiledSources = true,
+		},
+		signatureHelp = { enabled = true },
+		extendedClientCapabilities = jdtls.extendedClientCapabilities,
+		sources = {
+			organizeImports = {
+				starThreshold = 9999,
+				staticStarThreshold = 9999,
+			},
+		},
 		java = {
 			configuration = {
 				runtimes = {
@@ -70,7 +95,9 @@ local config = {
 			},
 		},
 	},
-	on_attach = require("plugins.configs.lsp.general-confs").on_attach,
+	flags = {
+		allow_incremental_sync = true,
+	},
 	init_options = {
 		bundles = {
 			fn.glob(
@@ -84,4 +111,4 @@ local config = {
 	},
 }
 
-require("jdtls").start_or_attach(config)
+jdtls.start_or_attach(config)
