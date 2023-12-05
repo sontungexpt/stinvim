@@ -129,5 +129,13 @@ autocmd({ "BufWritePre" }, {
 autocmd("BufWritePost", {
 	group = group,
 	desc = "Reload NvimTree after writing the buffer",
-	command = "NvimTreeRefresh",
+	callback = function()
+		local bufs = fn.getbufinfo()
+		for _, buf in ipairs(bufs) do
+			if buf.name:find("NvimTree_") then
+				cmd("NvimTreeRefresh")
+				break
+			end
+		end
+	end,
 })
