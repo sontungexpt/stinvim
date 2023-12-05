@@ -125,3 +125,9 @@ autocmd({ "BufWritePre" }, {
 	desc = "Create missing directories before writing the buffer",
 	command = "silent! call mkdir(expand('%:p:h'), 'p')",
 })
+
+autocmd("BufWritePost", {
+	group = group,
+	desc = "Reload NvimTree after writing the buffer",
+	command = "NvimTreeRefresh",
+})
