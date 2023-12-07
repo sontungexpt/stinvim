@@ -74,6 +74,7 @@ local plugins = {
 	},
 
 	{
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/url-open",
 		"sontungexpt/url-open",
 		branch = "mini",
 		cmd = "URLOpenUnderCursor",
