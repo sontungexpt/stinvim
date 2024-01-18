@@ -7,21 +7,23 @@ local options = {
 		xml = { "xmlformat" },
 
 		-- webdev
-		javascript = { prettier },
-		typescript = { prettier },
-		javascriptreact = { prettier },
-		typescriptreact = { prettier },
-		json = { prettier },
-		jsonc = { prettier },
-		css = { prettier },
-		html = { prettier },
-		markdown = { prettier },
+		javascript = { prettier, "eslint" },
+		typescript = { prettier, "eslint" },
+		javascriptreact = { prettier, "eslint" },
+		typescriptreact = { prettier, "eslint" },
+		json = { prettier, "eslint" },
+		jsonc = { prettier, "eslint" },
+		css = { prettier, "eslint" },
+		html = { prettier, "eslint" },
+		markdown = { prettier, "eslint" },
+		yaml = { prettier, "eslint" },
 
 		["*"] = { "codespell" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 		cmake = { "clang_format" },
 		rust = { "rustfmt" },
+		zig = { "zigfmt" },
 
 		sh = { "shfmt", "shellcheck" },
 

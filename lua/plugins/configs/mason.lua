@@ -41,6 +41,7 @@ local options = {
 		"css-lsp",
 		"html-lsp",
 		"typescript-language-server",
+		"svelte-language-server",
 		"emmet-ls",
 		"json-lsp",
 		"tailwindcss-language-server",

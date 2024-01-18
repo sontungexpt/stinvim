@@ -19,9 +19,11 @@
   "eslint-lsp",
   "css-lsp",
   "html-lsp",
+  "svelte-language-server",
   "typescript-language-server",
   "emmet-ls",
   "json-lsp",
   "tailwindcss-language-server",
-  "xmlformatter"
+  "xmlformatter",
+  "yaml-language-server"
 ]
