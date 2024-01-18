@@ -33,7 +33,6 @@ end
 local config = {
 	cmd = {
 		get_java_path(),
-		-- "/usr/lib/jvm/java-17-openjdk/bin/java", -- or '/path/to/java17_or_newer/bin/java'
 		"-Declipse.application=org.eclipse.jdt.ls.core.id1",
 		"-Dosgi.bundles.defaultStartLevel=4",
 		"-Declipse.product=org.eclipse.jdt.ls.core.product",
@@ -41,6 +40,8 @@ local config = {
 		"-Dlog.level=ALL",
 		"-javaagent:" .. install_path .. "/lombok.jar",
 		"-Xmx1g",
+		"-Xms512m",
+		"-Xmx2048m",
 		"--add-modules=ALL-SYSTEM",
 		"--add-opens",
 		"java.base/java.util=ALL-UNNAMED",
@@ -81,6 +82,35 @@ local config = {
 			},
 		},
 		java = {
+			signatureHelp = {
+				enabled = true,
+			},
+			saveActions = {
+				organizeImports = true,
+			},
+			completion = {
+				maxResults = 20,
+				favoriteStaticMembers = {
+					"org.hamcrest.MatcherAssert.assertThat",
+					"org.hamcrest.Matchers.*",
+					"org.hamcrest.CoreMatchers.*",
+					"org.junit.jupiter.api.Assertions.*",
+					"java.util.Objects.requireNonNull",
+					"java.util.Objects.requireNonNullElse",
+					"org.mockito.Mockito.*",
+				},
+			},
+			sources = {
+				organizeImports = {
+					starThreshold = 9999,
+					staticStarThreshold = 9999,
+				},
+			},
+			codeGeneration = {
+				toString = {
+					template = "${object.className}{${member.name()}=${member.value}, ${otherMembers}}",
+				},
+			},
 			configuration = {
 				runtimes = {
 					{
@@ -96,6 +126,7 @@ local config = {
 		},
 	},
 	flags = {
+		debounce_text_changes = 150,
 		allow_incremental_sync = true,
 	},
 	init_options = {
