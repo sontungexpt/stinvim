@@ -46,6 +46,9 @@ local lsp_servers = {
 		},
 	},
 	{
+		name = "svelte",
+	},
+	{
 		name = "html",
 	},
 	{
