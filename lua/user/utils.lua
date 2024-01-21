@@ -69,4 +69,44 @@ M.compile_stilux_srcipt_file = function()
 	})
 end
 
+M.hex2rgb = function(hex)
+	hex = hex:gsub("#", "")
+	if hex:len() == 3 then
+		return (tonumber("0x" .. hex:sub(1, 1)) * 17),
+			(tonumber("0x" .. hex:sub(2, 2)) * 17),
+			(tonumber("0x" .. hex:sub(3, 3)) * 17)
+	else
+		return tonumber("0x" .. hex:sub(1, 2)),
+			tonumber("0x" .. hex:sub(3, 4)),
+			tonumber("0x" .. hex:sub(5, 6))
+	end
+end
+
+M.ansi_color = function(hex)
+	local r, g, b = M.hex2rgb(hex)
+	return string.format("38;2;%s;%s;%s", r, g, b)
+end
+
+M.compile_lf_colors = function()
+	local colors_file = fn.expand("$HOME") .. "/.config/lf/colors"
+
+	local new_lines = {}
+
+	for line in io.lines(colors_file) do
+		local color = line:match("#%x%x%x%x%x%x") or line:match("#%x%x%x")
+		if color == nil then
+			new_lines[#new_lines + 1] = line
+		else
+			new_lines[#new_lines + 1] = line:gsub("#%x%x%x%x%x%x", M.ansi_color(color))
+		end
+	end
+
+	local file = io.open(colors_file, "w")
+	local content = table.concat(new_lines, "\n")
+	if file then
+		file:write(content)
+		file:close()
+	end
+end
+
 return M

@@ -15,10 +15,9 @@ local options = {
 		jsonc = { prettier, "eslint" },
 		css = { prettier, "eslint" },
 		html = { prettier, "eslint" },
-		markdown = { prettier, "eslint" },
+		markdown = { prettier, "eslint", "codespell" },
 		yaml = { prettier, "eslint" },
 
-		["*"] = { "codespell" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 		cmake = { "clang_format" },
