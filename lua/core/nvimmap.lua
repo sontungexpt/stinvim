@@ -17,6 +17,9 @@ map("n", "dd", function() return api.nvim_get_current_line():match("^%s*$") and 
 -- When you press i, automatically indent to the appropriate position
 map("n", "i", function() return #vim.fn.getline(".") == 0 and "_cc" or "i" end, 7)
 
+-- inspect colors
+map("n", "<M-C>", "<cmd>Inspect<cr>", 1)
+
 -- same with P key
 -- map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
 

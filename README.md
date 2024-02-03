@@ -28,8 +28,6 @@ This is the distro neovim for fullstack development.
 
 And many more plugins that you can see in [plugins/init.lua](./lua/plugins/init.lua)
 
-<!-- | [bufferline](https://github.com/akinsho/bufferline.nvim)                                                             | Manages buffers with bufferline, a simple and configurable interface for buffer management         | -->
-
 ## Preview
 
 ![preview1](./docs/readme/preview1.png)

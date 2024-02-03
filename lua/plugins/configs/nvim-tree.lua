@@ -57,7 +57,7 @@ local options = {
 	select_prompts = false,
 	view = {
 		cursorline = true,
-		width = 28,
+		width = 32,
 		side = "left",
 		adaptive_size = false,
 		number = false,
@@ -65,7 +65,9 @@ local options = {
 		signcolumn = "yes",
 	},
 	renderer = {
-		special_files = {}, -- add highlight if is special file
+		special_files = {
+			"README.md",
+		}, -- add highlight if is special file
 	},
 	update_focused_file = {
 		enable = true,
