@@ -5,14 +5,28 @@ local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
 
 local plugins = {
 	--------------------------------------------------- Theme ---------------------------------------------------
+	-- {
+	-- 	"folke/tokyonight.nvim",
+	-- 	priority = 1000,
+	-- 	lazy = false,
+	-- 	opts = require("plugins.configs.tokyonight"),
+	-- 	config = function(_, opts)
+	-- 		require("tokyonight").setup(opts)
+	-- 		vim.api.nvim_command([[colorscheme tokyonight]])
+	-- 	end,
+	-- },
+
 	{
-		"folke/tokyonight.nvim",
+		"sontungexpt/witch",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/witch",
 		priority = 1000,
+		-- branch = "develop",
 		lazy = false,
-		opts = require("plugins.configs.tokyonight"),
+		-- opts = require("plugins.configs.stinvimui"),
 		config = function(_, opts)
-			require("tokyonight").setup(opts)
-			vim.api.nvim_command([[colorscheme tokyonight]])
+			---@diagnostic disable-next-line: different-requires
+			require("witch").setup()
+			-- vim.api.nvim_command([[colorscheme stinvimui]])
 		end,
 	},
 
