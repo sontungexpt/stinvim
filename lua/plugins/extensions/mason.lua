@@ -8,20 +8,12 @@ local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
 local M = {}
 
-local json_to_array = function(json_str)
-	local array = {}
-	for value in json_str:gmatch('"([^"]+)"') do
-		array[#array + 1] = value
-	end
-	return array
-end
-
 local get_ensured_packages = function()
 	local rcfile = io.open(MASONRC_FILE, "r")
 	if rcfile then
 		local json = rcfile:read("*all")
 		rcfile:close()
-		return json_to_array(json)
+		return vim.json.decode(json)
 	else
 		package.loaded[mason_config_module] = nil
 		local status_ok, config = pcall(require, mason_config_module)
@@ -64,7 +56,7 @@ local sync_packages = function()
 end
 
 M.extend_command = function()
-	vim.api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
+	api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
 end
 
 -------------------- Auto commands --------------------
