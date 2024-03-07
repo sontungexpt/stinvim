@@ -5,16 +5,6 @@ local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
 
 local plugins = {
 	--------------------------------------------------- Theme ---------------------------------------------------
-	-- {
-	-- 	"folke/tokyonight.nvim",
-	-- 	priority = 1000,
-	-- 	lazy = false,
-	-- 	opts = require("plugins.configs.tokyonight"),
-	-- 	config = function(_, opts)
-	-- 		require("tokyonight").setup(opts)
-	-- 		vim.api.nvim_command([[colorscheme tokyonight]])
-	-- 	end,
-	-- },
 	{
 		"sontungexpt/witch",
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/witch",
@@ -29,10 +19,21 @@ local plugins = {
 		end,
 	},
 
+	-- {
+	-- 	dir = "/home/stilux/Data/Workspace/neovim-plugins/witch-line",
+	-- 	dependencies = {
+	-- 		"nvim-tree/nvim-web-devicons",
+	-- 	},
+	-- 	init = function() load_on_file_open("witch-line") end,
+	-- 	-- opts = require("plugins.configs.sttusline"),
+	-- 	config = function(_, opts) require("witch-line").setup(opts) end,
+	-- },
 	{
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline",
+		-- event = "UIEnter",
 		"sontungexpt/sttusline",
-		branch = "table_version",
+		-- branch = "table_version",
+		branch = "develop",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
@@ -82,9 +83,10 @@ local plugins = {
 
 	------------------------------------ Editor ------------------------------------
 	{
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/stcursorword",
 		"sontungexpt/stcursorword",
 		init = function() load_on_file_open("stcursorword") end,
-		config = function(_, opts) require("stcursorword").setup {} end,
+		config = function(_, opts) require("stcursorword").setup() end,
 	},
 
 	{
