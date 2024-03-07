@@ -15,7 +15,6 @@ local plugins = {
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("witch").setup()
-			-- vim.api.nvim_command([[colorscheme stinvimui]])
 		end,
 	},
 
