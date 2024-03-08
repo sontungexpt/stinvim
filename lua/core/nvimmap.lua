@@ -1,9 +1,10 @@
 local vim = vim
-local map = require("utils.mapper").map
 local api = vim.api
 local autocmd = api.nvim_create_autocmd
 local augroup = api.nvim_create_augroup
 local group = api.nvim_create_augroup("STINVIM_CORE_NVIMMAP", { clear = true })
+
+local map = require("utils.mapper").map
 
 -- Remap for dealing with word wrap
 map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
