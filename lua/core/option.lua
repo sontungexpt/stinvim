@@ -1,6 +1,13 @@
+local vim = vim
 local opts = vim.opt
 local cmd = vim.api.nvim_command
 local g = vim.g
+
+-- add binaries installed by mason.nvim to path
+vim.env.PATH = vim.fn.stdpath("data")
+	.. "/mason/bin"
+	.. (vim.loop.os_uname().sysname == "Windows_NT" and ";" or ":")
+	.. vim.env.PATH
 
 cmd("filetype plugin on")
 cmd("filetype plugin indent on")
@@ -9,17 +16,30 @@ cmd("filetype plugin indent on")
 cmd("syntax enable")
 cmd("syntax on")
 
--- cmp
-opts.completeopt = { "menu", "menuone", "noselect" }
+-- File to identify project root
+g.stinvim_root_markers = {
+	".git",
+	"package.json", -- npm
+	"Cargo.toml", -- rust
+	"stylua.toml", -- lua
+	"lazy-lock.json", -- nvim config
+	"gradlew", -- java
+	"mvnw", -- java
+}
 
--- disable nvim intro
-opts.shortmess:append("sI")
+g.stinvim_plugin_extension_dir = vim.fn.stdpath("config") .. "/lua/plugins/extensions"
 
 -- disable netrw for nvimtree
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
 
 g.skip_ts_context_commentstring_module = true
+
+-- cmp
+opts.completeopt = { "menu", "menuone", "noselect" }
+
+-- disable nvim intro
+opts.shortmess:append("sI")
 
 -- Don't show mode since we have a statusline
 opts.showmode = require("utils").is_plug_installed("lualine.nvim") and false or true

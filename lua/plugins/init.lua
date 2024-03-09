@@ -1,7 +1,4 @@
 local require = require
-require("plugins.extensions")
-local load_on_file_open = require("utils.lazyloader").load_on_file_open
-local load_on_repo_open = require("utils.lazyloader").load_on_repo_open
 
 local plugins = {
 	--------------------------------------------------- Theme ---------------------------------------------------
@@ -18,11 +15,11 @@ local plugins = {
 
 	{
 		"sontungexpt/sttusline",
-		branch = "table_version",
+		branch = "develop",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-		init = function() load_on_file_open("sttusline") end,
+		event = "User FilePostLazyLoaded",
 		config = function(_, opts) require("sttusline").setup() end,
 	},
 
@@ -42,7 +39,7 @@ local plugins = {
 		dependencies = {
 			"HiPhish/rainbow-delimiters.nvim",
 		},
-		init = function() load_on_file_open("nvim-treesitter") end,
+		event = { "BufReadPost", "BufNewFile" },
 		cmd = {
 			"TSInstall",
 			"TSBufEnable",
@@ -63,7 +60,7 @@ local plugins = {
 	------------------------------------ Editor ------------------------------------
 	{
 		"sontungexpt/stcursorword",
-		init = function() load_on_file_open("stcursorword") end,
+		event = "User FilePostLazyLoaded",
 		config = function(_, opts) require("stcursorword").setup {} end,
 	},
 
@@ -71,7 +68,7 @@ local plugins = {
 		"sontungexpt/url-open",
 		branch = "mini",
 		cmd = "URLOpenUnderCursor",
-		init = function() load_on_file_open("url-open") end,
+		event = "User FilePostLazyLoaded",
 		config = function(_, opts) require("url-open").setup() end,
 	},
 
@@ -143,7 +140,7 @@ local plugins = {
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
-		init = function() load_on_file_open("indent-blankline.nvim") end,
+		event = "User FilePostLazyLoaded",
 		opts = require("plugins.configs.indent-blankline"),
 		config = function(_, opts) require("ibl").setup(opts) end,
 	},
@@ -151,7 +148,7 @@ local plugins = {
 	{
 		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
-		init = function() load_on_file_open("nvim-highlight-colors") end,
+		event = "User FilePostLazyLoaded",
 		opts = require("plugins.configs.highlight-colors"),
 		config = function(_, opts) require("nvim-highlight-colors").setup(opts) end,
 	},
@@ -270,7 +267,7 @@ local plugins = {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		init = function() load_on_file_open("todo-comments.nvim") end,
+		event = "User FilePostLazyLoaded",
 		config = function() require("todo-comments").setup {} end,
 		-- opts = require("plugins.configs.comment.todo-comments"),
 		-- config = function(_, opts) require("todo-comments").setup(opts) end,
@@ -280,7 +277,7 @@ local plugins = {
 	{
 		"lewis6991/gitsigns.nvim",
 		ft = { "gitcommit" },
-		init = function() load_on_repo_open("gitsigns.nvim") end,
+		event = "User GitLazyLoaded",
 		opts = require("plugins.configs.git.gitsigns"),
 		config = function(_, opts)
 			require("gitsigns").setup(opts)
@@ -291,7 +288,7 @@ local plugins = {
 	{
 		"akinsho/git-conflict.nvim",
 		ft = { "gitcommit" },
-		init = function() load_on_repo_open("git-conflict.nvim") end,
+		event = "User GitLazyLoaded",
 		opts = require("plugins.configs.git.git-conflict"),
 		config = function(_, opts) require("git-conflict").setup(opts) end,
 	},
@@ -299,7 +296,7 @@ local plugins = {
 	--------------------------------------------------- LSP ---------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
-		init = function() load_on_file_open("nvim-lspconfig") end,
+		event = "User FilePostLazyLoaded",
 		config = function() require("plugins.configs.lsp.lspconfig") end,
 	},
 

@@ -2,6 +2,23 @@ local fn = vim.fn
 
 local M = {}
 
+local copy_file_content = function(source, target)
+	local source_file = io.open(source, "r")
+	if source_file then
+		local content = source_file:read("*all")
+		source_file:close()
+
+		local target_file = io.open(target, "w")
+		if target_file then
+			target_file:write(content)
+			target_file:close()
+			return true
+		else
+			return false
+		end
+	end
+end
+
 M.touch_plug_extension = function()
 	local filename = fn.input("Enter the filename: ", "", "file")
 
@@ -12,17 +29,18 @@ M.touch_plug_extension = function()
 
 	if not filename:match("%.lua$") then filename = fn.fnamemodify(filename, ":r") .. ".lua" end
 
-	local new_file_path = require("core.genconfs").plug_extension_dir .. "/" .. filename
+	local new_file_path = (
+		vim.g.stinvim_plugin_extension_dir or vim.fn.stdpath("config") .. "/lua/plugins/extensions"
+	)
+		.. "/"
+		.. filename
 
 	if fn.filereadable(new_file_path) == 1 then
 		require("utils.notify").warn("File already exists: " .. filename)
 		return
 	end
 
-	local status_ok = require("utils").copy_file_content(
-		require("core.genconfs").templates_dir .. "/plug_autocmd.txt",
-		new_file_path
-	)
+	local status_ok = copy_file_content(vim.fn.stdpath("config") .. "/templates", new_file_path)
 	if status_ok then
 		require("utils.notify").info("Created file: " .. filename)
 	else

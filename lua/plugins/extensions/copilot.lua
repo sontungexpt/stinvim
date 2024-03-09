@@ -1,4 +1,3 @@
-local utils = require("utils")
 local api = vim.api
 
 local M = {}
@@ -14,7 +13,7 @@ M.create_autocmds = function()
 		desc = "Automatic auth for copilot",
 		callback = function()
 			vim.schedule(function()
-				if utils.is_plug_installed("copilot.lua") and not M.has_copilot_auth() then
+				if require("utils").is_plug_installed("copilot.lua") and not M.has_copilot_auth() then
 					api.nvim_command("Copilot auth")
 				end
 			end)

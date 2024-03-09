@@ -6,7 +6,7 @@ local load_and_exec = require("utils").load_and_exec
 local map = require("utils.mapper").map
 
 local M = {}
-M.map_on_startup = function()
+M.on_startup = function()
 	------------------------------ url-open ------------------------------
 	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
 
@@ -146,7 +146,7 @@ M.map_on_startup = function()
 	map("n", "<leader>do", function()
 		load_and_exec("dap", function(dap) dap.step_over() end)
 	end, { desc = "Step over" })
-	map("n", "<leader>dc", function() continue_debugging() end, { desc = "Continue or start debugging" })
+	map("n", "<leader>dc", continue_debugging, { desc = "Continue or start debugging" })
 	map("n", "<leader>dd", function()
 		load_and_exec("dap", function(dap)
 			dap.disconnect()
@@ -159,7 +159,7 @@ M.map_on_startup = function()
 	map("n", "<F12>", function()
 		load_and_exec("dap", function(dap) dap.step_over() end)
 	end, { desc = "Step over" })
-	map("n", "<F5>", function() continue_debugging() end, { desc = "Continue or start debugging" })
+	map("n", "<F5>", continue_debugging, { desc = "Continue or start debugging" })
 	map("n", "<F4>", function()
 		load_and_exec("dap", function(dap)
 			dap.disconnect()
@@ -213,12 +213,12 @@ M.gitsigns = function(bufnr)
 	-- Navigation
 	map1("n", "]g", function()
 		if vim.wo.diff then return "]g" end
-		vim.schedule(function() gs.next_hunk() end)
+		vim.schedule(gs.next_hunk)
 		return "<Ignore>"
 	end, { expr = true, desc = "Next hunk" })
 	map1("n", "[g", function()
 		if vim.wo.diff then return "[g" end
-		vim.schedule(function() gs.prev_hunk() end)
+		vim.schedule(gs.prev_hunk)
 		return "<Ignore>"
 	end, { expr = true, desc = "Prev hunk" })
 	map1("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
