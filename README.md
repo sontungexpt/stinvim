@@ -163,8 +163,6 @@ This configuration is highly customizable and easy to configure.
 │   │   ├── autocmd.lua
 │   │   ├── autofiletype.lua
 │   │   ├── command.lua
-│   │   ├── genconfs.lua
-│   │   ├── init.lua
 │   │   ├── nvimmap.lua
 │   │   ├── option.lua
 │   │   ├── plugmap.lua
@@ -228,7 +226,6 @@ This configuration is highly customizable and easy to configure.
 │   │   ├── extensions
 │   │   │   ├── copilot.lua
 │   │   │   ├── git-conflict.lua
-│   │   │   ├── init.lua
 │   │   │   ├── lualine.lua
 │   │   │   └── mason.lua
 │   │   └── init.lua
@@ -243,7 +240,6 @@ This configuration is highly customizable and easy to configure.
 │   └── utils
 │   ├── bootstrap.lua
 │   ├── init.lua
-│   ├── lazyloader.lua
 │   ├── mapper.lua
 │   ├── notify.lua
 │   ├── plug-extension.lua

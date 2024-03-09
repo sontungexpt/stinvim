@@ -74,10 +74,10 @@ map("n", "gv", "<C-w>t<C-w>H")
 map("n", "gh", "<C-w>t<C-w>K")
 
 -- Split horizontally
-map("n", "<A-s>", "<cmd>split<CR>", { desc = "Split Down" })
+map("n", "<A-s>", "<cmd>split<CR>")
 
 -- Split vertically
-map("n", "<A-v>", "<cmd>vsplit<CR>", { desc = "Split Right" })
+map("n", "<A-v>", "<cmd>vsplit<CR>")
 
 --Move between windows
 map("n", "<C-h>", "<C-w>h")
@@ -93,27 +93,34 @@ map("v", "<A-Up>", "<cmd>m '<-2<CR>gv=gv")
 map("n", "<A-Down>", "<cmd>m .+1<CR>==")
 map("v", "<A-Down>", "<cmd>m '>+1<CR>gv=gv")
 
---Auto close brackets, quotes in command mode
-local function map_autoclose_bracket(open_bracket, close_bracket)
-	map(
-		"c",
-		open_bracket,
-		function()
-			vim.api.nvim_feedkeys(
-				vim.api.nvim_replace_termcodes(open_bracket .. close_bracket .. "<left>", true, true, true),
-				"n",
-				true
+autocmd("CmdlineEnter", {
+	once = true,
+	group = group,
+	desc = "Make autoclose brackets, quotes in command mode",
+	callback = function(args)
+		local bracket_pairs = {
+			{ "(", ")" },
+			{ "[", "]" },
+			{ "{", "}" },
+			{ "<", ">" },
+			{ "'", "'" },
+			{ '"', '"' },
+			{ "`", "`" },
+		}
+
+		local feedks = api.nvim_feedkeys
+		local replace_termcodes = api.nvim_replace_termcodes
+
+		for _, pair in ipairs(bracket_pairs) do
+			map(
+				"c",
+				pair[1],
+				function() feedks(replace_termcodes(pair[1] .. pair[2] .. "<left>", true, true, true), "n", true) end,
+				7
 			)
 		end
-	)
-end
-map_autoclose_bracket("(", ")")
-map_autoclose_bracket("[", "]")
-map_autoclose_bracket("{", "}")
-map_autoclose_bracket("<", ">")
-map_autoclose_bracket("'", "'")
-map_autoclose_bracket('"', '"')
-map_autoclose_bracket("`", "`")
+	end,
+})
 
 autocmd("BufWinEnter", {
 	desc = "Make q close help, man, quickfix, dap floats",

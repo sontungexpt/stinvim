@@ -120,22 +120,16 @@ autocmd("WinEnter", {
 	command = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
 })
 
-autocmd({ "BufWritePre" }, {
+autocmd("BufWritePre", {
 	group = group,
 	desc = "Create missing directories before writing the buffer",
 	command = "silent! call mkdir(expand('%:p:h'), 'p')",
 })
 
-autocmd("BufWritePost", {
+autocmd("TermLeave", {
 	group = group,
-	desc = "Reload NvimTree after writing the buffer",
+	desc = "Refresh nvim-tree when terminal is closed",
 	callback = function()
-		local bufs = fn.getbufinfo()
-		for _, buf in ipairs(bufs) do
-			if buf.name:find("NvimTree_") then
-				cmd("NvimTreeRefresh")
-				break
-			end
-		end
+		if package.loaded["nvim-tree"] then cmd("NvimTreeRefresh") end
 	end,
 })

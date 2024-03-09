@@ -6,7 +6,15 @@ local M = {}
 --- Get the root directory of the project
 --- @return string: The root directory of the project
 M.find_root = function()
-	return vim.fs.dirname(vim.fs.find(require("core.genconfs").root_markers, { upward = true })[1])
+	return vim.fs.find(vim.g.stinvim_root_markers or {
+		".git",
+		"package.json", -- npm
+		"Cargo.toml", -- rust
+		"stylua.toml", -- lua
+		"lazy-lock.json", -- nvim config
+		"gradlew", -- java
+		"mvnw", -- java
+	}, { upward = true })[1]
 end
 
 M.is_same_array = function(table1, table2) -- O(n)
@@ -76,25 +84,6 @@ M.load_and_exec = function(module_name, cb)
 		cb(module)
 	else
 		require("utils.notify").error("Module " .. module_name .. " not found")
-	end
-end
-
---- Copy all content to new file
---- @treturn boolean : true successful | false failed
-M.copy_file_content = function(source, target)
-	local source_file = io.open(source, "r")
-	if source_file then
-		local content = source_file:read("*all")
-		source_file:close()
-
-		local target_file = io.open(target, "w")
-		if target_file then
-			target_file:write(content)
-			target_file:close()
-			return true
-		else
-			return false
-		end
 	end
 end
 
