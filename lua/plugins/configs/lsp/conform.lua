@@ -16,7 +16,7 @@ local options = {
 		html = { prettier },
 		markdown = { prettier },
 
-		["*"] = { "codespell" },
+		-- ["*"] = { "codespell" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 		cmake = { "clang_format" },
