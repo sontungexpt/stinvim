@@ -83,7 +83,7 @@ local plugins = {
 	------------------------------------ Editor ------------------------------------
 	{
 		"sontungexpt/stcursorword",
-		event = { "CursorHold", "CursorHoldI" },
+		event = { "CursorHold", "CursorHoldI", "CursorMoved", "CursorMovedI" },
 		config = function(_, opts) require("stcursorword").setup {} end,
 	},
 
