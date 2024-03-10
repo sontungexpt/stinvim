@@ -89,10 +89,10 @@ local plugins = {
 	-- 	},
 	-- },
 
-	-- {
-	-- 	"VebbNix/lf-vim",
-	-- 	ft = "lf",
-	-- },
+	{
+		"VebbNix/lf-vim",
+		ft = "lf",
+	},
 
 	{
 		"elkowar/yuck.vim",
