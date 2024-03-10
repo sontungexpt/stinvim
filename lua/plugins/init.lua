@@ -33,7 +33,6 @@ local plugins = {
 			"nvim-tree/nvim-web-devicons",
 		},
 		-- opts = require("plugins.configs.sttusline"),
-		config = function(_, opts) require("sttusline").setup(opts) end,
 		event = "User FilePostLazyLoaded",
 		config = function(_, opts) require("sttusline").setup() end,
 	},
