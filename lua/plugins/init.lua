@@ -103,7 +103,7 @@ local plugins = {
 	{
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/stcursorword",
 		"sontungexpt/stcursorword",
-		event = { "CursorHold", "CursorHoldI" },
+		event = { "CursorHold", "CursorHoldI", "CursorMoved", "CursorMovedI" },
 		config = function(_, opts) require("stcursorword").setup() end,
 	},
 
