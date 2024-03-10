@@ -11,6 +11,7 @@ This is the distro neovim for fullstack development.
 | [mason](https://github.com/williamboman/mason.nvim)                                                                  | Automatically installs LSP servers, formatters, linters, and debug adapters                        |
 | [conform](https://github.com/stevearc/conform.nvim)                                                                  | Fast formatter                                                                                     |
 | [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)                                                                      | A lightweight completion plugin                                                                    |
+| [witch](https://github.com/sontungexpt/witch)                                                                        | Main theme                                                                                         |
 | [url-open](https://github.com/sontungexpt/url-open)                                                                  | Great plugin to open the url under cursor                                                          |
 | [stcursorword](https://github.com/sontungexpt/stcursorword)                                                          | Highlight all words similar to the word under the cursor                                           |
 | [buffer-closer](https://github.com/sontungexpt/buffer-closer)                                                        | Automatic close unused buffers                                                                     |
@@ -56,7 +57,6 @@ And many more plugins that you can see in [plugins/init.lua](./lua/plugins/init.
     ---@tparam string key : The key you wish to map.
     ---@tparam function|string map_to : The key or function to be executed by the keymap.
     ---@tparam table|number opts : Options to be applied in vim.keymap.set.
-    --- - Default opts = 1.
     --- - Default opts = 1.
     --- - opts = 1 for noremap and silent and nowait.
     --- - opts = 2 for not noremap and silent.

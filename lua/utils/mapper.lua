@@ -1,7 +1,10 @@
 local set_keymap = vim.keymap.set
+local deep_extend = vim.tbl_deep_extend
+
 local M = {}
 
-local opt_map = {
+--- Options for key mappings.
+local OPTIONS = {
 	{ noremap = true, silent = true, nowait = true },
 	{ noremap = false, silent = true },
 	{ noremap = true, silent = false },
@@ -19,11 +22,11 @@ local opt_map = {
 --- @param extend_opts table|nil: Extension or overriding of opts if opts is a number.
 M.map = function(mode, key, map_to, opts, extend_opts)
 	if type(opts) == "table" then
-		set_keymap(mode, key, map_to, vim.tbl_deep_extend("force", opt_map[1], opts))
+		set_keymap(mode, key, map_to, deep_extend("force", OPTIONS[1], opts))
 	elseif type(extend_opts) == "table" then
-		set_keymap(mode, key, map_to, vim.tbl_deep_extend("force", opt_map[opts] or opt_map[1], extend_opts))
+		set_keymap(mode, key, map_to, deep_extend("force", OPTIONS[opts] or OPTIONS[1], extend_opts))
 	else
-		set_keymap(mode, key, map_to, opt_map[opts] or opt_map[1])
+		set_keymap(mode, key, map_to, OPTIONS[opts] or OPTIONS[1])
 	end
 end
 
