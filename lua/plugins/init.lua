@@ -95,12 +95,6 @@ local plugins = {
 	},
 
 	{
-		"sontungexpt/stcursorword",
-		event = { "CursorHold", "CursorHoldI" },
-		config = function(_, opts) require("stcursorword").setup {} end,
-	},
-
-	{
 		"elkowar/yuck.vim",
 		ft = "yuck",
 	},
@@ -109,8 +103,8 @@ local plugins = {
 	{
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/stcursorword",
 		"sontungexpt/stcursorword",
+		event = { "CursorHold", "CursorHoldI" },
 		config = function(_, opts) require("stcursorword").setup() end,
-		event = "User FilePostLazyLoaded",
 	},
 
 	{
