@@ -1,4 +1,3 @@
---- This module provides a simple wrapper around vim.notify to make it easier to
 local M = {}
 
 local levels = vim.log.levels

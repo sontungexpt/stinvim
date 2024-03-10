@@ -1,9 +1,11 @@
 local api = vim.api
 local fn = vim.fn
+local pcall = pcall
 
 local M = {}
 
---- Get the root directory of the project
+--- Get the root directory of the project.
+---
 --- @return string: The root directory of the project
 M.find_root = function()
 	return vim.fs.find(vim.g.stinvim_root_markers or {
@@ -17,7 +19,8 @@ M.find_root = function()
 	}, { upward = true })[1]
 end
 
---- Check if two tables contain the same items, regardless of order and duplicates
+--- Check if two tables contain the same items, regardless of order and duplicates.
+---
 --- @param table1 table The first table to compare
 --- @param table2 table The second table to compare
 --- @return boolean: Whether the two tables are contain the same items
@@ -38,7 +41,8 @@ M.is_same_set = function(table1, table2) -- O(n)
 	return next(tbl1_hash) == nil -- check if all elements in table1 are in table2
 end
 
---- Check if two tables contain the same items, regardless of order
+--- Check if two tables contain the same items, regardless of order.
+---
 --- @param table1 table The first table to compare
 --- @param table2 table The second table to compare
 --- @return boolean: Whether the two tables are contain the same items
@@ -60,6 +64,8 @@ M.is_same_array = function(table1, table2) -- O(n)
 	return true
 end
 
+--- Finds the items in the source table that are not present in the target table.
+---
 --- @param source table The source table to find unique items
 --- @param target table The target table to compare with source table
 --- @return table The unique items in source table that are not in target table
@@ -84,9 +90,13 @@ M.find_unique_items = function(source, target)
 	return unique_items
 end
 
---- Execute a command by calling `vim.api.nvim_command` function
---- @tparam string command: The command to execute
---- @tparam table msg: The message to print on success or error
+--- Executes a specified command using vim.api.nvim_command
+--- and optionally displays success or error messages.
+---
+--- @param command string The command to execute
+--- @param msg table|nil The message to print on success or error
+--- @param quiet boolean|nil Whether to display success or error messages
+--- @return boolean True if the command was executed successfully, false otherwise.
 M.exec_cmd = function(command, msg, quiet)
 	local success, error_message = pcall(api.nvim_command, command)
 	if not quiet then
@@ -99,6 +109,11 @@ M.exec_cmd = function(command, msg, quiet)
 	return success
 end
 
+--- Checks if a given plugin is installed in the specified directory.
+---
+--- @param plugin_name string The name of the plugin to check.
+--- @param custom_dir string  The custom installation directory for plugins.
+--- @return boolean True if the plugin is installed, false otherwise.
 M.is_plug_installed = function(plugin_name, custom_dir)
 	custom_dir = custom_dir or "/lazy/"
 	if not vim.startswith(custom_dir, "/") then custom_dir = "/" .. custom_dir end
@@ -107,6 +122,10 @@ M.is_plug_installed = function(plugin_name, custom_dir)
 	return fn.isdirectory(fn.stdpath("data") .. custom_dir .. plugin_name) == 1
 end
 
+--- Attempts to load a module and calls a provided callback function with the loaded module if successful.
+---
+--- @param module_name string The name of the module to load.
+--- @param cb function A function to be executed with the loaded module as an argument.
 M.load_and_exec = function(module_name, cb)
 	local status_ok, module = pcall(require, module_name)
 	if status_ok then
@@ -116,6 +135,10 @@ M.load_and_exec = function(module_name, cb)
 	end
 end
 
+--- Closes all buffers matching the specified filetypes or buffer types.
+---
+--- @param filetypes string|table The filetypes of buffers to close, can be a string or table of filetypes.
+--- @param buftypes string|table The buffer types of buffers to close, can be a string or table of buffer types.
 M.close_buffer = function(filetypes, buftypes)
 	-- get all buffers
 	local buffers = api.nvim_list_bufs()

@@ -8,7 +8,7 @@ local plugins = {
 		priority = 1000,
 		-- branch = "develop",
 		lazy = false,
-		-- opts = require("plugins.configs.stinvimui"),
+		-- opts = require("plugins.configs.witch"),
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("witch").setup()
@@ -92,6 +92,12 @@ local plugins = {
 	{
 		"VebbNix/lf-vim",
 		ft = "lf",
+	},
+
+	{
+		"sontungexpt/stcursorword",
+		event = { "CursorHold", "CursorHoldI" },
+		config = function(_, opts) require("stcursorword").setup {} end,
 	},
 
 	{
@@ -394,7 +400,7 @@ local plugins = {
 	{
 		"williamboman/mason.nvim",
 		build = ":MasonUpdate",
-		init = function() require("plugins.extensions.mason").extend_command() end,
+		init = require("plugins.extensions.mason").extend_command,
 		cmd = {
 			"Mason",
 			"MasonLog",
@@ -449,7 +455,6 @@ local plugins = {
 					{
 						"theHamsta/nvim-dap-virtual-text",
 						config = function() require("nvim-dap-virtual-text").setup {} end,
-						-- config = function() require("dap-virtual-text") end,
 					},
 				},
 				config = function() require("plugins.configs.dap") end,
