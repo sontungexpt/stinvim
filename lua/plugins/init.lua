@@ -319,7 +319,7 @@ local plugins = {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		event = { "CursorHold", "CursorHoldI" },
+		event = { "CursorHold", "CursorHoldI", "CmdlineEnter", "CursorMoved", "CursorMovedI" },
 		-- opts = require("plugins.configs.comment.todo-comments"),
 		config = function(_, opts) require("todo-comments").setup {} end,
 	},
