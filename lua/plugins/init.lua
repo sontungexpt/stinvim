@@ -28,7 +28,7 @@ local plugins = {
 	-- 	dependencies = {
 	-- 		"nvim-tree/nvim-web-devicons",
 	-- 	},
-	-- 	init = function() load_on_file_open("bufferline.nvim") end,
+	-- 	event = "User FilePostLazyLoaded",
 	-- 	opts = require("plugins.configs.bufferline"),
 	-- 	config = function(_, opts) require("bufferline").setup(opts) end,
 	-- },

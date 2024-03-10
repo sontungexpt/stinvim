@@ -39,11 +39,11 @@ local sync_packages = function()
 
 		schedule(function()
 			local packages_to_remove = utils.find_unique_items(installed_packages, ensured_packages)
-			if next(packages_to_remove) then
+			if #packages_to_remove > 0 then
 				api.nvim_command("MasonUninstall " .. table.concat(packages_to_remove, " "))
 			end
 			local packages_to_install = utils.find_unique_items(ensured_packages, installed_packages)
-			if next(packages_to_install) then
+			if #packages_to_install > 0 then
 				api.nvim_command("MasonInstall " .. table.concat(packages_to_install, " "))
 			end
 		end, 10)
