@@ -1,5 +1,5 @@
-local status, jdtls = pcall(require, "jdtls")
-if not status then return end
+local ok, jdtls = pcall(require, "jdtls")
+if not ok then return end
 
 local fn = vim.fn
 local find_root = require("jdtls.setup").find_root

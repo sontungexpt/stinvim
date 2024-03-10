@@ -2,9 +2,6 @@ local status_ok, lspconfig = pcall(require, "lspconfig")
 
 if not status_ok then return end
 
-local capabilities = require("plugins.configs.lsp.general-confs").capabilities
-local on_attach = require("plugins.configs.lsp.general-confs").on_attach
-
 local lsp_servers = {
 
 	-- python
@@ -120,7 +117,8 @@ local lsp_servers = {
 
 for _, server in ipairs(lsp_servers) do
 	local config = server.config or {}
-	config.on_attach = config.on_attach or on_attach
-	config.capabilities = config.capabilities or capabilities()
+	config.on_attach = config.on_attach or require("plugins.configs.lsp.general-confs").on_attach
+	config.capabilities = config.capabilities
+		or require("plugins.configs.lsp.general-confs").capabilities()
 	lspconfig[server.name].setup(config)
 end

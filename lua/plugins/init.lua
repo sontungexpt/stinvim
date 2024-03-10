@@ -49,10 +49,15 @@ local plugins = {
 
 	--------------------------------------------------- Syntax ---------------------------------------------------
 	{
-		"nvim-treesitter/nvim-treesitter",
+		"HiPhish/rainbow-delimiters.nvim",
 		dependencies = {
-			"HiPhish/rainbow-delimiters.nvim",
+			"nvim-treesitter/nvim-treesitter",
 		},
+		event = "User FilePostLazyLoaded",
+	},
+
+	{
+		"nvim-treesitter/nvim-treesitter",
 		event = { "BufReadPost", "BufNewFile" },
 		cmd = {
 			"TSInstall",
@@ -66,10 +71,28 @@ local plugins = {
 		config = function(_, opts) require("nvim-treesitter.configs").setup(opts) end,
 	},
 
-	{
-		"VebbNix/lf-vim",
-		ft = "lf",
-	},
+	-- {
+	-- 	"windwp/nvim-ts-autotag",
+	-- 	dependencies = {
+	-- 		"nvim-treesitter/nvim-treesitter",
+	-- 	},
+	-- 	ft = {
+	-- 		"html",
+	-- 		"vue",
+	-- 		"tsx",
+	-- 		"jsx",
+	-- 		"svelte",
+	-- 		"javascript",
+	-- 		"typescript",
+	-- 		"javascriptreact",
+	-- 		"typescriptreact",
+	-- 	},
+	-- },
+
+	-- {
+	-- 	"VebbNix/lf-vim",
+	-- 	ft = "lf",
+	-- },
 
 	{
 		"elkowar/yuck.vim",
@@ -130,24 +153,6 @@ local plugins = {
 			end
 		end,
 	},
-
-	-- {
-	-- 	"windwp/nvim-ts-autotag",
-	-- 	dependencies = {
-	-- 		"nvim-treesitter/nvim-treesitter",
-	-- 	},
-	-- 	ft = {
-	-- 		"html",
-	-- 		"vue",
-	-- 		"tsx",
-	-- 		"jsx",
-	-- 		"svelte",
-	-- 		"javascript",
-	-- 		"typescript",
-	-- 		"javascriptreact",
-	-- 		"typescriptreact",
-	-- 	},
-	-- },
 
 	-- {
 	-- 	"gelguy/wilder.nvim",
@@ -326,10 +331,7 @@ local plugins = {
 		ft = { "gitcommit" },
 		event = "User GitLazyLoaded",
 		opts = require("plugins.configs.git.gitsigns"),
-		config = function(_, opts)
-			require("gitsigns").setup(opts)
-			-- vim.api.nvim_command([[set statusline+=%{get(b:,'gitsigns_status','')}]])
-		end,
+		config = function(_, opts) require("gitsigns").setup(opts) end,
 	},
 
 	{

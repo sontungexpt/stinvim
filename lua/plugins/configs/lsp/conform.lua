@@ -18,6 +18,7 @@ local options = {
 		markdown = { prettier, "eslint", "codespell" },
 		yaml = { prettier, "eslint" },
 
+		-- ["*"] = { "codespell" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
 		cmake = { "clang_format" },

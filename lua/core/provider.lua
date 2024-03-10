@@ -7,6 +7,8 @@ g.python3_host_prog = "~/.venv/bin/python3"
 local disabled = {
 	"perl",
 	"ruby",
+	"python3",
+	"node",
 }
 
 for _, provider in ipairs(disabled) do
