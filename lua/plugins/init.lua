@@ -72,12 +72,12 @@ local plugins = {
 		config = function(_, opts) require("url-open").setup() end,
 	},
 
-	{
-		"sontungexpt/buffer-closer",
-		cmd = "BufferCloserRetire",
-		event = { "BufAdd", "FocusLost", "FocusGained" },
-		config = function(_, opts) require("buffer-closer").setup {} end,
-	},
+	-- {
+	-- 	"sontungexpt/buffer-closer",
+	-- 	cmd = "BufferCloserRetire",
+	-- 	event = { "BufAdd", "FocusLost", "FocusGained" },
+	-- 	config = function(_, opts) require("buffer-closer").setup {} end,
+	-- },
 
 	{
 		"akinsho/toggleterm.nvim",

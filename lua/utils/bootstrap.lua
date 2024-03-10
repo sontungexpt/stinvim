@@ -30,16 +30,15 @@ end
 
 M.load_plugin_extensions = function(install_path)
 	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir
-		or vim.fn.stdpath("config") .. "/lua/plugins/extensions"
+		or fn.stdpath("config") .. "/lua/plugins/extensions"
 
-	local files = vim.fn.glob(plug_extension_dir .. "/*.lua", true, true)
+	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
 
 	local parent_module = string.gsub(string.match(plug_extension_dir, ".-lua/(.*)"), "/", ".")
 
 	for _, file in ipairs(files) do
-		local filename = vim.fn.fnamemodify(file, ":t:r")
-		local status_ok, module = pcall(require, parent_module .. "." .. filename)
-		if status_ok and type(module.create_autocmds) == "function" then module.create_autocmds() end
+		local module = require(parent_module .. "." .. fn.fnamemodify(file, ":t:r") --[[ filename ]])
+		if type(module.create_autocmds) == "function" then module.create_autocmds() end
 	end
 end
 
