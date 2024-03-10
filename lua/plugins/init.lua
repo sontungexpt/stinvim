@@ -272,10 +272,9 @@ local plugins = {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		event = "User FilePostLazyLoaded",
-		config = function() require("todo-comments").setup {} end,
+		event = { "CursorHold", "CursorHoldI" },
 		-- opts = require("plugins.configs.comment.todo-comments"),
-		-- config = function(_, opts) require("todo-comments").setup(opts) end,
+		config = function(_, opts) require("todo-comments").setup {} end,
 	},
 
 	--------------------------------------------------- Git supporter ---------------------------------------------------
