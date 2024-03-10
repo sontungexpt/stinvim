@@ -35,7 +35,7 @@ M.is_same_set = function(table1, table2) -- O(n)
 		tbl2_hash[value] = true
 	end
 
-	return #tbl1_hash == 0
+	return next(tbl1_hash) == nil -- check if all elements in table1 are in table2
 end
 
 --- Check if two tables contain the same items, regardless of order
