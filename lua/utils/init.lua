@@ -35,7 +35,7 @@ M.is_same_set = function(table1, table2) -- O(n)
 		tbl2_hash[value] = true
 	end
 
-	return next(tbl1_hash) == nil -- if tbl1_hash is empty, then all elements are in table2
+	return #tbl1_hash == 0
 end
 
 --- Check if two tables contain the same items, regardless of order
@@ -113,6 +113,25 @@ M.load_and_exec = function(module_name, cb)
 		cb(module)
 	else
 		require("utils.notify").error("Module " .. module_name .. " not found")
+	end
+end
+
+M.close_buffer = function(filetypes, buftypes)
+	-- get all buffers
+	local buffers = api.nvim_list_bufs()
+	local tbl_contains = vim.tbl_contains
+
+	for _, buf in ipairs(buffers) do
+		local filetype = api.nvim_buf_get_option(buf, "filetype")
+		local buftype = api.nvim_buf_get_option(buf, "buftype")
+		if
+			(type(filetypes) == "string" and filetype == filetypes)
+			or (type(buftypes) == "string" and buftype == buftypes)
+			or (type(filetypes) == "table" and tbl_contains(filetypes, filetype))
+			or (type(buftypes) == "table" and tbl_contains(buftypes, buftype))
+		then
+			api.nvim_buf_delete(buf, { force = true })
+		end
 	end
 end
 
