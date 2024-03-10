@@ -1,8 +1,11 @@
+local vim = vim
 local api = vim.api
 local fn = vim.fn
-local utils = require("utils")
 local schedule = vim.schedule
-local mason_config_module = "plugins.configs.mason"
+
+local utils = require("utils")
+
+local MASON_CONFIG_MODULE = "plugins.configs.mason"
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
 local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
@@ -15,8 +18,8 @@ local get_ensured_packages = function()
 		rcfile:close()
 		return vim.json.decode(json)
 	else
-		package.loaded[mason_config_module] = nil
-		local status_ok, config = pcall(require, mason_config_module)
+		package.loaded[MASON_CONFIG_MODULE] = nil
+		local status_ok, config = pcall(require, MASON_CONFIG_MODULE)
 		return status_ok and config.ensure_installed or {}
 	end
 end
@@ -35,7 +38,7 @@ local sync_packages = function()
 		local ensured_packages = get_ensured_packages()
 
 		-- had changed
-		if not utils.is_same_array(ensured_packages, installed_packages) then
+		if not utils.is_same_set(ensured_packages, installed_packages) then
 			local packages_to_remove = utils.find_unique_items(installed_packages, ensured_packages)
 			local packages_to_install = utils.find_unique_items(ensured_packages, installed_packages)
 
@@ -61,10 +64,9 @@ end
 
 -------------------- Auto commands --------------------
 M.create_autocmds = function()
-	local group = api.nvim_create_augroup("MasonExtensions", { clear = true })
-	if require(mason_config_module).auto_sync then
+	if require(MASON_CONFIG_MODULE).auto_sync then
 		api.nvim_create_autocmd("User", {
-			group = group,
+			group = api.nvim_create_augroup("MasonExtensions", { clear = true }),
 			pattern = "VeryLazy",
 			callback = function() schedule(sync_packages) end,
 		})

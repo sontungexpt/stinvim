@@ -30,16 +30,15 @@ end
 
 M.load_plugin_extensions = function(install_path)
 	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir
-		or vim.fn.stdpath("config") .. "/lua/plugins/extensions"
+		or fn.stdpath("config") .. "/lua/plugins/extensions"
 
-	local files = vim.fn.glob(plug_extension_dir .. "/*.lua", true, true)
+	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
 
 	local parent_module = string.gsub(string.match(plug_extension_dir, ".-lua/(.*)"), "/", ".")
 
 	for _, file in ipairs(files) do
-		local filename = vim.fn.fnamemodify(file, ":t:r")
-		local status_ok, module = pcall(require, parent_module .. "." .. filename)
-		if status_ok and type(module.create_autocmds) == "function" then module.create_autocmds() end
+		local module = require(parent_module .. "." .. fn.fnamemodify(file, ":t:r") --[[ filename ]])
+		if type(module.create_autocmds) == "function" then module.create_autocmds() end
 	end
 end
 
@@ -50,16 +49,19 @@ M.load_plugins = function(install_path)
 	autocmd({ "UIEnter", "BufReadPost", "BufNewFile" }, {
 		group = augroup("StinvimFilePost", { clear = true }),
 		callback = function(args)
-			local file = api.nvim_buf_get_name(args.buf)
-			local buftype = api.nvim_buf_get_option(args.buf, "buftype")
+			if args.event == "UIEnter" then vim.g.ui_entered = true end
 
-			if not vim.g.ui_entered and args.event == "UIEnter" then vim.g.ui_entered = true end
+			if
+				api.nvim_buf_get_name(args.buf) ~= ""
+				and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile"
+				and vim.g.ui_entered
+			then
+				vim.schedule(function()
+					api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
+					api.nvim_del_augroup_by_name("StinvimFilePost")
 
-			if file ~= "" and buftype ~= "nofile" and vim.g.ui_entered then
-				api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
-				api.nvim_del_augroup_by_name("StinvimFilePost")
-
-				vim.schedule(function() api.nvim_exec_autocmds("FileType", {}) end, 0)
+					vim.schedule(function() api.nvim_exec_autocmds("FileType", {}) end, 0)
+				end, 50)
 			end
 		end,
 	})
@@ -67,11 +69,13 @@ M.load_plugins = function(install_path)
 	autocmd("BufReadPost", {
 		group = api.nvim_create_augroup("StinvimGitLazyLoad", { clear = true }),
 		callback = function()
-			fn.system("git -C " .. '"' .. fn.expand("%:p:h") .. '"' .. " rev-parse")
-			if vim.v.shell_error == 0 then
-				api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
-				api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
-			end
+			vim.schedule(function()
+				fn.system("git -C " .. '"' .. fn.expand("%:p:h") .. '"' .. " rev-parse")
+				if vim.v.shell_error == 0 then
+					api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
+					api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
+				end
+			end, 50)
 		end,
 	})
 

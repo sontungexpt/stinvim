@@ -17,6 +17,31 @@ M.find_root = function()
 	}, { upward = true })[1]
 end
 
+--- Check if two tables contain the same items, regardless of order and duplicates
+--- @param table1 table The first table to compare
+--- @param table2 table The second table to compare
+--- @return boolean: Whether the two tables are contain the same items
+M.is_same_set = function(table1, table2) -- O(n)
+	local tbl1_hash = {} -- to check that all elements are in table2
+	local tbl2_hash = {} -- to check for duplicates in table2
+
+	for _, value in ipairs(table1) do
+		tbl1_hash[value] = true
+	end
+
+	for _, value in ipairs(table2) do
+		if not tbl1_hash[value] and not tbl2_hash[value] then return false end
+		tbl1_hash[value] = nil
+		tbl2_hash[value] = true
+	end
+
+	return next(tbl1_hash) == nil -- if tbl1_hash is empty, then all elements are in table2
+end
+
+--- Check if two tables contain the same items, regardless of order
+--- @param table1 table The first table to compare
+--- @param table2 table The second table to compare
+--- @return boolean: Whether the two tables are contain the same items
 M.is_same_array = function(table1, table2) -- O(n)
 	if #table1 ~= #table2 then return false end
 
@@ -35,9 +60,9 @@ M.is_same_array = function(table1, table2) -- O(n)
 	return true
 end
 
---- @tparam table source: The source table to find unique items
---- @tparam table target: The target table to compare with source table
---- @treturn table: The unique items in source table that are not in target table
+--- @param source table The source table to find unique items
+--- @param target table The target table to compare with source table
+--- @return table The unique items in source table that are not in target table
 M.find_unique_items = function(source, target)
 	if #target == 0 then return source end
 
