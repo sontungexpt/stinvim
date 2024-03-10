@@ -22,7 +22,8 @@ map("n", "i", function() return #vim.fn.getline(".") == 0 and "_cc" or "i" end, 
 map("n", "<M-C>", "<cmd>Inspect<cr>", 1)
 
 -- same with P key
--- map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
+map("x", "P", "p")
+map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
 
 -- Indent lines with tab in visual mode
 map("x", "<Tab>", ">gv|")
