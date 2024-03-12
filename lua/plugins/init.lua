@@ -39,7 +39,7 @@ local plugins = {
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},
-		event = { "CursorHold", "CursorMoved" },
+		event = "User FilePostLazyLoaded",
 	},
 
 	{
