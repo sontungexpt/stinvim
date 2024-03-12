@@ -7,21 +7,23 @@ local group = api.nvim_create_augroup("STINVIM_CORE_NVIMMAP", { clear = true })
 local map = require("utils.mapper").map
 
 -- Remap for dealing with word wrap
-map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
-map({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 5)
-map({ "n", "v" }, "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 5)
-map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 5)
-
--- Delete empty lines without writing to registers
-map("n", "dd", function() return api.nvim_get_current_line():match("^%s*$") and '"_dd' or "dd" end, 7)
+map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 7)
+map({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 7)
+map({ "n", "v" }, "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 7)
+map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 7)
 
 -- When you press i, automatically indent to the appropriate position
-map("n", "i", function() return #vim.fn.getline(".") == 0 and "_cc" or "i" end, 7)
+map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
 
 -- inspect colors
-map("n", "<M-C>", "<cmd>Inspect<cr>", 1)
+map("n", "<M-C>", "<cmd>Inspect<cr>")
 
--- same with P key
+-- Delete empty lines without writing to registers
+map("n", "dd", [[match(getline('.'), '^\s*$') != -1 ? '"_dd' : "dd"]], 7)
+
+map("n", "x", [[col('.') == 1 && match(getline('.'), '^\s*$') != -1 ? '"_dd$' : '"_x']], 7)
+map("n", "X", [[col('.') == 1 && match(getline('.'), '^\s*$') != -1 ? '"_dd$' : '"_X']], 7)
+
 map("x", "P", "p")
 map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
 
@@ -68,7 +70,7 @@ map("n", "<A-h>", "<cmd>vertical resize +1<cr>")
 --Make all windows (almost) equally high and wide
 map("n", "=", "<C-W>=")
 
---Change the layout to horizohkkntal
+--Change the layout to horizontal
 map("n", "gv", "<C-w>t<C-w>H")
 
 --Change the layout to vertical
