@@ -1,7 +1,5 @@
 local vim = vim
-local opts = vim.opt
-local cmd = vim.api.nvim_command
-local g = vim.g
+local opts, cmd, g = vim.opt, vim.api.nvim_command, vim.g
 
 -- add binaries installed by mason.nvim to path
 vim.env.PATH = vim.fn.stdpath("data")

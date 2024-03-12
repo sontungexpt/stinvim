@@ -1,7 +1,6 @@
-local api = vim.api
-local fn = vim.fn
-local cmd = api.nvim_command
-local autocmd = api.nvim_create_autocmd
+local api, fn = vim.api, vim.fn
+local cmd, autocmd = api.nvim_command, api.nvim_create_autocmd
+
 local group = api.nvim_create_augroup("STINVIM_CORE_AUTOCMD", { clear = true })
 
 autocmd({ "VimEnter", "VimLeave" }, {

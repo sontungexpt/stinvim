@@ -1,7 +1,6 @@
-local vim = vim
 local api = vim.api
 local autocmd = api.nvim_create_autocmd
-local augroup = api.nvim_create_augroup
+
 local group = api.nvim_create_augroup("STINVIM_CORE_NVIMMAP", { clear = true })
 
 local map = require("utils.mapper").map

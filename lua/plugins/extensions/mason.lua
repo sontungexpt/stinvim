@@ -1,9 +1,5 @@
 local vim = vim
-local api = vim.api
-local fn = vim.fn
-local schedule = vim.schedule
-
-local utils = require("utils")
+local api, fn, schedule = vim.api, vim.fn, vim.schedule
 
 local MASON_CONFIG_MODULE = "plugins.configs.mason"
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
@@ -33,6 +29,7 @@ local get_installed_packages = function()
 end
 
 local sync_packages = function()
+	local utils = require("utils")
 	if utils.is_plug_installed("mason", "/") then
 		local installed_packages = get_installed_packages()
 		local ensured_packages = get_ensured_packages()

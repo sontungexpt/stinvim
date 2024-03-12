@@ -1,8 +1,6 @@
 local M = {}
 
-local levels = vim.log.levels
-local notify = vim.notify
-local schedule = vim.schedule
+local levels, notify, schedule = vim.log.levels, vim.notify, vim.schedule
 
 M.info = function(msg, opts)
 	schedule(function() notify(msg, levels.INFO, opts or { title = "Information" }) end)
