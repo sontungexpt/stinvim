@@ -1,8 +1,7 @@
 local api = vim.api
-local autocmd = api.nvim_create_autocmd
-local augroup = api.nvim_create_augroup
-local load_and_exec = require("utils").load_and_exec
+local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 
+local load_and_exec = require("utils").load_and_exec
 local map = require("utils.mapper").map
 
 local M = {}

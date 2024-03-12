@@ -1,8 +1,6 @@
 local vim = vim
-local api = vim.api
-local fn = vim.fn
-local autocmd = api.nvim_create_autocmd
-local augroup = api.nvim_create_augroup
+local api, fn = vim.api, vim.fn
+local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 
 local M = {}
 

@@ -1,7 +1,5 @@
-local api = vim.api
-local fn = vim.fn
-local autocmd = api.nvim_create_autocmd
-local augroup = api.nvim_create_augroup
+local api, fn = vim.api, vim.fn
+local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 
 autocmd({ "VimEnter" }, {
 	group = augroup("AutocdConfigFolderRoot", { clear = true }),
@@ -13,13 +11,13 @@ autocmd({ "VimEnter" }, {
 autocmd({ "BufWritePost" }, {
 	group = augroup("ScriptBuilder", { clear = true }),
 	desc = "Compile scripts in ~/scripts/stilux/systems",
-	pattern = { fn.expand("$HOME") .. "/scripts/stilux/systems/*" },
+	pattern = fn.expand("$HOME") .. "/scripts/stilux/systems/*",
 	callback = require("user.utils").compile_stilux_srcipt_file,
 })
 
 autocmd({ "BufWritePost" }, {
 	group = augroup("Lf", { clear = true }),
-	pattern = { fn.expand("$HOME") .. "/.config/lf/colors" },
+	pattern = fn.expand("$HOME") .. "/.config/lf/colors",
 	callback = function()
 		require("user.utils").compile_lf_colors()
 		vim.cmd("checktime")
@@ -28,7 +26,7 @@ autocmd({ "BufWritePost" }, {
 
 autocmd("FileType", {
 	group = augroup("OpenApiDoc", { clear = true }),
-	pattern = { "java" },
+	pattern = "java",
 	callback = function(args)
 		api.nvim_create_user_command("OpenApiDoc", function()
 			fn.jobstart("xdg-open http://localhost:8080/swagger-ui/index.html", {

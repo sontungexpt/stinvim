@@ -1,5 +1,5 @@
-local fn = vim.fn
-local env = vim.env
+local fn, env = vim.fn, vim.env
+
 local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
 local sep = is_windows and ";" or ":"
 

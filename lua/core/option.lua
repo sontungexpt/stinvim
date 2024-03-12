@@ -1,7 +1,5 @@
 local vim = vim
-local opts = vim.opt
-local cmd = vim.api.nvim_command
-local g = vim.g
+local opts, g, cmd = vim.opt, vim.g, vim.api.nvim_command
 
 cmd("filetype plugin on")
 cmd("filetype plugin indent on")

@@ -1,5 +1,4 @@
-local set_keymap = vim.keymap.set
-local deep_extend = vim.tbl_deep_extend
+local set_keymap, deep_extend = vim.keymap.set, vim.tbl_deep_extend
 
 local M = {}
 
