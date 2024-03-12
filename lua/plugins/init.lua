@@ -39,7 +39,7 @@ local plugins = {
 		dependencies = {
 			"nvim-treesitter/nvim-treesitter",
 		},
-		event = "User FilePostLazyLoaded",
+		event = { "CursorHold", "CursorMoved" },
 	},
 
 	{
@@ -83,7 +83,7 @@ local plugins = {
 	------------------------------------ Editor ------------------------------------
 	{
 		"sontungexpt/stcursorword",
-		event = { "CursorHold", "CursorHoldI", "CursorMoved", "CursorMovedI" },
+		event = { "CursorHold", "CursorMoved" },
 		config = function(_, opts) require("stcursorword").setup() end,
 	},
 
@@ -272,7 +272,7 @@ local plugins = {
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
-		event = { "CursorHold", "CursorHoldI", "CmdlineEnter", "CursorMoved", "CursorMovedI" },
+		event = { "CursorHold", "CmdlineEnter", "CursorMoved" },
 		-- opts = require("plugins.configs.comment.todo-comments"),
 		config = function(_, opts) require("todo-comments").setup {} end,
 	},
