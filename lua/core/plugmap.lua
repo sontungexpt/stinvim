@@ -79,7 +79,7 @@ M.on_startup = function()
 		desc = "Lspsaga actions",
 		group = augroup("Lspsaga-mappings", { clear = true }),
 		callback = function()
-			map("n", "gf", "<cmd>Lspsaga lsp_finder<CR>")
+			map("n", "gf", "<cmd>Lspsaga finder<CR>")
 
 			map({ "n", "v" }, "<leader>sa", "<cmd>Lspsaga code_action<CR>")
 
