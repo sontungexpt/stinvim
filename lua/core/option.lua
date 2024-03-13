@@ -1,10 +1,10 @@
 local vim = vim
-local opts, cmd, g = vim.opt, vim.api.nvim_command, vim.g
+local opts, cmd, g, fn = vim.opt, vim.api.nvim_command, vim.g, vim.fn
 
 -- add binaries installed by mason.nvim to path
-vim.env.PATH = vim.fn.stdpath("data")
+vim.env.PATH = fn.stdpath("data")
 	.. "/mason/bin"
-	.. (vim.loop.os_uname().sysname == "Windows_NT" and ";" or ":")
+	.. (fn.has("win32") ~= 0 and ";" or ":")
 	.. vim.env.PATH
 
 cmd("filetype plugin on")
@@ -25,7 +25,7 @@ g.stinvim_root_markers = {
 	"mvnw", -- java
 }
 
-g.stinvim_plugin_extension_dir = vim.fn.stdpath("config") .. "/lua/plugins/extensions"
+g.stinvim_plugin_extension_dir = fn.stdpath("config") .. "/lua/plugins/extensions"
 
 -- disable netrw for nvimtree
 g.loaded_netrw = 1
@@ -67,7 +67,7 @@ opts.ruler = true
 
 --Encoding
 opts.encoding = "utf-8"
-opts.mouse = vim.fn.isdirectory("/system") == 1 and "v" or "a" -- Enable mouse support on android system
+opts.mouse = fn.isdirectory("/system") == 1 and "v" or "a" -- Enable mouse support on android system
 opts.mousemoveevent = true
 
 opts.incsearch = true
