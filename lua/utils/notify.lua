@@ -1,4 +1,4 @@
-local levels, notify, schedule = vim.log.levels, notify, vim.schedule
+local levels, notify, schedule = vim.log.levels, vim.notify, vim.schedule
 
 local M = {}
 

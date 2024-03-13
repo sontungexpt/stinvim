@@ -4,14 +4,14 @@ local group = api.nvim_create_augroup("STINVIM_CORE_AUTOFILETYPE", { clear = tru
 
 autocmd("BufReadPre", {
 	group = group,
-	pattern = { "*.json" },
+	pattern = "*.json",
 	command = "set filetype=jsonc",
 	desc = "Enable syntax for .json files",
 })
 
 autocmd("BufReadPre", {
 	group = group,
-	pattern = { "*.rasi" },
+	pattern = "*.rasi",
 	command = "set filetype=rasi",
 	desc = "Enable syntax for .rasi files",
 })
