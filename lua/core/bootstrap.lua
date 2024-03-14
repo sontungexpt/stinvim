@@ -1,6 +1,7 @@
 local vim = vim
-local api, fn = vim.api, vim.fn
-local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
+local api, fn, defer_fn, schedule = vim.api, vim.fn, vim.defer_fn, vim.schedule
+local autocmd, augroup, nvim_exec_autocmds =
+	api.nvim_create_autocmd, api.nvim_create_augroup, api.nvim_exec_autocmds
 
 local M = {}
 
@@ -17,13 +18,20 @@ local function shell_call(args)
 	)
 end
 
+M.load_commands = function()
+	local new_cmd = vim.api.nvim_create_user_command
+
+	new_cmd("NvimHotReload", require("utils.reloader").hot_reload, { nargs = 0 })
+	new_cmd("NvimTouchPlugExtension", require("utils.plug-extension").touch_plug_extension, { nargs = 0 })
+end
+
 M.lazy = function(install_path)
 	--------- lazy.nvim ---------------
 	echo("  Installing lazy.nvim & plugins ...")
 	local repo = "https://github.com/folke/lazy.nvim.git"
 	shell_call { "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }
 
-	M.load_plugins(install_path)
+	M.boot(install_path)
 end
 
 M.load_plugin_extensions = function(install_path)
@@ -40,7 +48,7 @@ M.load_plugin_extensions = function(install_path)
 	end
 end
 
-M.load_plugins = function(install_path)
+M.boot = function(install_path)
 	vim.opt.rtp:prepend(install_path)
 
 	-- setup autocmds for lazy loading
@@ -54,12 +62,15 @@ M.load_plugins = function(install_path)
 				and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile"
 				and vim.g.ui_entered
 			then
-				vim.schedule(function()
-					api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
-					api.nvim_del_augroup_by_name("StinvimFilePost")
-
-					vim.schedule(function() api.nvim_exec_autocmds("FileType", {}) end, 0)
-				end, 50)
+				schedule(function()
+					nvim_exec_autocmds("User", { pattern = "FilePostLazyLoadedFast", modeline = false })
+					defer_fn(function()
+						nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
+						api.nvim_del_augroup_by_name("StinvimFilePost")
+						schedule(function() nvim_exec_autocmds("FileType", {}) end, 0)
+					end, 50)
+					M.load_commands()
+				end, 0)
 			end
 		end,
 	})
@@ -67,11 +78,11 @@ M.load_plugins = function(install_path)
 	autocmd("BufReadPost", {
 		group = api.nvim_create_augroup("StinvimGitLazyLoad", { clear = true }),
 		callback = function()
-			vim.schedule(function()
+			defer_fn(function()
 				fn.system("git -C " .. '"' .. fn.expand("%:p:h") .. '"' .. " rev-parse")
 				if vim.v.shell_error == 0 then
 					api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
-					api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
+					nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
 				end
 			end, 50)
 		end,
