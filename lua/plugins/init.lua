@@ -9,6 +9,7 @@ local plugins = {
 		-- branch = "develop",
 		lazy = false,
 		-- opts = require("plugins.configs.witch"),
+		-- event = "User FilePostLazyLoadedFast",
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("witch").setup()
@@ -32,8 +33,7 @@ local plugins = {
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-		-- opts = require("plugins.configs.sttusline"),
-		event = "User FilePostLazyLoaded",
+		event = "User FilePostLazyLoadedFast",
 		config = function(_, opts) require("sttusline").setup() end,
 	},
 
@@ -67,7 +67,7 @@ local plugins = {
 			"TSInstallFromGrammar",
 		},
 		build = ":TSUpdate",
-		opts = require("plugins.configs.nvim-treesitter"),
+		opts = function() return require("plugins.configs.nvim-treesitter") end,
 		config = function(_, opts) require("nvim-treesitter.configs").setup(opts) end,
 	},
 
@@ -128,7 +128,7 @@ local plugins = {
 		"akinsho/toggleterm.nvim",
 		cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec" },
 		keys = "<C-t>",
-		opts = require("plugins.configs.toggleterm"),
+		opts = function() return require("plugins.configs.toggleterm") end,
 		config = function(_, opts) require("toggleterm").setup(opts) end,
 	},
 
@@ -141,8 +141,8 @@ local plugins = {
 
 	{
 		"windwp/nvim-autopairs",
-		opts = require("plugins.configs.nvim-autopairs"),
 		event = "InsertEnter",
+		opts = function() return require("plugins.configs.nvim-autopairs") end,
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("nvim-autopairs").setup(opts)
@@ -168,7 +168,7 @@ local plugins = {
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
 		event = "User FilePostLazyLoaded",
-		opts = require("plugins.configs.indent-blankline"),
+		opts = function() return require("plugins.configs.indent-blankline") end,
 		config = function(_, opts) require("ibl").setup(opts) end,
 	},
 
@@ -176,7 +176,7 @@ local plugins = {
 		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
 		event = "User FilePostLazyLoaded",
-		opts = require("plugins.configs.highlight-colors"),
+		opts = function() return require("plugins.configs.highlight-colors") end,
 		config = function(_, opts) require("nvim-highlight-colors").setup(opts) end,
 	},
 
@@ -219,7 +219,7 @@ local plugins = {
 	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
-		opts = require("plugins.configs.whichkey"),
+		opts = function() return require("plugins.configs.whichkey") end,
 		config = function(_, opts) require("which-key").setup(opts) end,
 	},
 
@@ -260,7 +260,7 @@ local plugins = {
 			"NvimTreeFocus",
 			"NvimTreeOpen",
 		},
-		opts = require("plugins.configs.nvim-tree"),
+		opts = function() return require("plugins.configs.nvim-tree") end,
 		config = function(_, opts) require("nvim-tree").setup(opts) end,
 	},
 
@@ -294,11 +294,10 @@ local plugins = {
 				dependencies = {
 					"nvim-treesitter/nvim-treesitter",
 				},
-				config = function()
-					require("ts_context_commentstring").setup {
-						enable_autocmd = false,
-					}
-				end,
+				opts = {
+					enable_autocmd = false,
+				},
+				config = function(_, opts) require("ts_context_commentstring").setup(opts) end,
 			},
 		},
 		keys = {
@@ -329,7 +328,7 @@ local plugins = {
 		"lewis6991/gitsigns.nvim",
 		ft = { "gitcommit" },
 		event = "User GitLazyLoaded",
-		opts = require("plugins.configs.git.gitsigns"),
+		opts = function() return require("plugins.configs.git.gitsigns") end,
 		config = function(_, opts) require("gitsigns").setup(opts) end,
 	},
 
@@ -337,7 +336,7 @@ local plugins = {
 		"akinsho/git-conflict.nvim",
 		ft = { "gitcommit" },
 		event = "User GitLazyLoaded",
-		opts = require("plugins.configs.git.git-conflict"),
+		opts = function() return require("plugins.configs.git.git-conflict") end,
 		config = function(_, opts) require("git-conflict").setup(opts) end,
 	},
 
@@ -386,7 +385,7 @@ local plugins = {
 			--Please make sure you install markdown and markdown_inline parser
 			{ "nvim-treesitter/nvim-treesitter" },
 		},
-		opts = require("plugins.configs.lsp.lspsaga"),
+		opts = function() return require("plugins.configs.lsp.lspsaga") end,
 		config = function(_, opts) require("lspsaga").setup(opts) end,
 	},
 
@@ -402,7 +401,7 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
-		opts = require("plugins.configs.mason"),
+		opts = function() return require("plugins.configs.mason") end,
 		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
@@ -433,7 +432,7 @@ local plugins = {
 		"stevearc/conform.nvim",
 		cmd = "ConformInfo",
 		event = "BufWritePre",
-		opts = require("plugins.configs.lsp.conform"),
+		opts = function() return require("plugins.configs.lsp.conform") end,
 		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("conform").setup(opts) end,
 	},

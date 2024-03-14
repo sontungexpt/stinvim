@@ -1,11 +1,20 @@
 local vim = vim
 local opts, cmd, g, fn = vim.opt, vim.api.nvim_command, vim.g, vim.fn
 
--- add binaries installed by mason.nvim to path
-vim.env.PATH = fn.stdpath("data")
-	.. "/mason/bin"
-	.. (fn.has("win32") ~= 0 and ";" or ":")
-	.. vim.env.PATH
+-- provider
+-- If you want to use a specific version of a provider, you can set the path to the binary
+-- g.ruby_host_prog = "~/.rbenv/versions/3.2.2/bin/neovim-ruby-host"
+-- g.python3_host_prog = "~/.venv/bin/python3"
+
+-- disable some providers by default, remove the line if you want to use them
+for _, provider in ipairs {
+	"perl",
+	"ruby",
+	"python3",
+	"node",
+} do
+	g["loaded_" .. provider .. "_provider"] = 0
+end
 
 cmd("filetype plugin on")
 cmd("filetype plugin indent on")

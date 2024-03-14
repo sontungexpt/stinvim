@@ -2,8 +2,6 @@ local require = require
 
 -- core module
 require("core.environment")
-require("core.provider")
-require("core.command")
 require("core.option")
 require("core.autofiletype")
 require("core.autocmd")
@@ -18,7 +16,7 @@ require("user.autofiletype")
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
 if not vim.loop.fs_stat(lazypath) then
-	require("utils.bootstrap").lazy(lazypath)
+	require("core.bootstrap").lazy(lazypath)
 else
-	require("utils.bootstrap").load_plugins(lazypath)
+	require("core.bootstrap").boot(lazypath)
 end
