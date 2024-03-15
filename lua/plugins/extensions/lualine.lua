@@ -1,5 +1,7 @@
 local M = {}
 
+M.enabled = false
+
 M.create_autocmds = function()
 	vim.api.nvim_create_autocmd({ "VimEnter", "VimResized" }, {
 		desc = "Enable the 'noshowmode' option when resizing the window width exceeds 70 if lualine is installed",
