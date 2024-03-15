@@ -138,22 +138,24 @@ end
 --- @param filetypes string|table The filetypes of buffers to close, can be a string or table of filetypes.
 --- @param buftypes string|table The buffer types of buffers to close, can be a string or table of buffer types.
 M.close_buffer = function(filetypes, buftypes)
-	-- get all buffers
-	local buffers = api.nvim_list_bufs()
-	local tbl_contains = vim.tbl_contains
+	vim.schedule(function()
+		-- get all buffers
+		local buffers = api.nvim_list_bufs()
+		local tbl_contains = vim.tbl_contains
 
-	for _, buf in ipairs(buffers) do
-		local filetype = api.nvim_buf_get_option(buf, "filetype")
-		local buftype = api.nvim_buf_get_option(buf, "buftype")
-		if
-			(type(filetypes) == "string" and filetype == filetypes)
-			or (type(buftypes) == "string" and buftype == buftypes)
-			or (type(filetypes) == "table" and tbl_contains(filetypes, filetype))
-			or (type(buftypes) == "table" and tbl_contains(buftypes, buftype))
-		then
-			api.nvim_buf_delete(buf, { force = true })
+		for _, buf in ipairs(buffers) do
+			local filetype = api.nvim_buf_get_option(buf, "filetype")
+			local buftype = api.nvim_buf_get_option(buf, "buftype")
+			if
+				(type(filetypes) == "string" and filetype == filetypes)
+				or (type(buftypes) == "string" and buftype == buftypes)
+				or (type(filetypes) == "table" and tbl_contains(filetypes, filetype))
+				or (type(buftypes) == "table" and tbl_contains(buftypes, buftype))
+			then
+				api.nvim_buf_delete(buf, { force = true })
+			end
 		end
-	end
+	end)
 end
 
 return M

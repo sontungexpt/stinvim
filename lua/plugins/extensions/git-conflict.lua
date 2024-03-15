@@ -1,4 +1,6 @@
-local M = {}
+local M = {
+	enabled = true,
+}
 
 M.create_autocmds = function()
 	vim.api.nvim_create_autocmd("User", {

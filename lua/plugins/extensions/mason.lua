@@ -5,7 +5,9 @@ local MASON_CONFIG_MODULE = "plugins.configs.mason"
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
 local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
-local M = {}
+local M = {
+	enabled = true,
+}
 
 local get_ensured_packages = function()
 	local rcfile = io.open(MASONRC_FILE, "r")
@@ -41,9 +43,21 @@ local sync_packages = function()
 			end
 			schedule(function()
 				local packages_to_install = utils.find_unique_items(ensured_packages, installed_packages)
-				if #packages_to_install > 0 then
+				local num_packages = #packages_to_install
+				if num_packages > 0 then
 					api.nvim_command("MasonInstall " .. table.concat(packages_to_install, " "))
 				end
+
+				local count = 0
+
+				require("mason-registry"):on("package:install:success", function(pkg)
+					count = count + 1
+					if count == num_packages then
+						api.nvim_command("MasonUpdate")
+						require("utils").close_buffer("mason")
+						require("utils.notify").info("Mason: Packages synced successfully")
+					end
+				end)
 			end)
 		end, 10)
 	end

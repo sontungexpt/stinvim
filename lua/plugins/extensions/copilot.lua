@@ -1,12 +1,13 @@
-local api = vim.api
-
-local M = {}
+local M = {
+	enabled = true,
+}
 
 M.has_copilot_auth = function()
 	return vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.config/github-copilot/hosts.json") == 1
 end
 
 M.create_autocmds = function()
+	local api = vim.api
 	api.nvim_create_autocmd({ "User" }, {
 		group = api.nvim_create_augroup("CopilotAutoAuth", { clear = true }),
 		pattern = "VeryLazy",
