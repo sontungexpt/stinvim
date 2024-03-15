@@ -46,18 +46,17 @@ local sync_packages = function()
 				local num_packages = #packages_to_install
 				if num_packages > 0 then
 					api.nvim_command("MasonInstall " .. table.concat(packages_to_install, " "))
+
+					local count = 0
+					require("mason-registry"):on("package:install:success", function(pkg)
+						count = count + 1
+						if count == num_packages then
+							vim.schedule(function() api.nvim_command("MasonUpdate") end)
+							require("utils").close_buffer("mason")
+							require("utils.notify").info("Mason: Packages synced successfully")
+						end
+					end)
 				end
-
-				local count = 0
-
-				require("mason-registry"):on("package:install:success", function(pkg)
-					count = count + 1
-					if count == num_packages then
-						api.nvim_command("MasonUpdate")
-						require("utils").close_buffer("mason")
-						require("utils.notify").info("Mason: Packages synced successfully")
-					end
-				end)
 			end)
 		end, 10)
 	end
