@@ -6,7 +6,7 @@ require("core.option")
 require("core.autofiletype")
 require("core.autocmd")
 require("core.nvimmap")
-require("core.plugmap").on_startup()
+require("core.plugmap")
 
 -- user module
 require("user.autocmd")
