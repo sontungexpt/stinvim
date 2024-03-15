@@ -1,20 +1,15 @@
 local vim = vim
 local opts, cmd, g, fn = vim.opt, vim.api.nvim_command, vim.g, vim.fn
 
--- provider
--- If you want to use a specific version of a provider, you can set the path to the binary
+-- Disable all providers by default, If we need a provider we can enable it by comment the line
+g.loaded_node_provider = 0
+g.loaded_perl_provider = 0
+g.loaded_python3_provider = 0
+g.loaded_ruby_provider = 0
+
+-- Uncomment the following lines to use a ruby and python provider
 -- g.ruby_host_prog = "~/.rbenv/versions/3.2.2/bin/neovim-ruby-host"
 -- g.python3_host_prog = "~/.venv/bin/python3"
-
--- disable some providers by default, remove the line if you want to use them
-for _, provider in ipairs {
-	"perl",
-	"ruby",
-	"python3",
-	"node",
-} do
-	g["loaded_" .. provider .. "_provider"] = 0
-end
 
 cmd("filetype plugin on")
 cmd("filetype plugin indent on")

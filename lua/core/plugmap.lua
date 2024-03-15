@@ -3,7 +3,6 @@ local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 local M = {}
 
 autocmd("User", {
-	-- pattern = "LazyVimStarted",
 	pattern = "KeymapLazyLoaded",
 	desc = "Lazy load keymaps for plugins",
 	once = true,

@@ -1,6 +1,6 @@
 local fn, env = vim.fn, vim.env
 
-local is_windows = vim.loop.os_uname().sysname == "Windows_NT"
+local is_windows = fn.has("win32") ~= 0
 local sep = is_windows and ";" or ":"
 
 -- if nvm is installed, add node binaries to path
