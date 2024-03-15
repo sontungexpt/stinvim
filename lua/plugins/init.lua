@@ -146,8 +146,16 @@ local plugins = {
 	{
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
-		event = "User FilePostLazyLoaded",
-		opts = function() return require("plugins.configs.indent-blankline") end,
+		-- event = "User FilePostLazyLoaded",
+		event = { "CursorHold", "CursorMoved" },
+		opts = {
+			indent = {
+				char = "│",
+			},
+			scope = {
+				char = "│",
+			},
+		},
 		config = function(_, opts) require("ibl").setup(opts) end,
 	},
 
