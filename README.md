@@ -35,8 +35,6 @@ And many more plugins that you can see in [plugins/init.lua](./lua/plugins/init.
 
 ![preview2](./docs/readme/preview2.png)
 
-![preview3](./docs/readme/preview3.png)
-
 ## How to add more key map
 
 - We provide you two files for keymap.
@@ -81,7 +79,7 @@ And many more plugins that you can see in [plugins/init.lua](./lua/plugins/init.
 - Additionally, you can manually sync the package by using the command `:MasonSyncPackages` in your neovim
 
 - Example .masonrc.json
-  ![.masonrc.json](./docs/readme/masonrc_preview.png)
+  ![.masonrc.json](./docs/readme/masonrc.png)
 
 ## Requirements
 
