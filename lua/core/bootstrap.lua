@@ -80,16 +80,18 @@ M.boot = function(install_path)
 	autocmd("BufEnter", {
 		group = api.nvim_create_augroup("StinvimGitLazyLoad", { clear = true }),
 		callback = function(args)
-			vim.defer_fn(function()
-				fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
-					on_exit = function(_, code, _)
-						if code == 0 then
-							api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
-							exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
-						end
-					end,
-				})
-			end, 80)
+			if args.file ~= "" and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile" then
+				vim.defer_fn(function()
+					fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
+						on_exit = function(_, code, _)
+							if code == 0 then
+								api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
+								exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
+							end
+						end,
+					})
+				end, 80)
+			end
 		end,
 	})
 
