@@ -3,6 +3,7 @@ local options = {
 		char = "│",
 	},
 	scope = {
+		char = "│",
 		show_start = false,
 	},
 	exclude = {
