@@ -3,10 +3,12 @@ local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 local M = {}
 
 autocmd("User", {
+	-- pattern = "LazyVimStarted",
 	pattern = "KeymapLazyLoaded",
 	desc = "Lazy load keymaps for plugins",
 	once = true,
 	callback = function()
+		vim.g.test = (vim.g.test or "") .. "LazyVimStarted "
 		local map = require("utils.mapper").map
 		local load_and_exec = require("utils").load_and_exec
 

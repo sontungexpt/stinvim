@@ -17,6 +17,7 @@ M.lazy = function(install_path)
 		on_exit = function(_, code, _)
 			if code == 0 then
 				M.boot(install_path)
+				require("utils").close_buffer("lazy")
 			else
 				api.nvim_err_writeln("Error: " .. code)
 			end
@@ -53,6 +54,7 @@ M.boot = function(install_path)
 		group = augroup("StinvimLazyEvents", { clear = true }),
 		callback = function(args)
 			if args.event == "UIEnter" then vim.g.ui_entered = true end
+
 			if
 				vim.g.ui_entered
 				and args.file ~= ""

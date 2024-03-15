@@ -1,6 +1,6 @@
-local M = {}
-
-M.enabled = false
+local M = {
+	enabled = false,
+}
 
 M.create_autocmds = function()
 	vim.api.nvim_create_autocmd({ "VimEnter", "VimResized" }, {
