@@ -67,7 +67,7 @@ M.extend_command = function()
 end
 
 -------------------- Auto commands --------------------
-M.create_autocmds = function()
+M.entry = function()
 	if require(MASON_CONFIG_MODULE).auto_sync then
 		api.nvim_create_autocmd("User", {
 			group = api.nvim_create_augroup("MasonExtension", { clear = true }),
