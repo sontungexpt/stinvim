@@ -2,7 +2,7 @@ local M = {
 	enabled = true,
 }
 
-M.create_autocmds = function()
+M.entry = function()
 	vim.api.nvim_create_autocmd("User", {
 		pattern = "GitConflictDetected",
 		callback = function()

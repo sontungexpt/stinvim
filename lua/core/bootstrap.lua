@@ -10,16 +10,24 @@ end
 
 M.lazy = function(install_path)
 	--------- lazy.nvim ---------------
-	echo("  Installing lazy.nvim & plugins ...")
-	local repo = "https://github.com/folke/lazy.nvim.git"
+	echo("  Installing lazy.nvim and plugins ...")
 
+	api.nvim_create_autocmd("User", {
+		once = true,
+		pattern = "LazyDone",
+		callback = function()
+			require("utils").close_buffer("lazy")
+			echo("Lazy.nvim and plugins installed successfully!")
+		end,
+	})
+
+	local repo = "https://github.com/folke/lazy.nvim.git"
 	fn.jobstart({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, {
-		on_exit = function(_, code, _)
+		on_exit = function(_, code)
 			if code == 0 then
 				M.boot(install_path)
-				require("utils").close_buffer("lazy")
 			else
-				api.nvim_err_writeln("Error: " .. code)
+				api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
 			end
 		end,
 	})
@@ -35,9 +43,7 @@ M.load_plugin_extensions = function(install_path)
 
 	for _, file in ipairs(files) do
 		local module = require(parent_module .. "." .. fn.fnamemodify(file, ":t:r") --[[ filename ]])
-		if module.enabled ~= false and type(module.create_autocmds) == "function" then
-			module.create_autocmds()
-		end
+		if module.enabled ~= false and type(module.entry) == "function" then module.entry() end
 	end
 end
 
@@ -48,6 +54,15 @@ M.boot = function(install_path)
 	autocmd("CmdlineEnter", {
 		once = true,
 		callback = function() require("core.command") end,
+	})
+
+	autocmd({ "UIEnter", "CursorHold", "CursorMoved" }, {
+		once = true,
+		callback = function()
+			vim.schedule(
+				function() exec_autocmds("User", { pattern = "KeymapLazyLoaded", modeline = false }) end
+			)
+		end,
 	})
 
 	autocmd({ "UIEnter", "BufReadPost", "BufNewFile" }, {
@@ -63,10 +78,7 @@ M.boot = function(install_path)
 				vim.schedule(function()
 					api.nvim_del_augroup_by_name("StinvimLazyEvents")
 
-					exec_autocmds(
-						"User",
-						{ pattern = { "FilePostLazyLoadedFast", "KeymapLazyLoaded" }, modeline = false }
-					)
+					exec_autocmds("User", { pattern = "FilePostLazyLoadedFast", modeline = false })
 
 					vim.defer_fn(function()
 						exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
@@ -83,7 +95,7 @@ M.boot = function(install_path)
 			if args.file ~= "" and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile" then
 				vim.defer_fn(function()
 					fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
-						on_exit = function(_, code, _)
+						on_exit = function(_, code)
 							if code == 0 then
 								api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
 								exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
