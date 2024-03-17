@@ -91,7 +91,7 @@ local plugins = {
 		"sontungexpt/url-open",
 		branch = "mini",
 		cmd = "URLOpenUnderCursor",
-		event = "User FilePostLazyLoaded",
+		event = { "CursorHold", "CursorMoved" },
 		config = function(_, opts) require("url-open").setup() end,
 	},
 
