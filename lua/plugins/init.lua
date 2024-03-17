@@ -49,7 +49,9 @@ local plugins = {
 	--------------------------------------------------- Syntax ---------------------------------------------------
 	{
 		"nvim-treesitter/nvim-treesitter",
-		dependencies = { "HiPhish/rainbow-delimiters.nvim" },
+		dependencies = {
+			"HiPhish/rainbow-delimiters.nvim",
+		},
 		event = {
 			"CursorHold",
 			"CursorMoved",
