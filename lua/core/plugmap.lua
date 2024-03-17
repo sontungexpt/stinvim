@@ -75,8 +75,8 @@ autocmd("User", {
 		map("n", "<Leader>pm", "<Cmd>MarkdownPreviewToggle<CR>", 6, { desc = "Toggle markdown preview" })
 
 		------------------------------ wilder ------------------------------
-		-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 5)
-		-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 5)
+		-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
+		-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 6)
 		--
 		--------------------------------------- dap ---------------------------------------
 		local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
