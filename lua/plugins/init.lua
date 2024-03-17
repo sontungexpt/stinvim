@@ -168,6 +168,9 @@ local plugins = {
 		"lukas-reineke/indent-blankline.nvim",
 		main = "ibl",
 		event = { "CursorHold", "CursorMoved" },
+		dependencies = {
+			"HiPhish/rainbow-delimiters.nvim",
+		},
 		opts = {
 			indent = {
 				char = "│",
