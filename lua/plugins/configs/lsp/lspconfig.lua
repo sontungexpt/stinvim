@@ -29,6 +29,11 @@ local lsp_servers = {
 		name = "cmake",
 	},
 
+	-- zig
+	{
+		name = "zls",
+	},
+
 	-- dev
 	{
 		name = "cssls",

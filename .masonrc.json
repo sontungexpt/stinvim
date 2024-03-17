@@ -11,6 +11,7 @@
   "clangd",
   "clang-format",
   "cmake-language-server",
+  "zls",
   "codelldb",
   "pyright",
   "autopep8",

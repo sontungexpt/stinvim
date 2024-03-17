@@ -21,6 +21,9 @@ local options = {
 		-- toml
 		"taplo",
 
+		-- zig
+		"zls",
+
 		-- c++
 		"clangd",
 		"clang-format",
