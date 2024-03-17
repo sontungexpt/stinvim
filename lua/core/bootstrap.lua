@@ -16,8 +16,8 @@ M.lazy = function(install_path)
 		once = true,
 		pattern = "LazyDone",
 		callback = function()
+			echo("󰏔 Plugins installed successfully!")
 			require("utils").close_buffer("lazy")
-			echo("Lazy.nvim and plugins installed successfully!")
 		end,
 	})
 
@@ -25,6 +25,7 @@ M.lazy = function(install_path)
 	fn.jobstart({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, {
 		on_exit = function(_, code)
 			if code == 0 then
+				echo(" lazy.nvim installed successfully!")
 				M.boot(install_path)
 			else
 				api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
@@ -56,15 +57,6 @@ M.boot = function(install_path)
 		callback = function() require("core.command") end,
 	})
 
-	autocmd({ "UIEnter", "CursorHold", "CursorMoved" }, {
-		once = true,
-		callback = function()
-			vim.schedule(
-				function() exec_autocmds("User", { pattern = "KeymapLazyLoaded", modeline = false }) end
-			)
-		end,
-	})
-
 	autocmd({ "UIEnter", "BufReadPost", "BufNewFile" }, {
 		group = augroup("StinvimLazyEvents", { clear = true }),
 		callback = function(args)
@@ -79,8 +71,6 @@ M.boot = function(install_path)
 					api.nvim_del_augroup_by_name("StinvimLazyEvents")
 
 					exec_autocmds("User", { pattern = "FilePostLazyLoadedFast", modeline = false })
-
-					-- vim.schedule(function() api.nvim_command("TSBufEnable highlight") end, 0)
 
 					vim.defer_fn(function()
 						exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
