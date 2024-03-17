@@ -411,8 +411,10 @@ local plugins = {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		opts = function() return require("plugins.configs.lsp.lspsaga") end,
-		---@diagnostic disable-next-line: different-requires
-		config = function(_, opts) require("lspsaga").setup(opts) end,
+		config = function(_, opts)
+			---@diagnostic disable-next-line: different-requires
+			require("lspsaga").setup(opts)
+		end,
 	},
 
 	{
