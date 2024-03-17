@@ -57,7 +57,7 @@ M.boot = function(install_path)
 		callback = function() require("core.command") end,
 	})
 
-	autocmd({ "UIEnter", "BufReadPost", "BufNewFile" }, {
+	autocmd({ "UIEnter", "BufEnter", "BufNewFile" }, {
 		group = augroup("StinvimLazyEvents", { clear = true }),
 		callback = function(args)
 			if args.event == "UIEnter" then vim.g.ui_entered = true end

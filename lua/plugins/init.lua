@@ -52,6 +52,7 @@ local plugins = {
 		dependencies = { "HiPhish/rainbow-delimiters.nvim" },
 		event = {
 			"CursorHold",
+			"CursorMoved",
 			"User FilePostLazyLoadedFast",
 		},
 		cmd = {
