@@ -1,6 +1,10 @@
 {
   "diagnostics.globals": ["vim", "on_attach", "msg"],
-  "diagnostics.disable": ["undefined-field", "unused-local", "param-type-mismatch"],
+  "diagnostics.disable": [
+    "undefined-field",
+    "unused-local",
+    "param-type-mismatch"
+  ],
   "workspace.library": [
     "/home/stilux/.local/share/nvim/lazy/neodev.nvim/types/stable",
     "/usr/share/nvim/runtime/lua",
