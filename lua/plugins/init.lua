@@ -43,8 +43,8 @@ local plugins = {
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = {
+			"CursorHold",
 			"User FilePostLazyLoadedFast",
-			"User KeymapLazyLoaded",
 		},
 		cmd = {
 			"TSInstall",
