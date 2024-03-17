@@ -6,14 +6,7 @@ local group = api.nvim_create_augroup("STINVIM_CORE_AUTOCMD", { clear = true })
 autocmd({ "VimEnter", "VimLeave" }, {
 	pattern = "*",
 	group = group,
-	command = "runtime! plugin/rplugin.vim",
-	desc = "Update remote plugins",
-})
-
-autocmd({ "VimEnter", "VimLeave" }, {
-	pattern = "*",
-	group = group,
-	command = "silent! UpdateRemotePlugins",
+	command = "runtime! plugin/rplugin.vim | silent! UpdateRemotePlugins",
 	desc = "Update remote plugins",
 })
 
