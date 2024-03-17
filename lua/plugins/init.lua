@@ -404,13 +404,14 @@ local plugins = {
 			},
 		},
 		dependencies = {
-			{ "neovim/nvim-lspconfig" },
-			{ "nvim-tree/nvim-web-devicons" },
+			"neovim/nvim-lspconfig",
+			"nvim-tree/nvim-web-devicons",
 
 			--Please make sure you install markdown and markdown_inline parser
-			{ "nvim-treesitter/nvim-treesitter" },
+			"nvim-treesitter/nvim-treesitter",
 		},
 		opts = function() return require("plugins.configs.lsp.lspsaga") end,
+		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("lspsaga").setup(opts) end,
 	},
 
