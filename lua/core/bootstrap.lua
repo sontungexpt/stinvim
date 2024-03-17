@@ -69,13 +69,8 @@ M.boot = function(install_path)
 			then
 				vim.schedule(function()
 					api.nvim_del_augroup_by_name("StinvimLazyEvents")
-
-					exec_autocmds("User", { pattern = "FilePostLazyLoadedFast", modeline = false })
-
-					vim.defer_fn(function()
-						exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
-						vim.schedule(function() exec_autocmds("FileType", {}) end, 0)
-					end, 50)
+					exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
+					vim.schedule(function() exec_autocmds("Filetype", { buffer = args.buf }) end)
 				end, 0)
 			end
 		end,
