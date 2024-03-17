@@ -9,7 +9,6 @@ local plugins = {
 		-- branch = "develop",
 		lazy = false,
 		-- opts = require("plugins.configs.witch"),
-		-- event = "User FilePostLazyLoadedFast",
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("witch").setup()
@@ -50,15 +49,16 @@ local plugins = {
 	--------------------------------------------------- Syntax ---------------------------------------------------
 	{
 		"HiPhish/rainbow-delimiters.nvim",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-		},
+		dependencies = "nvim-treesitter/nvim-treesitter",
 		event = "User FilePostLazyLoaded",
 	},
 
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = "User FilePostLazyLoadedFast",
+		event = {
+			"User FilePostLazyLoadedFast",
+			"User KeymapLazyLoaded",
+		},
 		cmd = {
 			"TSInstall",
 			"TSBufEnable",

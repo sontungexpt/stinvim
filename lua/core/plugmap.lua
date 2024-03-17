@@ -2,138 +2,132 @@ local api = vim.api
 local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 local M = {}
 
-autocmd("User", {
-	pattern = "KeymapLazyLoaded",
-	desc = "Lazy load keymaps for plugins",
-	once = true,
-	callback = function()
-		vim.g.test = (vim.g.test or "") .. "LazyVimStarted "
-		local map = require("utils.mapper").map
-		local load_and_exec = require("utils").load_and_exec
+vim.schedule(function()
+	local map = require("utils.mapper").map
+	local load_and_exec = require("utils").load_and_exec
 
-		------------------------------ url-open ------------------------------
-		map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
+	------------------------------ url-open ------------------------------
+	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
 
-		------------------------------ nvimtree ------------------------------
-		map({ "n", "i", "v", "c" }, "<C-b>", function()
-			local filetype = api.nvim_buf_get_option(0, "filetype")
-			-- local buftype = api.nvim_buf_get_option(0, "buftype")
-			if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then return end
-			api.nvim_command("NvimTreeToggle")
-		end, { desc = "Toggle NvimTree" })
+	------------------------------ nvimtree ------------------------------
+	map({ "n", "i", "v", "c" }, "<C-b>", function()
+		local filetype = api.nvim_buf_get_option(0, "filetype")
+		-- local buftype = api.nvim_buf_get_option(0, "buftype")
+		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then return end
+		api.nvim_command("NvimTreeToggle")
+	end, { desc = "Toggle NvimTree" })
 
-		------------------------------ Telescope ------------------------------
-		map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-		map("n", "<leader>fm", "<cmd>Telescope media_files<cr>", { desc = "Find media files" })
-		map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
-		map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
-		map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
-		map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
-		map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "Find recent projects" })
+	------------------------------ Telescope ------------------------------
+	map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
+	map("n", "<leader>fm", "<cmd>Telescope media_files<cr>", { desc = "Find media files" })
+	map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
+	map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
+	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
+	map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "Find recent projects" })
 
-		------------------------------ Git conflict ------------------------------
-		map("n", "<Leader>fc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
+	------------------------------ Git conflict ------------------------------
+	map("n", "<Leader>fc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
 
-		------------------------------ Todo-comments ------------------------------
-		map("n", "<Leader>ft", "<cmd>TodoQuickFix<cr>", { desc = "Todo quickfix" })
+	------------------------------ Todo-comments ------------------------------
+	map("n", "<Leader>ft", "<cmd>TodoQuickFix<cr>", { desc = "Todo quickfix" })
 
-		map("n", "[t", function()
-			load_and_exec("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
-		end, { desc = "Previous todo comment" })
+	map("n", "[t", function()
+		load_and_exec("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
+	end, { desc = "Previous todo comment" })
 
-		map("n", "]t", function()
-			load_and_exec("todo-comments", function(todo_comments) todo_comments.jump_next() end)
-		end, { desc = "Next todo comment" })
+	map("n", "]t", function()
+		load_and_exec("todo-comments", function(todo_comments) todo_comments.jump_next() end)
+	end, { desc = "Next todo comment" })
 
-		map("n", "[T", function()
-			load_and_exec(
-				"todo-comments",
-				function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end
-			)
-		end, { desc = "Previous error/ warning comment" })
+	map("n", "[T", function()
+		load_and_exec(
+			"todo-comments",
+			function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end
+		)
+	end, { desc = "Previous error/ warning comment" })
 
-		map("n", "]T", function()
-			load_and_exec(
-				"todo-comments",
-				function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end
-			)
-		end, { desc = "Next error/ warning comment" })
+	map("n", "]T", function()
+		load_and_exec(
+			"todo-comments",
+			function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end
+		)
+	end, { desc = "Next error/ warning comment" })
 
-		------------------------------ ccc ------------------------------
-		map({ "n", "i", "v" }, "<A-c>", "<cmd>CccPick<cr>", { desc = "Pick color" })
+	------------------------------ ccc ------------------------------
+	map({ "n", "i", "v" }, "<A-c>", "<cmd>CccPick<cr>", { desc = "Pick color" })
 
-		------------------------------ ufo ------------------------------
-		map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>")
-		map("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>")
-		map("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>")
-		map("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>")
+	------------------------------ ufo ------------------------------
+	map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>")
+	map("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>")
+	map("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>")
+	map("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>")
 
-		------------------------------ Bufferline ------------------------------
-		-- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
+	------------------------------ Bufferline ------------------------------
+	-- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
 
-		------------------------------ Markdown preview ------------------------------
-		map("n", "<Leader>pm", "<Cmd>MarkdownPreviewToggle<CR>", 6, { desc = "Toggle markdown preview" })
+	------------------------------ Markdown preview ------------------------------
+	map("n", "<Leader>pm", "<Cmd>MarkdownPreviewToggle<CR>", 6, { desc = "Toggle markdown preview" })
 
-		------------------------------ wilder ------------------------------
-		-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
-		-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 6)
-		--
-		--------------------------------------- dap ---------------------------------------
-		local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
+	------------------------------ wilder ------------------------------
+	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
+	-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 6)
+	--
+	--------------------------------------- dap ---------------------------------------
+	local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
 
-		map("n", "<leader>du", function()
-			load_and_exec("dapui", function(dapui) dapui.toggle() end)
-		end, { desc = "Toggle DAP UI" })
-		map("n", "<leader>db", function()
-			load_and_exec("dap", function(dap) dap.toggle_breakpoint() end)
-		end, { desc = "Toggle breakpoint" })
-		map("n", "<leader>di", function()
-			load_and_exec("dap", function(dap) dap.step_into() end)
-		end, { desc = "Step into" })
-		map("n", "<leader>do", function()
-			load_and_exec("dap", function(dap) dap.step_over() end)
-		end, { desc = "Step over" })
-		map("n", "<leader>dc", continue_debugging, { desc = "Continue or start debugging" })
-		map("n", "<leader>dd", function()
-			load_and_exec("dap", function(dap)
-				dap.disconnect()
-				dap.close()
-			end)
-		end, { desc = "Disconnect from debugger" })
-		map("n", "<F11>", function()
-			load_and_exec("dap", function(dap) dap.step_into() end)
-		end, { desc = "Step into" })
-		map("n", "<F12>", function()
-			load_and_exec("dap", function(dap) dap.step_over() end)
-		end, { desc = "Step over" })
-		map("n", "<F5>", continue_debugging, { desc = "Continue or start debugging" })
-		map("n", "<F4>", function()
-			load_and_exec("dap", function(dap)
-				dap.disconnect()
-				dap.close()
-			end)
-		end, { desc = "Disconnect from debugger" })
-		map("n", "<Leader>dr", function()
-			load_and_exec("dap", function(dap) dap.repl.open() end)
-		end, { desc = "Open REPL" })
-		map("n", "<Leader>dl", function()
-			load_and_exec("dap", function(dap) dap.run_last() end)
-		end, { desc = "Run last" })
+	map("n", "<leader>du", function()
+		load_and_exec("dapui", function(dapui) dapui.toggle() end)
+	end, { desc = "Toggle DAP UI" })
+	map("n", "<leader>db", function()
+		load_and_exec("dap", function(dap) dap.toggle_breakpoint() end)
+	end, { desc = "Toggle breakpoint" })
+	map("n", "<leader>di", function()
+		load_and_exec("dap", function(dap) dap.step_into() end)
+	end, { desc = "Step into" })
+	map("n", "<leader>do", function()
+		load_and_exec("dap", function(dap) dap.step_over() end)
+	end, { desc = "Step over" })
+	map("n", "<leader>dc", continue_debugging, { desc = "Continue or start debugging" })
+	map("n", "<leader>dd", function()
+		load_and_exec("dap", function(dap)
+			dap.disconnect()
+			dap.close()
+		end)
+	end, { desc = "Disconnect from debugger" })
+	map("n", "<F11>", function()
+		load_and_exec("dap", function(dap) dap.step_into() end)
+	end, { desc = "Step into" })
+	map("n", "<F12>", function()
+		load_and_exec("dap", function(dap) dap.step_over() end)
+	end, { desc = "Step over" })
+	map("n", "<F5>", continue_debugging, { desc = "Continue or start debugging" })
+	map("n", "<F4>", function()
+		load_and_exec("dap", function(dap)
+			dap.disconnect()
+			dap.close()
+		end)
+	end, { desc = "Disconnect from debugger" })
+	map("n", "<Leader>dr", function()
+		load_and_exec("dap", function(dap) dap.repl.open() end)
+	end, { desc = "Open REPL" })
+	map("n", "<Leader>dl", function()
+		load_and_exec("dap", function(dap) dap.run_last() end)
+	end, { desc = "Run last" })
 
-		map({ "n", "v" }, "<Leader>dh", function()
-			load_and_exec("dap.ui.widgets", function(widgets) widgets.hover() end)
-		end, { desc = "Hover widgets" })
-		map({ "n", "v" }, "<Leader>dp", function()
-			load_and_exec("dap.ui.widgets", function(widgets) widgets.preview() end)
-		end, { desc = "Preview widgets" })
-		map("n", "<Leader>df", function()
-			load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
-		end, { desc = "Frames" })
-		map("n", "<Leader>ds", function()
-			load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
-		end, { desc = "Scopes" })
-	end,
-})
+	map({ "n", "v" }, "<Leader>dh", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.hover() end)
+	end, { desc = "Hover widgets" })
+	map({ "n", "v" }, "<Leader>dp", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.preview() end)
+	end, { desc = "Preview widgets" })
+	map("n", "<Leader>df", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
+	end, { desc = "Frames" })
+	map("n", "<Leader>ds", function()
+		load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
+	end, { desc = "Scopes" })
+end)
 
 autocmd("LspAttach", {
 	group = augroup("Lspsaga-mappings", { clear = true }),
