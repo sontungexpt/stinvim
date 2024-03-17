@@ -35,13 +35,8 @@ local plugins = {
 
 	--------------------------------------------------- Syntax ---------------------------------------------------
 	{
-		"HiPhish/rainbow-delimiters.nvim",
-		dependencies = "nvim-treesitter/nvim-treesitter",
-		event = "User FilePostLazyLoaded",
-	},
-
-	{
 		"nvim-treesitter/nvim-treesitter",
+		dependencies = { "HiPhish/rainbow-delimiters.nvim" },
 		event = {
 			"CursorHold",
 			"User FilePostLazyLoadedFast",
