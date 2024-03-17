@@ -19,7 +19,7 @@ local plugins = {
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-		event = "User FilePostLazyLoadedFast",
+		event = "User FilePostLazyLoaded",
 		config = function(_, opts) require("sttusline").setup() end,
 	},
 
@@ -42,7 +42,7 @@ local plugins = {
 		event = {
 			"CursorHold",
 			"CursorMoved",
-			"User FilePostLazyLoadedFast",
+			"User FilePostLazyLoaded",
 		},
 		cmd = {
 			"TSInstall",
