@@ -58,7 +58,7 @@ local plugins = {
 
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = "User FilePostLazyLoadedFast",
+		event = { "BufReadPost", "BufNewFile" },
 		cmd = {
 			"TSInstall",
 			"TSBufEnable",
