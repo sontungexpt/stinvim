@@ -38,20 +38,18 @@ local sync_packages = function()
 
 		schedule(function()
 			local packages_to_remove = utils.find_unique_items(installed_packages, ensured_packages)
-			if #packages_to_remove > 0 then
+			if next(packages_to_remove) then
 				api.nvim_command("MasonUninstall " .. table.concat(packages_to_remove, " "))
 			end
 			schedule(function()
 				local packages_to_install = utils.find_unique_items(ensured_packages, installed_packages)
-				local num_packages = #packages_to_install
-				if num_packages > 0 then
+				if next(packages_to_install) then
 					api.nvim_command("MasonInstall " .. table.concat(packages_to_install, " "))
 
-					local count = 0
+					local count = #packages_to_install
 					require("mason-registry"):on("package:install:success", function(pkg)
-						count = count + 1
-						if count == num_packages then
-							vim.schedule(function() api.nvim_command("MasonUpdate") end)
+						count = count - 1
+						if count == 0 then
 							require("utils").close_buffer("mason")
 							require("utils.notify").info("Mason: Packages synced successfully")
 						end
@@ -71,7 +69,8 @@ M.entry = function()
 	if require(MASON_CONFIG_MODULE).auto_sync then
 		api.nvim_create_autocmd("User", {
 			group = api.nvim_create_augroup("MasonExtension", { clear = true }),
-			pattern = "VeryLazy",
+			once = true,
+			pattern = { "VeryLazy", "LazyVimStarted" },
 			callback = function() schedule(sync_packages) end,
 		})
 	end

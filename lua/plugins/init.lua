@@ -45,10 +45,11 @@ local plugins = {
 
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPost", "BufNewFile" },
+		event = "User FilePostLazyLoadedFast",
 		cmd = {
 			"TSInstall",
 			"TSBufEnable",
+			"TSEnable",
 			"TSBufDisable",
 			"TSModuleInfo",
 			"TSInstallFromGrammar",
@@ -121,7 +122,7 @@ local plugins = {
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		opts = function() return require("plugins.configs.nvim-autopairs") end,
+		-- opts = function() return require("plugins.configs.nvim-autopairs") end,
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("nvim-autopairs").setup(opts)
