@@ -80,6 +80,8 @@ M.boot = function(install_path)
 
 					exec_autocmds("User", { pattern = "FilePostLazyLoadedFast", modeline = false })
 
+					-- vim.schedule(function() api.nvim_command("TSBufEnable highlight") end, 0)
+
 					vim.defer_fn(function()
 						exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
 						vim.schedule(function() exec_autocmds("FileType", {}) end, 0)
