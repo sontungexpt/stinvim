@@ -58,7 +58,7 @@ local plugins = {
 
 	{
 		"nvim-treesitter/nvim-treesitter",
-		event = { "BufReadPost", "BufNewFile" },
+		event = "User FilePostLazyLoadedFast",
 		cmd = {
 			"TSInstall",
 			"TSBufEnable",
@@ -173,10 +173,26 @@ local plugins = {
 				char = "│",
 			},
 			scope = {
+				highlight = {
+					"RainbowDelimiterRed",
+					"RainbowDelimiterYellow",
+					"RainbowDelimiterBlue",
+					"RainbowDelimiterOrange",
+					"RainbowDelimiterGreen",
+					"RainbowDelimiterViolet",
+					"RainbowDelimiterCyan",
+				},
 				char = "│",
 			},
 		},
-		config = function(_, opts) require("ibl").setup(opts) end,
+		config = function(_, opts)
+			local hooks = require("ibl.hooks")
+
+			hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
+			hooks.register(hooks.type.WHITESPACE, hooks.builtin.hide_first_space_indent_level)
+
+			require("ibl").setup(opts)
+		end,
 	},
 
 	{
