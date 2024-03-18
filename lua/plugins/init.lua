@@ -217,27 +217,24 @@ local plugins = {
 	},
 
 	{
-		"aklt/plantuml-syntax",
-		ft = "plantuml",
-		event = "BufReadPost *.wsd,*.pu,*.puml,*.plantuml",
-	},
-
-	{
 		"https://gitlab.com/itaranto/plantuml.nvim",
+		dependencies = {
+			"aklt/plantuml-syntax",
+		},
+		ft = "plantuml",
 		event = "BufWritePre *.wsd,*.pu,*.puml,*.plantuml",
 		cmd = "PlantUml",
-		config = function()
-			require("plantuml").setup {
-				renderer = {
-					type = "image",
-					options = {
-						prog = "feh",
-						dark_mode = false,
-					},
+		opts = {
+			renderer = {
+				type = "image",
+				options = {
+					prog = "feh",
+					dark_mode = false,
 				},
-				render_on_write = true,
-			}
-		end,
+			},
+			render_on_write = true,
+		},
+		config = function(_, opts) require("plantuml").setup(opts) end,
 	},
 
 	{
@@ -267,12 +264,12 @@ local plugins = {
 
 	{
 		"zbirenbaum/copilot.lua",
-		-- "sontungexpt/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
 		opts = function() return require("plugins.configs.copilot") end,
 		config = function(_, opts) require("copilot").setup(opts) end,
 	},
+
 	--------------------------------------------------- File Explorer ---------------------------------------------------
 	{
 		"nvim-tree/nvim-tree.lua",
