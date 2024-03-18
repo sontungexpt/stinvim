@@ -263,23 +263,23 @@ local plugins = {
 		end,
 	},
 
-	{
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
-		event = "InsertEnter",
-		opts = function() return require("plugins.configs.copilot") end,
-		config = function(_, opts) require("copilot").setup(opts) end,
-	},
-
 	-- {
-	-- 	"Exafunction/codeium.vim",
-	-- 	cmd = "Codeium",
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	cmd = "Copilot",
 	-- 	event = "InsertEnter",
-	-- 	config = function()
-	-- 		vim.g.codeium_no_map_tab = true
-	-- 		require("utils.mapper").map("i", "<A-Tab>", "codeium#Accept()", 7)
-	-- 	end,
+	-- 	opts = function() return require("plugins.configs.copilot") end,
+	-- 	config = function(_, opts) require("copilot").setup(opts) end,
 	-- },
+
+	{
+		"Exafunction/codeium.vim",
+		cmd = "Codeium",
+		event = "InsertEnter",
+		config = function()
+			vim.g.codeium_no_map_tab = true
+			require("utils.mapper").map("i", "<A-Tab>", "codeium#Accept()", 7)
+		end,
+	},
 
 	--------------------------------------------------- File Explorer ---------------------------------------------------
 	{

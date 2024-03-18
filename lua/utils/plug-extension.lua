@@ -40,7 +40,8 @@ M.touch_plug_extension = function()
 		return
 	end
 
-	local status_ok = copy_file_content(vim.fn.stdpath("config") .. "/templates", new_file_path)
+	local status_ok =
+		copy_file_content(vim.fn.stdpath("config") .. "/templates/plug_autocmd.txt", new_file_path)
 	if status_ok then
 		require("utils.notify").info("Created file: " .. filename)
 	else
