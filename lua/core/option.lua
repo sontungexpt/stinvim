@@ -31,6 +31,7 @@ g.stinvim_root_markers = {
 	"Cargo.toml", -- rust
 	"stylua.toml", -- lua
 	"lazy-lock.json", -- nvim config
+	"build.zig", -- zig
 	"gradlew", -- java
 	"mvnw", -- java
 }
