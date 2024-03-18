@@ -10,6 +10,7 @@ M.find_root = function()
 		".git",
 		"package.json", -- npm
 		"Cargo.toml", -- rust
+		"build.zig", -- zig
 		"stylua.toml", -- lua
 		"lazy-lock.json", -- nvim config
 		"gradlew", -- java
@@ -64,11 +65,11 @@ end
 
 --- Finds the items in the source table that are not present in the target table.
 ---
---- @param source table The source table to find unique items
---- @param target table The target table to compare with source table
+--- @param source table The source table to find unique items that are not in target table
+--- @param target table The target table to compare with the source table
 --- @return table The unique items in source table that are not in target table
-M.find_unique_items = function(source, target)
-	if next(source) == nil then return source end
+M.find_unique_array_items = function(source, target)
+	if next(source) == nil then return target end
 
 	local founds = {}
 	local unique_items = {}
@@ -133,22 +134,53 @@ M.load_and_exec = function(module_name, cb)
 	end
 end
 
---- Closes all buffers matching the specified filetypes or buffer types.
+--- Close buffer if it matches the specified condition.
 ---
---- @param filetypes string|table The filetypes of buffers to close, can be a string or table of filetypes.
---- @param buftypes string|table The buffer types of buffers to close, can be a string or table of buffer types.
-M.close_buffer = function(filetypes, buftypes)
+--- @param bufnr number The buffer number.
+--- @param matches string|table The filetypes or buftypes to match.
+--- @param condition_name string Can be "filetype" or "buftype".
+M.close_buffer_matching = function(bufnr, matches, condition_name)
+	local buffer_condition = api.nvim_buf_get_option(bufnr, condition_name)
+	if type(matches) == "string" and buffer_condition == matches then
+		api.nvim_buf_delete(bufnr, { force = true })
+	elseif type(matches) == "table" then
+		for _, ft in ipairs(matches) do
+			if buffer_condition == ft then
+				api.nvim_buf_delete(bufnr, { force = true })
+				break
+			end
+		end
+	end
+end
+
+--- Close all buffers matching the specified filetypes or buffer types.
+---
+--- @param matches string|table The filetypes or buffer types to close.
+--- @param condition_name string Can be "filetype" or "buftype".
+M.close_buffers_matching = function(matches, condition_name)
 	vim.schedule(function()
 		for _, buf in ipairs(api.nvim_list_bufs()) do
-			local filetype = api.nvim_buf_get_option(buf, "filetype")
-			local buftype = api.nvim_buf_get_option(buf, "buftype")
-			if
-				(type(filetypes) == "string" and filetype == filetypes)
-				or (type(buftypes) == "string" and buftype == buftypes)
-				or (type(filetypes) == "table" and vim.tbl_contains(filetypes, filetype))
-				or (type(buftypes) == "table" and vim.tbl_contains(buftypes, buftype))
-			then
-				api.nvim_buf_delete(buf, { force = true })
+			M.close_buffer_matching(buf, matches, condition_name)
+		end
+	end)
+end
+
+--- Close buffers specified by buffer numbers or filetypes/buftypes.
+---
+--- @param matches number|table The buffer numbers or table with filetypes/buftypes.
+M.close_buffers = function(matches)
+	vim.schedule(function()
+		if type(matches) == "number" then
+			api.nvim_buf_delete(matches, { force = true })
+		elseif type(matches) == "table" then
+			for _, buf in ipairs(matches) do
+				if type(buf) == "number" and api.nvim_buf_is_valid(buf) then
+					api.nvim_buf_delete(buf, { force = true })
+				end
+			end
+			for _, buf in ipairs(api.nvim_list_bufs()) do
+				M.close_buffer_matching(buf, matches, "filetype")
+				M.close_buffer_matching(buf, matches, "buftype")
 			end
 		end
 	end)

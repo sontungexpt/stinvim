@@ -12,19 +12,19 @@ M.lazy = function(install_path)
 	--------- lazy.nvim ---------------
 	echo("  Installing lazy.nvim and plugins ...")
 
-	api.nvim_create_autocmd("User", {
-		once = true,
-		pattern = "LazyDone",
-		callback = function()
-			echo("󰏔 Plugins installed successfully!")
-			require("utils").close_buffer("lazy")
-		end,
-	})
-
 	local repo = "https://github.com/folke/lazy.nvim.git"
 	fn.jobstart({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, {
 		on_exit = function(_, code)
 			if code == 0 then
+				api.nvim_create_autocmd("User", {
+					once = true,
+					pattern = "LazyDone",
+					callback = function()
+						echo("󰏔 Plugins installed successfully!")
+						require("utils").close_buffers_matching("lazy", "filetype")
+					end,
+				})
+
 				echo(" lazy.nvim installed successfully!")
 				M.boot(install_path)
 			else
