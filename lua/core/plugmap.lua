@@ -4,7 +4,8 @@ local M = {}
 
 vim.schedule(function()
 	local map = require("utils.mapper").map
-	local load_and_exec = require("utils").load_and_exec
+	local utils = require("utils")
+	local load_and_exec = utils.load_and_exec
 
 	------------------------------ url-open ------------------------------
 	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })

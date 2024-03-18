@@ -8,8 +8,8 @@ local OPTIONS = {
 	{ noremap = false, silent = true },
 	{ noremap = true, silent = false },
 	{ noremap = false, silent = false },
-	{ noremap = true, silent = true, expr = true, replace_keycodes = true },
 	{ noremap = true, silent = true, nowait = false },
+	{ noremap = true, silent = true, expr = true, replace_keycodes = true },
 	{ noremap = true, silent = true, expr = true, replace_keycodes = true, nowait = true },
 }
 
