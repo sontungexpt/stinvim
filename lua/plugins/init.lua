@@ -277,7 +277,9 @@ local plugins = {
 		event = "InsertEnter",
 		config = function()
 			vim.g.codeium_no_map_tab = true
-			require("utils.mapper").map("i", "<A-Tab>", "codeium#Accept()", 7)
+			local map = require("utils.mapper").map
+			map("i", "<M-Tab>", "codeium#Accept()", 7)
+			map("i", "<M-CR>", "codeium#Chat()", 7)
 		end,
 	},
 

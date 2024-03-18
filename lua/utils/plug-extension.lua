@@ -19,15 +19,15 @@ local copy_file_content = function(source, target)
 	end
 end
 
-M.touch_plug_extension = function()
-	local filename = fn.input("Enter the filename: ", "", "file")
+M.touch_plug_extension = function(filename)
+	if type(filename) ~= "string" then filename = fn.input("Enter the filename: ", "", "file") end
 
 	if filename == "" then
 		require("utils.notify").warn("No filename given")
 		return
+	elseif not filename:match("%.lua$") then
+		filename = fn.fnamemodify(filename, ":r") .. ".lua"
 	end
-
-	if not filename:match("%.lua$") then filename = fn.fnamemodify(filename, ":r") .. ".lua" end
 
 	local new_file_path = (
 		vim.g.stinvim_plugin_extension_dir or vim.fn.stdpath("config") .. "/lua/plugins/extensions"

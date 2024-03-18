@@ -1,4 +1,6 @@
-local M = {}
+local M = {
+	enabled = true,
+}
 
 local is_authenticated = function() return vim.fn.isdirectory(vim.fn.expand("$HOME") .. "/.codeium") == 1 end
 
