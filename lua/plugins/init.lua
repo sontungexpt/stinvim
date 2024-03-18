@@ -217,11 +217,13 @@ local plugins = {
 	},
 
 	{
-		"https://gitlab.com/itaranto/plantuml.nvim",
-		dependencies = {
-			"aklt/plantuml-syntax",
-		},
+		"aklt/plantuml-syntax",
 		ft = "plantuml",
+		event = "BufEnter *.wsd,*.pu,*.puml,*.plantuml",
+	},
+
+	{
+		"https://gitlab.com/itaranto/plantuml.nvim",
 		event = "BufWritePre *.wsd,*.pu,*.puml,*.plantuml",
 		cmd = "PlantUml",
 		opts = {
