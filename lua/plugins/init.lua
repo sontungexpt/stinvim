@@ -220,13 +220,26 @@ local plugins = {
 		end,
 	},
 
+	-- {
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	cmd = "Copilot",
+	-- 	event = "InsertEnter",
+	-- 	opts = function() return require("plugins.configs.copilot") end,
+	-- 	config = function(_, opts) require("copilot").setup(opts) end,
+	-- },
+
 	{
-		"zbirenbaum/copilot.lua",
-		cmd = "Copilot",
+		"Exafunction/codeium.vim",
+		cmd = "Codeium",
 		event = "InsertEnter",
-		opts = function() return require("plugins.configs.copilot") end,
-		config = function(_, opts) require("copilot").setup(opts) end,
+		config = function()
+			vim.g.codeium_no_map_tab = true
+			local map = require("utils.mapper").map
+			map("i", "<M-Tab>", "codeium#Accept()", 7)
+			map("i", "<M-CR>", "codeium#Chat()", 7)
+		end,
 	},
+
 	--------------------------------------------------- File Explorer ---------------------------------------------------
 	{
 		"nvim-tree/nvim-tree.lua",
