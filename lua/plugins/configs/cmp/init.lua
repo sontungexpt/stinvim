@@ -4,10 +4,7 @@ if not cmp_status_ok then return end
 local snip_status_ok, luasnip = pcall(require, "luasnip")
 if not snip_status_ok then return end
 
-local check_backspace = function()
-	local col = vim.fn.col(".") - 1
-	return col == 0 or vim.fn.getline("."):sub(col, col):match("%s")
-end
+local api, fn = vim.api, vim.fn
 
 cmp.setup {
 	snippet = {
@@ -31,7 +28,7 @@ cmp.setup {
 	formatting = {
 		fields = { "kind", "abbr", "menu" },
 		format = function(entry, vim_item)
-			vim_item.kind = string.format("%s", require("ui.icons.lspkind")[vim_item.kind])
+			vim_item.kind = require("ui.icons.lspkind")[vim_item.kind]
 			vim_item.menu = ({
 				nvim_lsp = "λ ",
 				luasnip = " ",
@@ -64,12 +61,7 @@ cmp.setup {
 			if cmp.visible() then
 				cmp.select_next_item()
 			elseif luasnip.expand_or_jumpable() then
-				vim.fn.feedkeys(
-					vim.api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true),
-					""
-				)
-			elseif check_backspace() then
-				fallback()
+				fn.feedkeys(api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
 			else
 				fallback()
 			end
@@ -78,7 +70,7 @@ cmp.setup {
 			if cmp.visible() then
 				cmp.select_prev_item()
 			elseif luasnip.jumpable(-1) then
-				vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
+				fn.feedkeys(api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
 			else
 				fallback()
 			end
