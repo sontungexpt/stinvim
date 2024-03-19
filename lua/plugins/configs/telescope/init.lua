@@ -5,7 +5,7 @@ local sorters, previewers, actions =
 
 local options = {
 	extensions_list = {
-		"media_files",
+		-- "media_files",
 		"fzy_native",
 		-- "projects",
 		-- "zoxide",
