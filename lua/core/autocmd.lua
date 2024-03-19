@@ -1,4 +1,4 @@
-local api, fn = vim.api, vim.fn
+local api = vim.api
 local cmd, autocmd = api.nvim_command, api.nvim_create_autocmd
 
 local group = api.nvim_create_augroup("STINVIM_CORE_AUTOCMD", { clear = true })
@@ -37,7 +37,7 @@ autocmd("ModeChanged", {
 	desc = "Move to relative line number when in visual mode",
 })
 
-autocmd({ "BufReadPre" }, {
+autocmd("BufReadPost", {
 	group = group,
 	pattern = "*.env",
 	callback = function(args) vim.diagnostic.disable(args.buf) end,
@@ -121,7 +121,5 @@ autocmd("BufWritePre", {
 autocmd("TermLeave", {
 	group = group,
 	desc = "Refresh nvim-tree when terminal is closed",
-	callback = function()
-		if package.loaded["nvim-tree"] then cmd("NvimTreeRefresh") end
-	end,
+	command = "lua if package.loaded['nvim-tree'] then vim.api.nvim_command('NvimTreeRefresh') end",
 })
