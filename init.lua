@@ -9,7 +9,6 @@ require("core.plugmap")
 
 -- user module
 require("user.autocmd")
-require("user.autofiletype")
 
 -- Install lazy neovim if not installed
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
