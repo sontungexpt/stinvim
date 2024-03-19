@@ -123,14 +123,14 @@ end
 
 --- Attempts to load a module and calls a provided callback function with the loaded module if successful.
 ---
---- @param module_name string The name of the module to load.
+--- @param name string The name of the module to load.
 --- @param cb function A function to be executed with the loaded module as an argument.
-M.load_and_exec = function(module_name, cb)
-	local status_ok, module = pcall(require, module_name)
+M.load_mod = function(name, cb)
+	local status_ok, module = pcall(require, name)
 	if status_ok then
 		cb(module)
 	else
-		require("utils.notify").error("Module " .. module_name .. " not found")
+		require("utils.notify").error("Module " .. name .. " not found")
 	end
 end
 
