@@ -138,14 +138,15 @@ end
 ---
 --- @param bufnr number The buffer number.
 --- @param matches string|table The filetypes or buftypes to match.
---- @param condition_name string Can be "filetype" or "buftype".
+--- @param condition_name string Can be "filetype" or "buftype" (default: "filetype")
 M.close_buffer_matching = function(bufnr, matches, condition_name)
-	local buffer_condition = api.nvim_buf_get_option(bufnr, condition_name)
+	if not api.nvim_buf_is_valid(bufnr) then return end
+	local buffer_condition = api.nvim_buf_get_option(bufnr, condition_name or "filetype")
 	if type(matches) == "string" and buffer_condition == matches then
 		api.nvim_buf_delete(bufnr, { force = true })
 	elseif type(matches) == "table" then
-		for _, ft in ipairs(matches) do
-			if buffer_condition == ft then
+		for _, match in ipairs(matches) do
+			if buffer_condition == match then
 				api.nvim_buf_delete(bufnr, { force = true })
 				break
 			end
@@ -170,7 +171,7 @@ end
 --- @param matches number|table The buffer numbers or table with filetypes/buftypes.
 M.close_buffers = function(matches)
 	vim.schedule(function()
-		if type(matches) == "number" then
+		if type(matches) == "number" and api.nvim_buf_is_valid(matches) then
 			api.nvim_buf_delete(matches, { force = true })
 		elseif type(matches) == "table" then
 			for _, buf in ipairs(matches) do
