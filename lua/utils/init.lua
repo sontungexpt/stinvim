@@ -134,23 +134,30 @@ M.load_and_exec = function(module_name, cb)
 	end
 end
 
---- Close buffer if it matches the specified condition.
+--- Close a buffer matching the specified filetypes or buffer types.
+--- If matches is not a string or table, the buffer with id bufnr will be closed.
 ---
---- @param bufnr number The buffer number.
---- @param matches string|table The filetypes or buftypes to match.
---- @param condition_name string Can be "filetype" or "buftype" (default: "filetype")
+--- @param bufnr number The buffer number to close.
+--- @param matches string|table|nil The filetypes or buffer types to close.
+--- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
-	if not api.nvim_buf_is_valid(bufnr) then return end
-	local buffer_condition = api.nvim_buf_get_option(bufnr, condition_name or "filetype")
-	if type(matches) == "string" and buffer_condition == matches then
+	assert(type(bufnr) == "number", "bufnr must be a number")
+	if api.nvim_buf_is_valid(bufnr) then return end
+	if
+		type(matches) == "string"
+		and api.nvim_buf_get_option(bufnr, condition_name or "filetype") == matches
+	then
 		api.nvim_buf_delete(bufnr, { force = true })
 	elseif type(matches) == "table" then
+		local buffer_condition = api.nvim_buf_get_option(bufnr, condition_name or "filetype")
 		for _, match in ipairs(matches) do
 			if buffer_condition == match then
 				api.nvim_buf_delete(bufnr, { force = true })
 				break
 			end
 		end
+	else
+		api.nvim_buf_delete(bufnr, { force = true })
 	end
 end
 
