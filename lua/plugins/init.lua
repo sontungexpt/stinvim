@@ -230,13 +230,13 @@ local plugins = {
 
 	{
 		"Exafunction/codeium.vim",
-		cmd = "Codeium",
+		keys = "<A-CR>",
 		event = "InsertEnter",
 		config = function()
 			vim.g.codeium_no_map_tab = true
 			local map = require("utils.mapper").map
-			map("i", "<M-Tab>", "codeium#Accept()", 7)
-			map("i", "<M-CR>", "codeium#Chat()", 7)
+			map("i", "<A-Tab>", "codeium#Accept()", 7)
+			map({ "n", "i" }, "<A-CR>", "codeium#Chat()", 7)
 		end,
 	},
 
