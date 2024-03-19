@@ -31,10 +31,9 @@ local get_installed_packages = function()
 end
 
 local sync_packages = function()
-	local utils = require("utils")
-
-	if utils.is_plug_installed("mason", "/") then
-		schedule(function()
+	schedule(function()
+		local utils = require("utils")
+		if utils.is_plug_installed("mason", "/") then
 			local installed_packages = get_installed_packages()
 			local ensured_packages = get_ensured_packages()
 
@@ -42,14 +41,14 @@ local sync_packages = function()
 			local uninstall_trigger = false
 
 			if next(packages_to_remove) then
-				api.nvim_command("MasonUninstall " .. table.concat(packages_to_remove, " "))
+				pcall(api.nvim_command, "MasonUninstall " .. table.concat(packages_to_remove, " "))
 				uninstall_trigger = true
 			end
 
 			schedule(function()
 				local packages_to_install = utils.find_unique_array_items(ensured_packages, installed_packages)
 				if next(packages_to_install) then
-					api.nvim_command("MasonInstall " .. table.concat(packages_to_install, " "))
+					pcall(api.nvim_command, "MasonInstall " .. table.concat(packages_to_install, " "))
 
 					local count = #packages_to_install
 					require("mason-registry"):on("package:install:success", function(pkg)
@@ -67,9 +66,9 @@ local sync_packages = function()
 					utils.close_buffers_matching("mason", "filetype")
 					require("utils.notify").info("Mason: Removing unused packages successfully")
 				end
-			end, 0)
-		end, 0)
-	end
+			end, 100)
+		end
+	end, 100)
 end
 
 M.extend_command = function()
