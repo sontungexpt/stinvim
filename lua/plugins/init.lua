@@ -52,7 +52,7 @@ local plugins = {
 			"TSModuleInfo",
 			"TSInstallFromGrammar",
 		},
-		build = function() require("nvim-treesitter.install").update { with_sync = true }() end,
+		build = ":TSUpdate",
 		opts = function() return require("plugins.configs.nvim-treesitter") end,
 		config = function(_, opts) require("nvim-treesitter.configs").setup(opts) end,
 	},

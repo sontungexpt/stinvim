@@ -1,7 +1,4 @@
 [
-  "jdtls",
-  "google-java-format",
-  "java-debug-adapter",
   "lua-language-server",
   "stylua",
   "bash-language-server",
@@ -22,5 +19,8 @@
   "typescript-language-server",
   "emmet-ls",
   "json-lsp",
-  "tailwindcss-language-server"
+  "tailwindcss-language-server",
+  "google-java-format",
+  "java-debug-adapter",
+  "jdtls"
 ]

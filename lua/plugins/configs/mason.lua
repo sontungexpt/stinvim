@@ -4,11 +4,6 @@ local options = {
 
 	-- I recommend you create .masonrc.json file instead using this key to make the command MasonSyncPackages working
 	ensure_installed = {
-		-- java
-		"jdtls",
-		"google-java-format",
-		"java-debug-adapter",
-
 		-- lua
 		"lua-language-server",
 		"stylua",
@@ -44,6 +39,11 @@ local options = {
 		"emmet-ls",
 		"json-lsp",
 		"tailwindcss-language-server",
+
+		-- java
+		"jdtls",
+		"google-java-format",
+		"java-debug-adapter",
 	},
 	ui = {
 		check_outdated_packages_on_open = true,
