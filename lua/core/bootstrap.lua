@@ -70,8 +70,8 @@ M.boot = function(install_path)
 				vim.schedule(function()
 					api.nvim_del_augroup_by_name("StinvimLazyEvents")
 					exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
-					vim.schedule(function() exec_autocmds("Filetype", { buffer = args.buf }) end)
-				end, 0)
+					vim.schedule(function() exec_autocmds("Filetype", { buffer = args.buf }) end, 100)
+				end, 100)
 			end
 		end,
 	})
@@ -80,7 +80,7 @@ M.boot = function(install_path)
 		group = api.nvim_create_augroup("StinvimGitLazyLoad", { clear = true }),
 		callback = function(args)
 			if args.file ~= "" and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile" then
-				vim.defer_fn(function()
+				vim.schedule(function()
 					fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
 						on_exit = function(_, code)
 							if code == 0 then
@@ -89,7 +89,7 @@ M.boot = function(install_path)
 							end
 						end,
 					})
-				end, 80)
+				end, 100)
 			end
 		end,
 	})
