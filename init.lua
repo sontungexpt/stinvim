@@ -2,7 +2,6 @@ local require = require
 
 -- core module
 require("core.option")
-require("core.autofiletype")
 require("core.autocmd")
 require("core.nvimmap")
 require("core.plugmap")
