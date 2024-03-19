@@ -134,14 +134,12 @@ M.load_mod = function(name, cb)
 	end
 end
 
---- Close a buffer matching the specified filetypes or buffer types.
---- If matches is not a string or table, the buffer with id bufnr will be closed.
+--- Close a buffer matching the specified filetypes or buftypes.
 ---
 --- @param bufnr number The buffer number to close.
---- @param matches string|table|nil The filetypes or buffer types to close.
+--- @param matches string|table The filetypes or buffer types to close.
 --- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
-	assert(type(bufnr) == "number", "bufnr must be a number")
 	if not api.nvim_buf_is_valid(bufnr) then return end
 	if
 		type(matches) == "string"
@@ -153,11 +151,9 @@ M.close_buffer_matching = function(bufnr, matches, condition_name)
 		for _, match in ipairs(matches) do
 			if buffer_condition == match then
 				api.nvim_buf_delete(bufnr, { force = true })
-				break
+				return
 			end
 		end
-	else
-		api.nvim_buf_delete(bufnr, { force = true })
 	end
 end
 
