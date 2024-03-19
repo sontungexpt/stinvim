@@ -19,18 +19,24 @@ vim.schedule(function()
 
 	------------------------------ Telescope ------------------------------
 	map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-	map("n", "<leader>fm", "<cmd>Telescope media_files<cr>", { desc = "Find media files" })
 	map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
 	map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
 	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
+	map("n", "<leader>fu", "<cmd>Telescope grep_string<cr>", { desc = "Find word under cursor" })
 	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
-	map("n", "<leader>fp", "<cmd>Telescope projects<cr>", { desc = "Find recent projects" })
+	map(
+		"n",
+		"<leader>fd",
+		"<cmd>Telescope diagnostics<cr>",
+		{ desc = "Find diagnostics in the current buffer" }
+	)
+	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Find command history" })
 
 	------------------------------ Git conflict ------------------------------
-	map("n", "<Leader>fc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
+	map("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
 
 	------------------------------ Todo-comments ------------------------------
-	map("n", "<Leader>ft", "<cmd>TodoQuickFix<cr>", { desc = "Todo quickfix" })
+	map("n", "<Leader>qft", "<cmd>TodoQuickFix<cr>", { desc = "Todo quickfix" })
 
 	map("n", "[t", function()
 		load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
