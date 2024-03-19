@@ -142,7 +142,7 @@ end
 --- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
 	assert(type(bufnr) == "number", "bufnr must be a number")
-	if api.nvim_buf_is_valid(bufnr) then return end
+	if not api.nvim_buf_is_valid(bufnr) then return end
 	if
 		type(matches) == "string"
 		and api.nvim_buf_get_option(bufnr, condition_name or "filetype") == matches
