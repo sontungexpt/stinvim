@@ -306,6 +306,7 @@ local plugins = {
 			"nvim-lua/plenary.nvim",
 
 			-- extensions
+			-- "dharmx/telescope-media.nvim",
 			"nvim-telescope/telescope-media-files.nvim",
 			"nvim-telescope/telescope-fzy-native.nvim",
 		},
