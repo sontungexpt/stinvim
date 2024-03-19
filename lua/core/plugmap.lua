@@ -4,8 +4,7 @@ local M = {}
 
 vim.schedule(function()
 	local map = require("utils.mapper").map
-	local utils = require("utils")
-	local load_and_exec = utils.load_and_exec
+	local load_mod = require("utils").load_mod
 
 	------------------------------ url-open ------------------------------
 	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
@@ -34,22 +33,22 @@ vim.schedule(function()
 	map("n", "<Leader>ft", "<cmd>TodoQuickFix<cr>", { desc = "Todo quickfix" })
 
 	map("n", "[t", function()
-		load_and_exec("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
+		load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
 	end, { desc = "Previous todo comment" })
 
 	map("n", "]t", function()
-		load_and_exec("todo-comments", function(todo_comments) todo_comments.jump_next() end)
+		load_mod("todo-comments", function(todo_comments) todo_comments.jump_next() end)
 	end, { desc = "Next todo comment" })
 
 	map("n", "[T", function()
-		load_and_exec(
+		load_mod(
 			"todo-comments",
 			function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end
 		)
 	end, { desc = "Previous error/ warning comment" })
 
 	map("n", "]T", function()
-		load_and_exec(
+		load_mod(
 			"todo-comments",
 			function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end
 		)
@@ -78,55 +77,55 @@ vim.schedule(function()
 	local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
 
 	map("n", "<leader>du", function()
-		load_and_exec("dapui", function(dapui) dapui.toggle() end)
+		load_mod("dapui", function(dapui) dapui.toggle() end)
 	end, { desc = "Toggle DAP UI" })
 	map("n", "<leader>db", function()
-		load_and_exec("dap", function(dap) dap.toggle_breakpoint() end)
+		load_mod("dap", function(dap) dap.toggle_breakpoint() end)
 	end, { desc = "Toggle breakpoint" })
 	map("n", "<leader>di", function()
-		load_and_exec("dap", function(dap) dap.step_into() end)
+		load_mod("dap", function(dap) dap.step_into() end)
 	end, { desc = "Step into" })
 	map("n", "<leader>do", function()
-		load_and_exec("dap", function(dap) dap.step_over() end)
+		load_mod("dap", function(dap) dap.step_over() end)
 	end, { desc = "Step over" })
 	map("n", "<leader>dc", continue_debugging, { desc = "Continue or start debugging" })
 	map("n", "<leader>dd", function()
-		load_and_exec("dap", function(dap)
+		load_mod("dap", function(dap)
 			dap.disconnect()
 			dap.close()
 		end)
 	end, { desc = "Disconnect from debugger" })
 	map("n", "<F11>", function()
-		load_and_exec("dap", function(dap) dap.step_into() end)
+		load_mod("dap", function(dap) dap.step_into() end)
 	end, { desc = "Step into" })
 	map("n", "<F12>", function()
-		load_and_exec("dap", function(dap) dap.step_over() end)
+		load_mod("dap", function(dap) dap.step_over() end)
 	end, { desc = "Step over" })
 	map("n", "<F5>", continue_debugging, { desc = "Continue or start debugging" })
 	map("n", "<F4>", function()
-		load_and_exec("dap", function(dap)
+		load_mod("dap", function(dap)
 			dap.disconnect()
 			dap.close()
 		end)
 	end, { desc = "Disconnect from debugger" })
 	map("n", "<Leader>dr", function()
-		load_and_exec("dap", function(dap) dap.repl.open() end)
+		load_mod("dap", function(dap) dap.repl.open() end)
 	end, { desc = "Open REPL" })
 	map("n", "<Leader>dl", function()
-		load_and_exec("dap", function(dap) dap.run_last() end)
+		load_mod("dap", function(dap) dap.run_last() end)
 	end, { desc = "Run last" })
 
 	map({ "n", "v" }, "<Leader>dh", function()
-		load_and_exec("dap.ui.widgets", function(widgets) widgets.hover() end)
+		load_mod("dap.ui.widgets", function(widgets) widgets.hover() end)
 	end, { desc = "Hover widgets" })
 	map({ "n", "v" }, "<Leader>dp", function()
-		load_and_exec("dap.ui.widgets", function(widgets) widgets.preview() end)
+		load_mod("dap.ui.widgets", function(widgets) widgets.preview() end)
 	end, { desc = "Preview widgets" })
 	map("n", "<Leader>df", function()
-		load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
+		load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
 	end, { desc = "Frames" })
 	map("n", "<Leader>ds", function()
-		load_and_exec("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
+		load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
 	end, { desc = "Scopes" })
 end)
 
@@ -136,7 +135,7 @@ autocmd("LspAttach", {
 	once = true,
 	callback = function()
 		local map = require("utils.mapper").map
-		local load_and_exec = require("utils").load_and_exec
+		local load_mod = require("utils").load_mod
 
 		map("n", "gf", "<cmd>Lspsaga finder<CR>")
 
@@ -170,13 +169,13 @@ autocmd("LspAttach", {
 		map("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>")
 
 		map("n", "[e", function()
-			load_and_exec(
+			load_mod(
 				"lspsaga.diagnostic",
 				function(diagnostic) diagnostic:goto_prev { severity = vim.diagnostic.severity.ERROR } end
 			)
 		end)
 		map("n", "]e", function()
-			load_and_exec(
+			load_mod(
 				"lspsaga.diagnostic",
 				function(diagnostic) diagnostic:goto_next { severity = vim.diagnostic.severity.ERROR } end
 			)
@@ -210,7 +209,8 @@ end
 
 M.gitsigns = function(bufnr)
 	local map = require("utils.mapper").map
-	local gs = package.loaded.gitsigns
+	local gs = require("gitsigns")
+
 	local function map1(mode, key, map_to, opts)
 		opts.buffer = bufnr
 		map(mode, key, map_to, opts)
