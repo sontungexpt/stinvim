@@ -1,10 +1,11 @@
 -- local no_actions = function(prompt_bufnr) print("No actions available!") end
 
-local sorters, previewers, actions =
-	require("telescope.sorters"), require("telescope.previewers"), require("telescope.actions")
+local actions = require("telescope.actions")
+-- local sorters, previewers, actions =
+-- 	require("telescope.sorters"), require("telescope.previewers"), require("telescope.actions")
 
 local options = {
-	extensions_list = {
+	extension_list = {
 		-- "media_files",
 		"fzy_native",
 		-- "projects",
@@ -12,26 +13,6 @@ local options = {
 		-- "neoclip",
 	},
 	defaults = {
-		find_command = {
-			"rg",
-			"-L",
-			"--color=never",
-			"--no-heading",
-			"--with-filename",
-			"--line-number",
-			"--column",
-			"--smart-case",
-		},
-		vimgrep_arguments = {
-			"rg",
-			"-L",
-			"--color=never",
-			"--no-heading",
-			"--with-filename",
-			"--line-number",
-			"--column",
-			"--smart-case",
-		},
 		layout_config = {
 			horizontal = {
 				prompt_position = "top",
@@ -47,38 +28,51 @@ local options = {
 		},
 		prompt_prefix = "  ",
 		selection_caret = "  ",
-		entry_prefix = "  ",
-		initial_mode = "insert",
-		selection_strategy = "reset",
+		-- entry_prefix = "  ", -- default
+		-- initial_mode = "insert", -- default
+		-- selection_strategy = "reset", -- default
+		-- layout_strategy = "horizontal", -- default
 		sorting_strategy = "ascending",
-		layout_strategy = "horizontal",
 		mappings = {
 			i = {
-				["<C-p>"] = actions.close, -- support to toggle telescope
 				["<esc>"] = actions.close,
+				["<C-p>"] = actions.close, -- support to toggle telescope
 				["<C-q>"] = actions.close,
 				["<A-q>"] = actions.close,
+
 				["<C-j>"] = actions.move_selection_next,
 				["<C-k>"] = actions.move_selection_previous,
+
 				["<Tab>"] = actions.move_selection_next,
 				["<S-Tab>"] = actions.move_selection_previous,
+
 				["<C-e>"] = actions.results_scrolling_up,
 				["<C-y>"] = actions.results_scrolling_down,
+
 				["<C-u>"] = actions.preview_scrolling_up,
 				["<C-d>"] = actions.preview_scrolling_down,
+
+				["<M-v>"] = actions.select_vertical,
+				["<M-s>"] = actions.select_horizontal,
 			},
 			n = {
-				["<C-p>"] = actions.close, -- support to toggle telescope
 				["q"] = actions.close,
 				["<esc>"] = actions.close,
+				["<C-p>"] = actions.close, -- support to toggle telescope
 				["<C-q>"] = actions.close,
 				["<A-q>"] = actions.close,
-				["<C-e>"] = actions.results_scrolling_up,
-				["<C-y>"] = actions.results_scrolling_down,
+
 				["<C-u>"] = actions.preview_scrolling_up,
 				["<C-d>"] = actions.preview_scrolling_down,
+
+				["<C-e>"] = actions.results_scrolling_up,
+				["<C-y>"] = actions.results_scrolling_down,
+
 				["<Tab>"] = actions.move_selection_next,
 				["<S-Tab>"] = actions.move_selection_previous,
+
+				["<M-v>"] = actions.select_vertical,
+				["<M-s>"] = actions.select_horizontal,
 			},
 		},
 		file_ignore_patterns = {
@@ -93,18 +87,16 @@ local options = {
 			"^package%-lock%.json$",
 		},
 		path_display = { "smart" },
-		winblend = 0,
-		border = {},
+		-- border = true, -- default
+		-- color_devicons = true,
 		borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
-		color_devicons = true,
-		use_less = true,
-		set_env = { ["COLORTERM"] = "truecolor" }, -- default = nil,
-		file_sorter = sorters.get_fuzzy_file,
-		generic_sorter = sorters.get_generic_fuzzy_sorter,
-		file_previewer = previewers.vim_buffer_cat.new,
-		grep_previewer = previewers.vim_buffer_vimgrep.new,
-		qflist_previewer = previewers.vim_buffer_qflist.new,
-		buffer_previewer_maker = previewers.buffer_previewer_maker,
+		set_env = { COLORTERM = "truecolor" }, -- default = nil,
+		-- file_sorter = sorters.get_fuzzy_file,
+		-- generic_sorter = sorters.get_generic_fuzzy_sorter,
+		-- file_previewer = previewers.vim_buffer_cat.new,
+		-- grep_previewer = previewers.vim_buffer_vimgrep.new,
+		-- qflist_previewer = previewers.vim_buffer_qflist.new,
+		-- buffer_previewer_maker = previewers.buffer_previewer_maker,
 	},
 	pickers = {
 		planets = {
