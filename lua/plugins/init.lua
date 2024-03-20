@@ -313,7 +313,7 @@ local plugins = {
 		config = function(_, opts)
 			local telescope = require("telescope")
 			telescope.setup(opts)
-			for _, ext in ipairs(opts.extensions_list) do
+			for _, ext in ipairs(opts.extension_list) do
 				telescope.load_extension(ext)
 			end
 		end,
@@ -390,28 +390,6 @@ local plugins = {
 	{
 		"glepnir/lspsaga.nvim",
 		cmd = "Lspsaga",
-		keys = {
-			{
-				"[e",
-				function()
-					require("utils").load_and_exec(
-						"lspsaga.diagnostic",
-						function(diagnostic) diagnostic:goto_prev { severity = vim.diagnostic.severity.ERROR } end
-					)
-				end,
-				desc = "Lspsaga diagnostic goto prev error",
-			},
-			{
-				"]e",
-				function()
-					require("utils").load_and_exec(
-						"lspsaga.diagnostic",
-						function(diagnostic) diagnostic:goto_next { severity = vim.diagnostic.severity.ERROR } end
-					)
-				end,
-				desc = "Lspsaga diagnostic goto next error",
-			},
-		},
 		dependencies = {
 			"neovim/nvim-lspconfig",
 			"nvim-tree/nvim-web-devicons",

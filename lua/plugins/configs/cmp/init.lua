@@ -23,7 +23,7 @@ cmp.setup {
 	},
 	window = {
 		documentation = cmp.config.window.bordered(),
-		border = "single",
+		-- completion = cmp.config.window.bordered(),
 	},
 	formatting = {
 		fields = { "kind", "abbr", "menu" },
