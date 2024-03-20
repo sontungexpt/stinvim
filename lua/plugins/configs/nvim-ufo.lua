@@ -1,40 +1,44 @@
 local options = {
-	open_fold_hl_timeout = 100,
-	-- close_fold_kinds_for_ft = {
-	-- 	default = { "imports", "comment" },
-	-- 	json = { "array" },
-	-- 	c = { "comment", "region" },
-	-- },
+	-- open_fold_hl_timeout = 400,
+	close_fold_kinds_for_ft = {
+		default = { "imports", "comment" },
+		json = { "array" },
+		c = { "comment", "region" },
+	},
 	preview = {
 		win_config = {
 			border = "single",
-			winhighlight = "Normal:Folded",
+			winhighlight = "Normal:NormalFloat",
+			-- winhighlight = "Normal:Folded",
 			winblend = 0,
 		},
 		mappings = {
+			scrollE = "<C-E>",
+			scrollY = "<C-Y>",
 			scrollU = "<C-u>",
 			scrollD = "<C-d>",
-			jumpTop = "[",
-			jumpBot = "]",
+			jumpTop = "gg",
+			jumpBot = "G",
 		},
 	},
 	provider_selector = function(_, filetype, buftype)
-		local function handleFallbackException(bufnr, err, providerName)
-			if type(err) == "string" and err:match("UfoFallbackException") then
-				return require("ufo").getFolds(bufnr, providerName)
-			else
-				return require("promise").reject(err)
-			end
-		end
-
 		-- only use indent until a file is opened
-		return (filetype == "" or buftype == "nofile") and "indent"
-			or function(bufnr)
-				return require("ufo")
-					.getFolds(bufnr, "lsp")
-					:catch(function(err) return handleFallbackException(bufnr, err, "treesitter") end)
-					:catch(function(err) return handleFallbackException(bufnr, err, "indent") end)
+		if filetype == "" or buftype == "nofile" then return "indent" end
+
+		return function(bufnr)
+			local ufo = require("ufo")
+			local function handleFallbackException(err, providerName)
+				if type(err) == "string" and err:match("UfoFallbackException") then
+					return ufo.getFolds(bufnr, providerName)
+				else
+					return require("promise").reject(err)
+				end
 			end
+			return ufo
+				.getFolds(bufnr, "lsp")
+				:catch(function(err) return handleFallbackException(err, "treesitter") end)
+				:catch(function(err) return handleFallbackException(err, "indent") end)
+		end
 	end,
 	fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate)
 		local suffix = ("  %d "):format(endLnum - lnum)
