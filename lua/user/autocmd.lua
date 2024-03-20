@@ -1,31 +1,34 @@
-local api, fn = vim.api, vim.fn
+local api, fn, env = vim.api, vim.fn, vim.env
 local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 
-autocmd({ "VimEnter" }, {
-	group = augroup("AutocdConfigFolderRoot", { clear = true }),
+local group = augroup("UserAutocmd", { clear = true })
+
+autocmd("VimEnter", {
+	group = group,
 	pattern = fn.stdpath("config") .. "/**",
 	command = "cd " .. fn.stdpath("config"),
 	desc = "Auto change directory to config folder - support for nvimconfig alias",
 })
 
-autocmd({ "BufWritePost" }, {
-	group = augroup("ScriptBuilder", { clear = true }),
+autocmd("BufWritePost", {
+	group = group,
 	desc = "Compile scripts in ~/scripts/stilux/systems",
 	pattern = fn.expand("$HOME") .. "/scripts/stilux/systems/*",
-	callback = require("user.utils").compile_stilux_srcipt_file,
+	callback = function() require("user.utils").compile_stilux_srcipt_file() end,
 })
 
-autocmd({ "BufWritePost" }, {
-	group = augroup("Lf", { clear = true }),
-	pattern = fn.expand("$HOME") .. "/.config/lf/colors",
-	callback = function()
-		require("user.utils").compile_lf_colors()
-		vim.cmd("checktime")
-	end,
+autocmd("BufWritePost", {
+	group = group,
+	pattern = {
+		fn.expand("$HOME") .. "/.config/lf/colors",
+		env.LF_CONFIG_HOME and env.LF_CONFIG_HOME .. "/colors",
+		env.XDG_CONFIG_HOME and env.XDG_CONFIG_HOME .. "/lf/colors",
+	},
+	callback = function(args) require("user.utils").compile_lf_colors_file(args.file) end,
 })
 
 autocmd("FileType", {
-	group = augroup("OpenApiDoc", { clear = true }),
+	group = group,
 	pattern = "java",
 	callback = function(args)
 		api.nvim_create_user_command("OpenApiDoc", function()

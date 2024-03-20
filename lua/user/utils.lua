@@ -1,9 +1,9 @@
-local fn = vim.fn
+local fn, env = vim.fn, vim.env
 
 local M = {}
 
 M.is_terminal = function(terminal_name)
-	local term = vim.env.TERM or ""
+	local term = env.TERM or ""
 	return term:lower() == terminal_name
 end
 
@@ -69,44 +69,57 @@ M.compile_stilux_srcipt_file = function()
 	})
 end
 
-M.hex2rgb = function(hex)
-	hex = hex:gsub("#", "")
-	if hex:len() == 3 then
-		return (tonumber("0x" .. hex:sub(1, 1)) * 17),
-			(tonumber("0x" .. hex:sub(2, 2)) * 17),
-			(tonumber("0x" .. hex:sub(3, 3)) * 17)
-	else
-		return tonumber("0x" .. hex:sub(1, 2)),
-			tonumber("0x" .. hex:sub(3, 4)),
-			tonumber("0x" .. hex:sub(5, 6))
+M.hex2rgb = function(hex_color)
+	local tonumber = tonumber
+	if #hex_color == 4 then
+		local r = (tonumber(hex_color:sub(2, 2), 16) * 17) % 256
+		local g = (tonumber(hex_color:sub(3, 3), 16) * 17) % 256
+		local b = (tonumber(hex_color:sub(4, 4), 16) * 17) % 256
+		return r, g, b
 	end
+	local r = tonumber(hex_color:sub(2, 3), 16)
+	local g = tonumber(hex_color:sub(4, 5), 16)
+	local b = tonumber(hex_color:sub(6, 7), 16)
+	return r, g, b
 end
 
-M.ansi_color = function(hex)
-	local r, g, b = M.hex2rgb(hex)
-	return string.format("38;2;%s;%s;%s", r, g, b)
-end
-
-M.compile_lf_colors = function()
-	local colors_file = fn.expand("$HOME") .. "/.config/lf/colors"
-
-	local new_lines = {}
-
-	for line in io.lines(colors_file) do
-		local color = line:match("#%x%x%x%x%x%x") or line:match("#%x%x%x")
-		if color == nil then
-			new_lines[#new_lines + 1] = line
-		else
-			new_lines[#new_lines + 1] = line:gsub("#%x%x%x%x%x%x", M.ansi_color(color))
-		end
+M.compile_lf_colors_file = function(color_file)
+	local ansi_color = function(hex_color)
+		local r, g, b = M.hex2rgb(hex_color)
+		return string.format("38;2;%s;%s;%s", r, g, b)
 	end
 
-	local file = io.open(colors_file, "w")
-	local content = table.concat(new_lines, "\n")
-	if file then
-		file:write(content)
-		file:close()
-	end
+	-- get the variable from shell
+	color_file = color_file
+		or (env.LF_CONFIG_HOME and env.LF_CONFIG_HOME .. "/colors")
+		or (env.XDG_CONFIG_HOME and env.XDG_CONFIG_HOME .. "/lf/colors")
+		or fn.expand("$HOME") .. "/.config/lf/colors"
+
+	local uv = vim.uv or vim.loop
+	uv.fs_open(color_file, "r+", 438, function(err, fd)
+		if err then return end
+		---@diagnostic disable-next-line: redefined-local
+		uv.fs_fstat(fd, function(err, stat)
+			if err then return end
+			---@diagnostic disable-next-line: redefined-local
+			uv.fs_read(fd, stat.size, nil, function(err, data)
+				if err then return end
+				local new_content = data:gsub("#%x%x%x%x%x%x", ansi_color):gsub("#%x%x%x", ansi_color)
+				---@diagnostic disable-next-line: redefined-local
+				uv.fs_write(fd, new_content, 0, function(err, bytes)
+					if err then return end
+					---@diagnostic disable-next-line: redefined-local
+					uv.fs_close(fd, function(err)
+						if err then return end
+						vim.schedule(function()
+							vim.api.nvim_command("checktime")
+							require("utils.notify").info("Compiled lf colors file: " .. color_file)
+						end)
+					end)
+				end)
+			end)
+		end)
+	end)
 end
 
 return M
