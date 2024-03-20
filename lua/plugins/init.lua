@@ -458,6 +458,7 @@ local plugins = {
 		dependencies = {
 			{
 				"mfussenegger/nvim-dap",
+				"nvim-neotest/nvim-nio",
 				dependencies = {
 					{
 						"theHamsta/nvim-dap-virtual-text",
@@ -465,18 +466,6 @@ local plugins = {
 					},
 				},
 				config = function() require("plugins.configs.dap") end,
-			},
-		},
-		keys = {
-			{
-				"<leader>du",
-				function() require("dapui").toggle {} end,
-				desc = "Dap UI",
-			},
-			{
-				"<leader>db",
-				function() require("dap").toggle_breakpoint() end,
-				desc = "Dap Breakpoint",
 			},
 		},
 		config = function() require("plugins.configs.dap.dapui") end,
