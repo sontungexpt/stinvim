@@ -9,6 +9,29 @@ autocmd("VimEnter", {
 	desc = "Auto change directory to config folder - support for nvimconfig alias",
 })
 
+autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
+	group = group,
+	desc = "Switch ibus engine",
+	callback = function(args)
+		if env.TERM == "alacritty" then
+			local engines = {
+				VimEnter = "BambooUs",
+				FocusGained = "BambooUs",
+				VimLeave = "Bamboo",
+				FocusLost = "Bamboo",
+			}
+
+			fn.jobstart({ "ibus", "engine", engines[args.event] }, {
+				on_exit = function(_, code)
+					if code == 0 then
+						require("utils.notify").info("Switched ibus engine to " .. engines[args.event])
+					end
+				end,
+			})
+		end
+	end,
+})
+
 autocmd("BufWritePost", {
 	group = group,
 	desc = "Compile scripts in ~/scripts/stilux/systems",
