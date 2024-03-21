@@ -14,6 +14,7 @@ vim.schedule(function()
 
 	-- Delete empty lines without writing to registers
 	map("n", "dd", [[match(getline('.'), '^\s*$') != -1 ? '"_dd' : "dd"]], 7)
+	map("n", "dx", "x")
 
 	-- inspect colors
 	map("n", "<M-C>", "<cmd>Inspect<cr>")
