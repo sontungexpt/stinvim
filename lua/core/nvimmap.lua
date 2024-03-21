@@ -14,6 +14,7 @@ vim.schedule(function()
 
 	-- Delete empty lines without writing to registers
 	map("n", "dd", [[match(getline('.'), '^\s*$') != -1 ? '"_dd' : "dd"]], 7)
+	map("n", "dx", "x")
 
 	map("n", "x", [[col('.') == 1 && match(getline('.'), '^\s*$') != -1 ? '"_dd$' : '"_x']], 7)
 	map("n", "X", [[col('.') == 1 && match(getline('.'), '^\s*$') != -1 ? '"_dd$' : '"_X']], 7)
