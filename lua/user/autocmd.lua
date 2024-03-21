@@ -1,7 +1,6 @@
 local api, fn, env = vim.api, vim.fn, vim.env
-local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
-
-local group = augroup("UserAutocmd", { clear = true })
+local autocmd = api.nvim_create_autocmd
+local group = api.nvim_create_augroup("UserAutocmd", { clear = true })
 
 autocmd("VimEnter", {
 	group = group,
@@ -32,7 +31,7 @@ autocmd("FileType", {
 	pattern = "java",
 	callback = function(args)
 		api.nvim_create_user_command("OpenApiDoc", function()
-			fn.jobstart("xdg-open http://localhost:8080/swagger-ui/index.html", {
+			fn.jobstart({ "xdg-open", "http://localhost:8080/swagger-ui/index.html" }, {
 				detach = true,
 				on_exit = function(_, code, _)
 					if code ~= 0 then
