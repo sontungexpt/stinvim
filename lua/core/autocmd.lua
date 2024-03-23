@@ -108,7 +108,12 @@ autocmd({ "VimResized", "WinResized" }, {
 				vim.schedule(function()
 					for i = 1, num_of_wins - 1 do
 						local id = win_ids[i]
-						api.nvim_win_set_width(id, math.ceil(vim_width * api.nvim_win_get_var(id, "w_ratio")[false]))
+						if api.nvim_win_get_config(id).relative == "" then -- not a floating window
+							api.nvim_win_set_width(
+								id,
+								math.ceil(vim_width * api.nvim_win_get_var(id, "w_ratio")[false])
+							)
+						end
 					end
 				end, 0)
 			else
