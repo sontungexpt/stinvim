@@ -56,17 +56,18 @@ autocmd("VimEnter", {
 	end,
 })
 
--- Toggle search highlighting on insert mode
-autocmd({ "InsertEnter", "TermEnter" }, {
+autocmd({ "InsertEnter", "InsertLeave", "TermEnter", "TermLeave" }, {
 	group = group,
-	desc = "Set no search highlighting when entering insert mode, or terminal",
-	command = "set nohlsearch",
-})
-
-autocmd({ "InsertLeave", "TermLeave" }, {
-	group = group,
-	desc = "Set search highlighting when leaving insert mode, or terminal",
-	command = "set hlsearch",
+	desc = "Auto change search highlight color",
+	callback = function(args)
+		local maps = {
+			InsertEnter = "set nohlsearch",
+			InsertLeave = "set hlsearch",
+			TermEnter = "set nohlsearch",
+			TermLeave = "set hlsearch",
+		}
+		cmd(maps[args.event])
+	end,
 })
 
 -- https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
@@ -94,22 +95,42 @@ autocmd("FileType", {
 	command = "wincmd L",
 })
 
-autocmd("VimResized", {
+autocmd({ "VimResized", "WinResized" }, {
 	group = group,
-	desc = "Resize windows on VimResized",
-	command = "wincmd =",
+	desc = "Preserve window ratios on VimResized",
+	callback = function(args)
+		local win_ids = api.nvim_list_wins()
+		local num_of_wins = #win_ids
+
+		if num_of_wins > 1 then
+			local vim_width = api.nvim_get_option("columns")
+			if args.event == "VimResized" then
+				vim.schedule(function()
+					for i = 1, num_of_wins - 1 do
+						local id = win_ids[i]
+						api.nvim_win_set_width(id, math.ceil(vim_width * api.nvim_win_get_var(id, "w_ratio")[false]))
+					end
+				end, 0)
+			else
+				for i = 1, num_of_wins do
+					local id = win_ids[i]
+					api.nvim_win_set_var(id, "w_ratio", api.nvim_win_get_width(id) / vim_width)
+				end
+			end
+		end
+	end,
 })
 
-autocmd("WinLeave", {
+autocmd({ "WinLeave", "WinEnter" }, {
 	group = group,
-	desc = "Disable cursorline, cursorcolumn when leaving window",
-	command = "setlocal nocursorline nocursorcolumn",
-})
-
-autocmd("WinEnter", {
-	group = group,
-	desc = "Enable cursorline, cursorcolumn when entering window and buffer is listed in buffer list",
-	command = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
+	desc = "Highlight current line and column",
+	callback = function(args)
+		local maps = {
+			WinLeave = "setlocal nocursorline nocursorcolumn",
+			WinEnter = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
+		}
+		cmd(maps[args.event])
+	end,
 })
 
 autocmd("BufWritePre", {
