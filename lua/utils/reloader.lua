@@ -7,7 +7,6 @@ M.hot_reload = function(quiet)
 		"core.option",
 		"core.nvimmap",
 		"core.autocmd",
-		"core.autofiletype",
 		"core.plugmap",
 	}
 
@@ -26,7 +25,6 @@ M.hot_reload = function(quiet)
 		end
 	end
 
-	vim.api.nvim_exec_autocmds("User", { pattern = "KeymapLazyLoaded", modeline = false })
 	vim.api.nvim_exec_autocmds("ColorScheme", {})
 
 	if not quiet then -- if not quiet, then notify of result.
