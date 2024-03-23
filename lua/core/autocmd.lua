@@ -4,7 +4,6 @@ local cmd, autocmd = api.nvim_command, api.nvim_create_autocmd
 local group = api.nvim_create_augroup("STINVIM_CORE_AUTOCMD", { clear = true })
 
 autocmd({ "VimEnter", "VimLeave" }, {
-	pattern = "*",
 	group = group,
 	command = "runtime! plugin/rplugin.vim | silent! UpdateRemotePlugins",
 	desc = "Update remote plugins",
@@ -25,14 +24,18 @@ autocmd("FileType", {
 
 autocmd("BufWritePre", {
 	group = group,
-	pattern = "*",
+	desc = "Create missing directories before writing the buffer",
+	command = "silent! call mkdir(expand('%:p:h'), 'p')",
+})
+
+autocmd("BufWritePre", {
+	group = group,
 	command = ":%s/\\s\\+$//e",
 	desc = "Remove whitespace on save",
 })
 
 autocmd("ModeChanged", {
 	group = group,
-	pattern = "*",
 	command = "if mode() == 'v' | set relativenumber | else | set norelativenumber | endif",
 	desc = "Move to relative line number when in visual mode",
 })
@@ -44,8 +47,9 @@ autocmd("BufReadPost", {
 	desc = "Disable diagnostic for .env files",
 })
 
-autocmd("VimEnter", {
+autocmd("MenuPopup", {
 	group = group,
+	once = true,
 	desc = "Customize right click contextual menu.",
 	callback = function()
 		-- Disable right click message
@@ -60,13 +64,12 @@ autocmd({ "InsertEnter", "InsertLeave", "TermEnter", "TermLeave" }, {
 	group = group,
 	desc = "Auto change search highlight color",
 	callback = function(args)
-		local maps = {
+		cmd(({
 			InsertEnter = "set nohlsearch",
 			InsertLeave = "set hlsearch",
 			TermEnter = "set nohlsearch",
 			TermLeave = "set hlsearch",
-		}
-		cmd(maps[args.event])
+		})[args.event])
 	end,
 })
 
@@ -89,10 +92,10 @@ autocmd("BufHidden", {
 })
 
 autocmd("FileType", {
-	pattern = { "help" },
 	group = group,
-	desc = "Open help in vertical split",
+	pattern = { "help" },
 	command = "wincmd L",
+	desc = "Open help in vertical split",
 })
 
 autocmd({ "VimResized", "WinResized" }, {
@@ -124,18 +127,11 @@ autocmd({ "WinLeave", "WinEnter" }, {
 	group = group,
 	desc = "Highlight current line and column",
 	callback = function(args)
-		local maps = {
+		cmd(({
 			WinLeave = "setlocal nocursorline nocursorcolumn",
 			WinEnter = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
-		}
-		cmd(maps[args.event])
+		})[args.event])
 	end,
-})
-
-autocmd("BufWritePre", {
-	group = group,
-	desc = "Create missing directories before writing the buffer",
-	command = "silent! call mkdir(expand('%:p:h'), 'p')",
 })
 
 autocmd("TermLeave", {
