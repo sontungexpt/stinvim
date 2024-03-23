@@ -17,12 +17,12 @@ vim.env.PATH = fn.stdpath("data")
 	.. (fn.has("win32") ~= 0 and ";" or ":")
 	.. vim.env.PATH
 
-cmd("filetype plugin on")
-cmd("filetype plugin indent on")
+-- --Syntax
+-- cmd("syntax enable")
+-- cmd("syntax on")
 
---Syntax
-cmd("syntax enable")
-cmd("syntax on")
+-- cmd("filetype plugin on")
+-- cmd("filetype plugin indent on")
 
 -- File to identify project root
 g.stinvim_root_markers = {
@@ -51,7 +51,7 @@ opts.completeopt = { "menu", "menuone", "noselect" }
 opts.shortmess:append("sI")
 
 -- Don't show mode since we have a statusline
-opts.showmode = require("utils").is_plug_installed("lualine.nvim") and false or true
+opts.showmode = false
 opts.laststatus = 3
 
 -- fold
@@ -114,10 +114,10 @@ opts.ignorecase = true
 --Cursor line
 opts.cursorline = true
 opts.cursorcolumn = true
+opts.cursorlineopt = "number"
 
 --Appearance
 opts.termguicolors = true
-cmd([[set t_Co=256]])
 opts.background = "dark"
 opts.signcolumn = "yes"
 
@@ -131,7 +131,6 @@ opts.listchars:append {
 
 --Clipboard
 opts.clipboard:append { "unnamedplus" }
-cmd([[set go+=a]])
 
 --Split window
 opts.splitbelow = true
