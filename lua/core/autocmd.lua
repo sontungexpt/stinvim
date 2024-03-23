@@ -99,25 +99,24 @@ autocmd({ "VimResized", "WinResized" }, {
 	group = group,
 	desc = "Preserve window ratios on VimResized",
 	callback = function(args)
-		local win_ids = api.nvim_list_wins()
-		local num_of_wins = #win_ids
-
-		if num_of_wins > 1 then
-			local vim_width = api.nvim_get_option("columns")
-			if args.event == "VimResized" then
-				vim.schedule(function()
-					for i = 1, num_of_wins - 1 do
-						local id = win_ids[i]
+		vim.schedule(function()
+			local win_ids = vim.tbl_filter(
+				function(id) return api.nvim_win_get_config(id).relative == "" end,
+				api.nvim_list_wins()
+			)
+			if #win_ids > 1 then
+				local vim_width = api.nvim_get_option("columns")
+				if args.event == "VimResized" then
+					for index, id in ipairs(win_ids) do
 						api.nvim_win_set_width(id, math.ceil(vim_width * api.nvim_win_get_var(id, "w_ratio")[false]))
 					end
-				end, 0)
-			else
-				for i = 1, num_of_wins do
-					local id = win_ids[i]
-					api.nvim_win_set_var(id, "w_ratio", api.nvim_win_get_width(id) / vim_width)
+				else
+					for index, id in ipairs(win_ids) do
+						api.nvim_win_set_var(id, "w_ratio", api.nvim_win_get_width(id) / vim_width)
+					end
 				end
 			end
-		end
+		end, 0)
 	end,
 })
 
