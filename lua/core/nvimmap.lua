@@ -57,10 +57,10 @@ vim.schedule(function()
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
 
 	--Resize Buffer
-	map("n", "<A-j>", "<cmd>resize +1<cr>")
-	map("n", "<A-k>", "<cmd>resize -1<cr>")
-	map("n", "<A-l>", "<cmd>vertical resize -1<cr>")
-	map("n", "<A-h>", "<cmd>vertical resize +1<cr>")
+	map("n", "<A-l>", "winnr() == winnr('l') ? ':vertical resize -1<cr>' : ':vertical resize +1<cr>'", 7)
+	map("n", "<A-h>", "winnr() == winnr('l') ? ':vertical resize +1<cr>' : ':vertical resize -1<cr>'", 7)
+	map("n", "<A-k>", "winnr() == winnr('j') ? ':resize +1<cr>' : ':resize -1<cr>'", 7)
+	map("n", "<A-j>", "winnr() == winnr('j') ? ':resize -1<cr>' : ':resize +1<cr>'", 7)
 
 	--Make all windows (almost) equally high and wide
 	map("n", "=", "<C-W>=")
