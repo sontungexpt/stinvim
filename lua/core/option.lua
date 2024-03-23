@@ -1,5 +1,5 @@
 local vim = vim
-local opts, cmd, g, fn = vim.opt, vim.api.nvim_command, vim.g, vim.fn
+local opts, g, fn = vim.opt, vim.g, vim.fn
 
 -- Disable all providers by default, If we need a provider we can enable it by comment the line
 g.loaded_node_provider = 0
@@ -11,12 +11,12 @@ g.loaded_ruby_provider = 0
 -- g.ruby_host_prog = "~/.rbenv/versions/3.2.2/bin/neovim-ruby-host"
 -- g.python3_host_prog = "~/.venv/bin/python3"
 
-cmd("filetype plugin on")
-cmd("filetype plugin indent on")
+-- --Syntax
+-- cmd("syntax enable")
+-- cmd("syntax on")
 
---Syntax
-cmd("syntax enable")
-cmd("syntax on")
+-- cmd("filetype plugin on")
+-- cmd("filetype plugin indent on")
 
 -- File to identify project root
 g.stinvim_root_markers = {
@@ -45,7 +45,7 @@ opts.completeopt = { "menu", "menuone", "noselect" }
 opts.shortmess:append("sI")
 
 -- Don't show mode since we have a statusline
-opts.showmode = require("utils").is_plug_installed("lualine.nvim") and false or true
+opts.showmode = false
 opts.laststatus = 3
 
 -- fold
@@ -108,10 +108,10 @@ opts.ignorecase = true
 --Cursor line
 opts.cursorline = true
 opts.cursorcolumn = true
+opts.cursorlineopt = "number"
 
 --Appearance
 opts.termguicolors = true
-cmd([[set t_Co=256]])
 opts.background = "dark"
 opts.signcolumn = "yes"
 
@@ -125,7 +125,6 @@ opts.listchars:append {
 
 --Clipboard
 opts.clipboard:append { "unnamedplus" }
-cmd([[set go+=a]])
 
 --Split window
 opts.splitbelow = true
