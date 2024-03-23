@@ -16,11 +16,9 @@ M.hot_reload = function(quiet)
 		local status_ok, m = pcall(require, module)
 		if not status_ok then
 			table.insert(failed_modules, m)
-		else
-			if module == "core.plugmap" then
-				for _, func in pairs(m) do
-					if type(func) == "function" then func() end
-				end
+		elseif module == "core.plugmap" then
+			for _, func in pairs(m) do
+				if type(func) == "function" then func() end
 			end
 		end
 	end
