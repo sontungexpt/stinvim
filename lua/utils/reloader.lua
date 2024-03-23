@@ -7,7 +7,6 @@ M.hot_reload = function(quiet)
 		"core.option",
 		"core.nvimmap",
 		"core.autocmd",
-		"core.autofiletype",
 		"core.plugmap",
 	}
 
