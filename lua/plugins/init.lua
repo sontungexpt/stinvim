@@ -350,9 +350,8 @@ local plugins = {
 
 	{
 		"folke/todo-comments.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-		},
+		cmd = { "TodoTelescope", "TodoQuickFix" },
+		dependencies = "nvim-lua/plenary.nvim",
 		event = { "CursorHold", "CmdlineEnter", "CursorMoved" },
 		-- opts = require("plugins.configs.comment.todo-comments"),
 		config = function(_, opts) require("todo-comments").setup {} end,

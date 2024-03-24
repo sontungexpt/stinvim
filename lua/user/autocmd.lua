@@ -52,7 +52,7 @@ autocmd("BufWritePost", {
 autocmd("FileType", {
 	group = group,
 	pattern = "java",
-	callback = function(args)
+	callback = function()
 		api.nvim_create_user_command("OpenApiDoc", function()
 			fn.jobstart({ "xdg-open", "http://localhost:8080/swagger-ui/index.html" }, {
 				detach = true,
@@ -65,6 +65,6 @@ autocmd("FileType", {
 				end,
 			})
 		end, { nargs = 0 })
-		require("utils.mapper").map("n", "<leader>po", ":OpenApiDoc<CR>", { buffer = args.buf })
+		require("utils.mapper").map("n", "<leader>po", "<cmd>OpenApiDoc<CR>")
 	end,
 })

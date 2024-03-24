@@ -30,13 +30,13 @@ vim.schedule(function()
 		"<cmd>Telescope diagnostics<cr>",
 		{ desc = "Find diagnostics in the current buffer" }
 	)
+	------------------------------ Todo-comments ------------------------------
+	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todo comments" })
+
 	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Find command history" })
 
 	------------------------------ Git conflict ------------------------------
 	map("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
-
-	------------------------------ Todo-comments ------------------------------
-	map("n", "<Leader>qft", "<cmd>TodoQuickFix<cr>", { desc = "Todo quickfix" })
 
 	map("n", "[t", function()
 		load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
