@@ -415,16 +415,14 @@ local plugins = {
 		"rcarriga/nvim-dap-ui",
 		dependencies = {
 			{
-				{
-					"mfussenegger/nvim-dap",
-					config = function() require("plugins.configs.dap") end,
-				},
-				{
-					"theHamsta/nvim-dap-virtual-text",
-					config = function() require("nvim-dap-virtual-text").setup {} end,
-				},
-				"nvim-neotest/nvim-nio",
+				"mfussenegger/nvim-dap",
+				config = function() require("plugins.configs.dap") end,
 			},
+			{
+				"theHamsta/nvim-dap-virtual-text",
+				config = function() require("nvim-dap-virtual-text").setup {} end,
+			},
+			"nvim-neotest/nvim-nio",
 		},
 		config = function() require("plugins.configs.dap.dapui") end,
 	},
