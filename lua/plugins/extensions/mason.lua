@@ -77,14 +77,13 @@ end
 
 -------------------- Auto commands --------------------
 M.entry = function()
-	if require(MASON_CONFIG_MODULE).auto_sync then
-		api.nvim_create_autocmd("User", {
-			group = api.nvim_create_augroup("MasonExtension", { clear = true }),
-			once = true,
-			pattern = { "VeryLazy", "LazyVimStarted" },
-			callback = function() schedule(sync_packages) end,
-		})
-	end
+	api.nvim_create_autocmd("User", {
+		once = true,
+		pattern = { "VeryLazy", "LazyVimStarted" },
+		callback = function()
+			if require(MASON_CONFIG_MODULE).auto_sync then sync_packages() end
+		end,
+	})
 end
 
 return M

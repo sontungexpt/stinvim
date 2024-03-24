@@ -3,10 +3,13 @@ local M = {
 }
 
 M.entry = function()
-	vim.api.nvim_create_autocmd({ "VimEnter", "VimResized" }, {
-		desc = "Enable the 'noshowmode' option when resizing the window width exceeds 70 if lualine is installed",
-		callback = function()
-			if not require("utils").is_plug_installed("lualine.nvim") then
+	local id = nil
+	id = vim.api.nvim_create_autocmd("User", {
+		desc = "Auto enable showmode if the window is small",
+		pattern = "LazyLoad",
+		callback = function(args)
+			if args.data == "lualine.nvim" then
+				vim.api.nvim_del_autocmd(id)
 				if vim.o.columns > 70 then
 					vim.opt.showmode = false
 				else

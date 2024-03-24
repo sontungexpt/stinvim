@@ -232,6 +232,7 @@ local plugins = {
 		"Exafunction/codeium.vim",
 		keys = "<A-CR>",
 		event = "InsertEnter",
+		cmd = "Codeium",
 		config = function()
 			vim.g.codeium_no_map_tab = true
 			local map = require("utils.mapper").map
@@ -414,13 +415,15 @@ local plugins = {
 		"rcarriga/nvim-dap-ui",
 		dependencies = {
 			{
-				"mfussenegger/nvim-dap",
-				"nvim-neotest/nvim-nio",
+				{
+					"mfussenegger/nvim-dap",
+					config = function() require("plugins.configs.dap") end,
+				},
 				{
 					"theHamsta/nvim-dap-virtual-text",
 					config = function() require("nvim-dap-virtual-text").setup {} end,
 				},
-				config = function() require("plugins.configs.dap") end,
+				"nvim-neotest/nvim-nio",
 			},
 		},
 		config = function() require("plugins.configs.dap.dapui") end,
