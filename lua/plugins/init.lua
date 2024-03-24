@@ -89,6 +89,11 @@ local plugins = {
 	-- },
 
 	{
+		"fladson/vim-kitty",
+		ft = "kitty",
+	},
+
+	{
 		"VebbNix/lf-vim",
 		ft = "lf",
 	},
