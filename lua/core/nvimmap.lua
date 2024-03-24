@@ -57,7 +57,6 @@ vim.schedule(function()
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
 
 	--Resize Buffer
-	--Resize Buffer
 	map("n", "<A-l>", function()
 		local winnr = vim.fn.winnr()
 		if winnr == vim.fn.winnr("l") then
@@ -65,7 +64,7 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
 		else
-			return ":vertical resize +1<CR>|:wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
+			return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd 2l<CR>|:vertical resize -1|:wincmd h<CR>"
 		end
 	end, 7)
 	map("n", "<A-h>", function()
@@ -75,7 +74,7 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize -1<CR>"
 		else
-			return ":vertical resize -1<CR>|:wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
+			return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd 2l<CR>|:vertical resize +1|:wincmd h<CR>"
 		end
 	end, 7)
 	map("n", "<A-k>", function()
@@ -85,7 +84,7 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize -1<CR>"
 		else
-			return ":resize +1<CR>|:wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
+			return ":wincmd k<CR>|:resize +1<CR>|:wincmd 2j<CR>|:resize +1<CR>|:wincmd k<CR>"
 		end
 	end, 7)
 	map("n", "<A-j>", function()
@@ -95,7 +94,7 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize +1<CR>"
 		else
-			return ":resize -1<CR>|:wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
+			return ":wincmd k<CR>|:resize -1<CR>|:wincmd 2j<CR>|:resize -1<CR>|:wincmd k<CR>"
 		end
 	end, 7)
 
