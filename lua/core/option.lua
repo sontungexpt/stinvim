@@ -135,6 +135,7 @@ opts.clipboard:append { "unnamedplus" }
 --Split window
 opts.splitbelow = true
 opts.splitright = true
+opts.winminwidth = 5
 
 opts.wildignore:append {
 	"*.pyc",

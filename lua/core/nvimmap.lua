@@ -57,10 +57,47 @@ vim.schedule(function()
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
 
 	--Resize Buffer
-	map("n", "<A-l>", "winnr() == winnr('l') ? ':vertical resize -1<cr>' : ':vertical resize +1<cr>'", 7)
-	map("n", "<A-h>", "winnr() == winnr('l') ? ':vertical resize +1<cr>' : ':vertical resize -1<cr>'", 7)
-	map("n", "<A-k>", "winnr() == winnr('j') ? ':resize +1<cr>' : ':resize -1<cr>'", 7)
-	map("n", "<A-j>", "winnr() == winnr('j') ? ':resize -1<cr>' : ':resize +1<cr>'", 7)
+	--Resize Buffer
+	map("n", "<A-l>", function()
+		local winnr = vim.fn.winnr()
+		if winnr == vim.fn.winnr("l") then
+			return ":vertical resize -1<CR>"
+		elseif winnr == vim.fn.winnr("h") then
+			return ":vertical resize +1<CR>"
+		else
+			return ":vertical resize +1<CR>|:wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
+		end
+	end, 7)
+	map("n", "<A-h>", function()
+		local winnr = vim.fn.winnr()
+		if winnr == vim.fn.winnr("l") then
+			return ":vertical resize +1<CR>"
+		elseif winnr == vim.fn.winnr("h") then
+			return ":vertical resize -1<CR>"
+		else
+			return ":vertical resize -1<CR>|:wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
+		end
+	end, 7)
+	map("n", "<A-k>", function()
+		local winnr = vim.fn.winnr()
+		if winnr == vim.fn.winnr("j") then
+			return ":resize +1<CR>"
+		elseif winnr == vim.fn.winnr("k") then
+			return ":resize -1<CR>"
+		else
+			return ":resize +1<CR>|:wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
+		end
+	end, 7)
+	map("n", "<A-j>", function()
+		local winnr = vim.fn.winnr()
+		if winnr == vim.fn.winnr("j") then
+			return ":resize -1<CR>"
+		elseif winnr == vim.fn.winnr("k") then
+			return ":resize +1<CR>"
+		else
+			return ":resize -1<CR>|:wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
+		end
+	end, 7)
 
 	--Make all windows (almost) equally high and wide
 	map("n", "=", "<C-W>=")
