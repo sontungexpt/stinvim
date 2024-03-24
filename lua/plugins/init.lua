@@ -307,6 +307,7 @@ local plugins = {
 
 	{
 		"folke/todo-comments.nvim",
+		cmd = { "TodoQuickFix", "TodoTelescope" },
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 		},
