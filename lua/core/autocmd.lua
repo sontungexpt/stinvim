@@ -54,9 +54,10 @@ autocmd("MenuPopup", {
 	callback = function()
 		-- Disable right click message
 		cmd([[aunmenu PopUp.How-to\ disable\ mouse]])
-		-- cmd [[aunmenu PopUp.-1-]] -- You can remode a separator like this.
-		cmd([[menu PopUp.Toggle\ \Breakpoint <cmd>:lua require('dap').toggle_breakpoint()<CR>]])
-		cmd([[menu PopUp.Start\ \Debugger <cmd>:DapContinue<CR>]])
+		-- cmd([[aunmenu PopUp.-1-]]) -- You can remode a separator like this.
+		cmd([[menu PopUp.󰏘\ Inspect\ Color <cmd>:Inspect<CR>]])
+		cmd([[menu PopUp.\ Start\ \Debugger <cmd>:DapContinue<CR>]])
+		cmd([[menu PopUp.\ Toggle\ \Breakpoint <cmd>:lua require('dap').toggle_breakpoint()<CR>]])
 	end,
 })
 
