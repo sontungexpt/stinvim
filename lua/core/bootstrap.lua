@@ -40,10 +40,8 @@ M.load_plugin_extensions = function(install_path)
 
 	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
 
-	local parent_module = string.gsub(string.match(plug_extension_dir, ".-lua/(.*)"), "/", ".")
-
 	for _, file in ipairs(files) do
-		local module = require(parent_module .. "." .. fn.fnamemodify(file, ":t:r") --[[ filename ]])
+		local module = dofile(file)
 		if module.enabled ~= false and type(module.entry) == "function" then module.entry() end
 	end
 end
@@ -67,8 +65,8 @@ M.boot = function(install_path)
 				and args.file ~= ""
 				and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile"
 			then
+				api.nvim_del_augroup_by_name("StinvimLazyEvents")
 				vim.schedule(function()
-					api.nvim_del_augroup_by_name("StinvimLazyEvents")
 					exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
 					vim.schedule(function() exec_autocmds("Filetype", { buffer = args.buf }) end, 100)
 				end, 100)
@@ -80,11 +78,11 @@ M.boot = function(install_path)
 		group = api.nvim_create_augroup("StinvimGitLazyLoad", { clear = true }),
 		callback = function(args)
 			if args.file ~= "" and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile" then
+				api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
 				vim.schedule(function()
 					fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
 						on_exit = function(_, code)
 							if code == 0 then
-								api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
 								exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
 							end
 						end,
