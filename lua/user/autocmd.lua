@@ -1,4 +1,4 @@
-local api, fn, env = vim.api, vim.fn, vim.env
+local api, fn = vim.api, vim.fn
 local autocmd, expand = api.nvim_create_autocmd, fn.expand
 local group = api.nvim_create_augroup("UserAutocmd", { clear = true })
 
@@ -13,7 +13,7 @@ autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
 	group = group,
 	desc = "Switch ibus engine",
 	callback = function(args)
-		if env.TERM == "alacritty" then
+		if vim.env.TERM == "alacritty" then
 			local engines = {
 				VimEnter = "BambooUs",
 				FocusGained = "BambooUs",
