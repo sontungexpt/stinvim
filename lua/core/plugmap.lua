@@ -35,6 +35,9 @@ vim.schedule(function()
 
 	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Find command history" })
 
+	------------------------------ Todo-comments ------------------------------
+	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todo comments" })
+
 	------------------------------ Git conflict ------------------------------
 	map("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
 

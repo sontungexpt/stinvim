@@ -63,12 +63,20 @@ vim.schedule(function()
 	--Resize Buffer
 	map("n", "<A-l>", function()
 		local winnr = vim.fn.winnr()
+		-- local num = vim.api.nvim_win_get_number(0)
 		if winnr == vim.fn.winnr("l") then
 			return ":vertical resize -1<CR>"
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
 		else
-			return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd 2l<CR>|:vertical resize -1|:wincmd h<CR>"
+			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
+			local win_center_x =
+				math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			if win_center_x < vim_center_x then
+				return ":vertical resize +1<CR>"
+			else
+				return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
+			end
 		end
 	end, 7)
 	map("n", "<A-h>", function()
@@ -78,7 +86,14 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize -1<CR>"
 		else
-			return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd 2l<CR>|:vertical resize +1|:wincmd h<CR>"
+			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
+			local win_center_x =
+				math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			if win_center_x > vim_center_x then
+				return ":vertical resize -1<CR>"
+			else
+				return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
+			end
 		end
 	end, 7)
 	map("n", "<A-k>", function()
@@ -88,7 +103,14 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize -1<CR>"
 		else
-			return ":wincmd k<CR>|:resize +1<CR>|:wincmd 2j<CR>|:resize +1<CR>|:wincmd k<CR>"
+			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
+			local win_center_y =
+				math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			if win_center_y > vim_center_y then
+				return ":resize -1<CR>"
+			else
+				return ":wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
+			end
 		end
 	end, 7)
 	map("n", "<A-j>", function()
@@ -98,7 +120,14 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize +1<CR>"
 		else
-			return ":wincmd k<CR>|:resize -1<CR>|:wincmd 2j<CR>|:resize -1<CR>|:wincmd k<CR>"
+			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
+			local win_center_y =
+				math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			if win_center_y < vim_center_y then
+				return ":resize +1<CR>"
+			else
+				return ":wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
+			end
 		end
 	end, 7)
 
