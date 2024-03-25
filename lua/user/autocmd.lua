@@ -1,5 +1,5 @@
 local api, fn, env = vim.api, vim.fn, vim.env
-local autocmd = api.nvim_create_autocmd
+local autocmd, expand = api.nvim_create_autocmd, fn.expand
 local group = api.nvim_create_augroup("UserAutocmd", { clear = true })
 
 autocmd("VimEnter", {
@@ -35,16 +35,16 @@ autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
 autocmd("BufWritePost", {
 	group = group,
 	desc = "Compile scripts in ~/scripts/stilux/systems",
-	pattern = fn.expand("$HOME") .. "/scripts/stilux/systems/*",
+	pattern = expand("$HOME") .. "/scripts/stilux/systems/*",
 	callback = function() require("user.utils").compile_stilux_srcipt_file() end,
 })
 
 autocmd("BufWritePost", {
 	group = group,
 	pattern = {
-		fn.expand("$HOME") .. "/.config/lf/colors",
-		env.LF_CONFIG_HOME and env.LF_CONFIG_HOME .. "/colors",
-		env.XDG_CONFIG_HOME and env.XDG_CONFIG_HOME .. "/lf/colors",
+		expand("$HOME/.config/lf/colors"),
+		expand("$LF_CONFIG_HOME/colors"),
+		expand("$XDG_CONFIG_HOME/lf/colors"),
 	},
 	callback = function(args) require("user.utils").compile_lf_colors_file(args.file) end,
 })
@@ -52,7 +52,7 @@ autocmd("BufWritePost", {
 autocmd("FileType", {
 	group = group,
 	pattern = "java",
-	callback = function()
+	callback = function(args)
 		api.nvim_create_user_command("OpenApiDoc", function()
 			fn.jobstart({ "xdg-open", "http://localhost:8080/swagger-ui/index.html" }, {
 				detach = true,
