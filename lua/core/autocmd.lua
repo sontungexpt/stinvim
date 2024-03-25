@@ -99,20 +99,19 @@ autocmd("FileType", {
 	desc = "Open help in vertical split",
 })
 
-autocmd({ "VimResized", "WinResized" }, {
+autocmd({ "VimResized", "WinResized", "WinEnter" }, {
 	group = group,
 	desc = "Preserve window ratios on VimResized",
 	callback = function(args)
 		vim.schedule(function()
-			local win_ids = vim.tbl_filter(
-				function(id) return api.nvim_win_get_config(id).relative == "" end,
-				api.nvim_list_wins()
-			)
+			local win_ids = api.nvim_list_wins()
 			if #win_ids > 1 then
 				local vim_width = api.nvim_get_option("columns")
 				if args.event == "VimResized" then
 					for index, id in ipairs(win_ids) do
-						api.nvim_win_set_width(id, math.ceil(vim_width * api.nvim_win_get_var(id, "w_ratio")[false]))
+						local ratio = api.nvim_win_get_var(id, "w_ratio")
+						if type(ratio) == "table" then ratio = ratio[false] end
+						if ratio then api.nvim_win_set_width(id, math.ceil(vim_width * ratio)) end
 					end
 				else
 					for index, id in ipairs(win_ids) do
