@@ -452,7 +452,7 @@ local plugins = {
 		"stevearc/conform.nvim",
 		cmd = "ConformInfo",
 		event = "BufWritePre",
-		opts = function() return require("plugins.configs.lsp.conform") end,
+		opts = function() return require("plugins.configs.conform") end,
 		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("conform").setup(opts) end,
 	},
@@ -465,13 +465,11 @@ local plugins = {
 				"mfussenegger/nvim-dap",
 				config = function() require("plugins.configs.dap") end,
 			},
-			{
-				"theHamsta/nvim-dap-virtual-text",
-				config = function() require("nvim-dap-virtual-text").setup {} end,
-			},
+			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 		},
-		config = function() require("plugins.configs.dap.dapui") end,
+		opts = function() require("plugins.configs.dap.dapui") end,
+		config = function(_, opts) require("dapui").setup(opts) end,
 	},
 }
 

@@ -1,7 +1,3 @@
-local status_ok, lspconfig = pcall(require, "lspconfig")
-
-if not status_ok then return end
-
 local lsp_servers = {
 
 	-- python
@@ -67,18 +63,18 @@ local lsp_servers = {
 		config = {
 			filetypes = {
 				"html",
-				"typescriptreact",
-				"javascriptreact",
 				"css",
 				"sass",
 				"scss",
 				"less",
 				"javascript",
 				"typescript",
-				"vue",
-				"vue-html",
 				"jsx",
 				"tsx",
+				"typescriptreact",
+				"javascriptreact",
+				"vue",
+				"vue-html",
 			},
 		},
 	},
@@ -120,10 +116,13 @@ local lsp_servers = {
 	},
 }
 
+local lspconfig = require("lspconfig")
+local on_attach = require("plugins.configs.lsp.default").on_attach
+local capabilities = require("plugins.configs.lsp.default").capabilities
+
 for _, server in ipairs(lsp_servers) do
 	local config = server.config or {}
-	config.on_attach = config.on_attach or require("plugins.configs.lsp.general-confs").on_attach
-	config.capabilities = config.capabilities
-		or require("plugins.configs.lsp.general-confs").capabilities()
+	config.on_attach = config.on_attach or on_attach
+	config.capabilities = config.capabilities or capabilities
 	lspconfig[server.name].setup(config)
 end
