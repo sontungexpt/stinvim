@@ -1,3 +1,7 @@
+local lspconfig = require("lspconfig")
+local on_attach = require("plugins.configs.lsp.default").on_attach
+local capabilities = require("plugins.configs.lsp.default").capabilities
+
 local lsp_servers = {
 
 	-- python
@@ -94,10 +98,6 @@ local lsp_servers = {
 		},
 	},
 }
-
-local lspconfig = require("lspconfig")
-local on_attach = require("plugins.configs.lsp.default").on_attach
-local capabilities = require("plugins.configs.lsp.default").capabilities
 
 for _, server in ipairs(lsp_servers) do
 	local config = server.config or {}
