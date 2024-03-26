@@ -4,7 +4,7 @@ local api, fn = vim.api, vim.fn
 local M = {}
 
 local function echo(str)
-	vim.cmd("redraw")
+	vim.cmd.redraw()
 	api.nvim_echo({ { str, "Bold" } }, true, {})
 end
 

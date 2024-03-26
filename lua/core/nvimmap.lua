@@ -190,7 +190,7 @@ autocmd("BufWinEnter", {
 	desc = "Make q close help, man, quickfix, dap floats",
 	callback = function(args)
 		local map = require("utils.mapper").map
-		local buftype = vim.api.nvim_get_option_value("buftype", { buf = args.buf })
+		local buftype = vim.api.nvim_buf_get_option(args.buf, "buftype")
 		if vim.tbl_contains({ "help", "nofile", "quickfix" }, buftype) then
 			map("n", "q", "<cmd>close<cr>", { buffer = args.buf, nowait = true })
 		end
