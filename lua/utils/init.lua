@@ -5,8 +5,8 @@ local M = {}
 --- Get the root directory of the project.
 ---
 --- @return string: The root directory of the project
-M.find_root = function()
-	return vim.fs.find(vim.g.stinvim_root_markers or {
+M.find_root = function(path)
+	local marker_file_path = vim.fs.find(vim.g.stinvim_root_markers or {
 		".git",
 		"package.json", -- npm
 		"Cargo.toml", -- rust
@@ -15,7 +15,13 @@ M.find_root = function()
 		"lazy-lock.json", -- nvim config
 		"gradlew", -- java
 		"mvnw", -- java
-	}, { upward = true })[1]
+	}, {
+		upward = true,
+		stop = vim.loop.os_homedir(),
+		path = path,
+	})[1]
+
+	return marker_file_path and vim.fs.dirname(marker_file_path)
 end
 
 --- Check if two tables contain the same items, regardless of order and duplicates.

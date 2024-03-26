@@ -52,8 +52,8 @@ vim.schedule(function()
 			"-data",
 			workspace_dir,
 		},
-		capabilities = require("plugins.configs.lsp.general-confs").capabilities(true),
-		on_attach = require("plugins.configs.lsp.general-confs").on_attach,
+		capabilities = require("plugins.configs.lsp.default").capabilities,
+		on_attach = require("plugins.configs.lsp.default").on_attach,
 		root_dir = find_root(root_markers),
 		settings = {
 			eclipse = {

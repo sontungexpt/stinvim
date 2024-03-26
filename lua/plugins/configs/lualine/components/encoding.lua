@@ -1,5 +1,5 @@
 local colors = require("ui.colors")
-local no_seps = require("ui.lualine").no_seps
+local no_seps = require("configs.lualine.seps").no_seps
 
 -- https://www.nerdfonts.com/cheat-sheet
 local icons = {

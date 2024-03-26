@@ -9,10 +9,11 @@ autocmd({ "VimEnter", "VimLeave" }, {
 	desc = "Update remote plugins",
 })
 
-autocmd("TextYankPost", {
+autocmd("FileType", {
 	group = group,
-	command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=120})",
-	desc = "Highlight yanked text",
+	pattern = "help",
+	command = "wincmd L",
+	desc = "Open help in vertical split",
 })
 
 autocmd("FileType", {
@@ -20,6 +21,30 @@ autocmd("FileType", {
 	pattern = "qf",
 	command = "set nobuflisted",
 	desc = "Don't list quickfix buffers",
+})
+
+autocmd("BufReadPost", {
+	group = group,
+	pattern = "*.env",
+	callback = function(args) vim.diagnostic.disable(args.buf) end,
+	desc = "Disable diagnostic for .env files",
+})
+
+autocmd({ "WinLeave", "WinEnter" }, {
+	group = group,
+	desc = "Highlight current line and column",
+	callback = function(args)
+		cmd(({
+			WinLeave = "setlocal nocursorline nocursorcolumn",
+			WinEnter = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
+		})[args.event])
+	end,
+})
+
+autocmd("TextYankPost", {
+	group = group,
+	command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=120})",
+	desc = "Highlight yanked text",
 })
 
 autocmd("BufWritePre", {
@@ -38,13 +63,6 @@ autocmd("ModeChanged", {
 	group = group,
 	command = "if mode() == 'v' | set relativenumber | else | set norelativenumber | endif",
 	desc = "Move to relative line number when in visual mode",
-})
-
-autocmd("BufReadPost", {
-	group = group,
-	pattern = "*.env",
-	callback = function(args) vim.diagnostic.disable(args.buf) end,
-	desc = "Disable diagnostic for .env files",
 })
 
 autocmd("MenuPopup", {
@@ -76,9 +94,9 @@ autocmd({ "InsertEnter", "InsertLeave", "TermEnter", "TermLeave" }, {
 
 -- https://unix.stackexchange.com/questions/149209/refresh-changed-content-of-file-opened-in-vim/383044#383044
 -- https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
-autocmd({ "FocusGained", "BufEnter", "TermResponse" }, {
+autocmd({ "FocusGained", "TermResponse", "TermLeave" }, {
 	group = group,
-	command = [[silent! if mode() != 'c' && !bufexists("[Command Line]") | checktime | endif]],
+	command = [[silent! if mode() != 'c' && !bufexists("[Command Line]") | checktime | endif | lua if package.loaded['nvim-tree'] then vim.api.nvim_command('NvimTreeRefresh') end]],
 	desc = "Reload file if changed outside of nvim",
 })
 
@@ -92,14 +110,7 @@ autocmd("BufHidden", {
 	end,
 })
 
-autocmd("FileType", {
-	group = group,
-	pattern = { "help" },
-	command = "wincmd L",
-	desc = "Open help in vertical split",
-})
-
-autocmd({ "VimResized", "WinResized", "WinEnter" }, {
+autocmd({ "VimResized", "WinResized", "WinNew" }, {
 	group = group,
 	desc = "Preserve window ratios on VimResized",
 	callback = function(args)
@@ -107,35 +118,26 @@ autocmd({ "VimResized", "WinResized", "WinEnter" }, {
 			local win_ids = api.nvim_list_wins()
 			if #win_ids > 1 then
 				local vim_width = api.nvim_get_option("columns")
+				local vim_height = api.nvim_get_option("lines")
+
 				if args.event == "VimResized" then
 					for index, id in ipairs(win_ids) do
-						local ratio = api.nvim_win_get_var(id, "w_ratio")
-						if type(ratio) == "table" then ratio = ratio[false] end
-						if ratio then api.nvim_win_set_width(id, math.ceil(vim_width * ratio)) end
+						local ratio_x = vim.w[id].ratio_x
+						if type(ratio_x) == "table" then
+							api.nvim_win_set_width(id, math.floor(vim_width / ratio_x[2] * ratio_x[1]))
+						end
+						local ratio_y = vim.w[id].ratio_y
+						if type(ratio_y) == "table" then
+							api.nvim_win_set_height(id, math.floor(vim_height / ratio_y[2] * ratio_y[1]))
+						end
 					end
 				else
 					for index, id in ipairs(win_ids) do
-						api.nvim_win_set_var(id, "w_ratio", api.nvim_win_get_width(id) / vim_width)
+						api.nvim_win_set_var(id, "ratio_x", { api.nvim_win_get_width(id), vim_width })
+						api.nvim_win_set_var(id, "ratio_y", { api.nvim_win_get_height(id), vim_height })
 					end
 				end
 			end
 		end, 0)
 	end,
-})
-
-autocmd({ "WinLeave", "WinEnter" }, {
-	group = group,
-	desc = "Highlight current line and column",
-	callback = function(args)
-		cmd(({
-			WinLeave = "setlocal nocursorline nocursorcolumn",
-			WinEnter = "if &buflisted | setlocal cursorline cursorcolumn | else | setlocal cursorline | endif",
-		})[args.event])
-	end,
-})
-
-autocmd("TermLeave", {
-	group = group,
-	desc = "Refresh nvim-tree when terminal is closed",
-	command = "lua if package.loaded['nvim-tree'] then vim.api.nvim_command('NvimTreeRefresh') end",
 })

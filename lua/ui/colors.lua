@@ -19,8 +19,6 @@ local colors = {
 	gray = "#5c6370",
 	purple = "#c688eb",
 	pink = "#eb7fdc",
-	lualine_bg = "#1e2030",
-	trans = "#00000000",
 }
 
 return colors
