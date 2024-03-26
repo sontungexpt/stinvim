@@ -4,23 +4,28 @@ local M = {}
 
 --- Get the root directory of the project.
 ---
---- @return string: The root directory of the project
-M.find_root = function(path)
-	local marker_file_path = vim.fs.find(vim.g.stinvim_root_markers or {
-		".git",
-		"package.json", -- npm
-		"Cargo.toml", -- rust
-		"build.zig", -- zig
-		"stylua.toml", -- lua
-		"lazy-lock.json", -- nvim config
-		"gradlew", -- java
-		"mvnw", -- java
-	}, {
-		upward = true,
-		stop = vim.loop.os_homedir(),
-		path = path,
-	})[1]
+--- @param opts table|nil: Options to be applied in vim.fs.find
+--- @return string: The root directory path of the project
+M.find_root = function(opts)
+	opts = type(opts) == "table" and opts or {}
 
+	local markers = opts.markers
+		or vim.g.stinvim_root_markers
+		or {
+			".git",
+			"package.json", -- npm
+			"Cargo.toml", -- rust
+			"build.zig", -- zig
+			"stylua.toml", -- lua
+			"lazy-lock.json", -- nvim config
+			"gradlew", -- java
+			"mvnw", -- java
+		}
+
+	opts.upward = true
+	opts.stop = vim.loop.os_homedir()
+
+	local marker_file_path = vim.fs.find(markers, opts)[1]
 	return marker_file_path and vim.fs.dirname(marker_file_path)
 end
 
