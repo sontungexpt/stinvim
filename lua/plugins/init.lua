@@ -269,26 +269,26 @@ local plugins = {
 		end,
 	},
 
-	-- {
-	-- 	"zbirenbaum/copilot.lua",
-	-- 	cmd = "Copilot",
-	-- 	event = "InsertEnter",
-	-- 	opts = function() return require("plugins.configs.copilot") end,
-	-- 	config = function(_, opts) require("copilot").setup(opts) end,
-	-- },
-
 	{
-		"Exafunction/codeium.vim",
-		keys = "<A-CR>",
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
 		event = "InsertEnter",
-		cmd = "Codeium",
-		config = function()
-			vim.g.codeium_no_map_tab = true
-			local map = require("utils.mapper").map
-			map("i", "<A-Tab>", "codeium#Accept()", 7)
-			map({ "n", "i" }, "<A-CR>", "codeium#Chat()", 7)
-		end,
+		opts = function() return require("plugins.configs.copilot") end,
+		config = function(_, opts) require("copilot").setup(opts) end,
 	},
+
+	-- {
+	-- 	"Exafunction/codeium.vim",
+	-- 	keys = "<A-CR>",
+	-- 	event = "InsertEnter",
+	-- 	cmd = "Codeium",
+	-- 	config = function()
+	-- 		vim.g.codeium_no_map_tab = true
+	-- 		local map = require("utils.mapper").map
+	-- 		map("i", "<A-Tab>", "codeium#Accept()", 7)
+	-- 		map({ "n", "i" }, "<A-CR>", "codeium#Chat()", 7)
+	-- 	end,
+	-- },
 
 	--------------------------------------------------- File Explorer ---------------------------------------------------
 	{
