@@ -119,6 +119,8 @@ autocmd({ "VimResized", "WinResized", "WinNew" }, {
 			if #win_ids > 1 then
 				local vim_width = api.nvim_get_option("columns")
 				local vim_height = api.nvim_get_option("lines")
+					- vim.o.cmdheight
+					- (vim.o.laststatus ~= 0 and 1 or 0)
 
 				if args.event == "VimResized" then
 					for index, id in ipairs(win_ids) do
@@ -131,7 +133,6 @@ autocmd({ "VimResized", "WinResized", "WinNew" }, {
 							api.nvim_win_set_height(id, math.floor(vim_height / ratio_y[2] * ratio_y[1]))
 						end
 					end
-					vim.o.cmdheight = vim.o.cmdheight or 1
 				else
 					for index, id in ipairs(win_ids) do
 						api.nvim_win_set_var(id, "ratio_x", { api.nvim_win_get_width(id), vim_width })
