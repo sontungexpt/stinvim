@@ -193,6 +193,7 @@ local plugins = {
 		"iamcco/markdown-preview.nvim",
 		ft = "markdown",
 		build = function() vim.fn["mkdp#util#install"]() end,
+		config = function() vim.g.mkdp_auto_close = 0 end,
 	},
 
 	{
@@ -319,7 +320,6 @@ local plugins = {
 	--------------------------------------------------- Git supporter ---------------------------------------------------
 	{
 		"lewis6991/gitsigns.nvim",
-		ft = { "gitcommit" },
 		event = "User GitLazyLoaded",
 		opts = function() return require("plugins.configs.git.gitsigns") end,
 		config = function(_, opts) require("gitsigns").setup(opts) end,
@@ -327,7 +327,6 @@ local plugins = {
 
 	{
 		"akinsho/git-conflict.nvim",
-		ft = { "gitcommit" },
 		event = "User GitLazyLoaded",
 		opts = function() return require("plugins.configs.git.git-conflict") end,
 		config = function(_, opts) require("git-conflict").setup(opts) end,
