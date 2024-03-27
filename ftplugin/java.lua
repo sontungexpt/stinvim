@@ -1,11 +1,13 @@
+local vim = vim
+
 vim.schedule(function()
 	local ok, jdtls = pcall(require, "jdtls")
 	if not ok then return end
-	local vim = vim
+
 	local fn, uv, fs = vim.fn, (vim.uv or vim.loop), vim.fs
 
-	local mason_registry = require("mason-registry")
-	local jdtls_path = mason_registry.get_package("jdtls"):get_install_path()
+	local mason_registry_get_package = require("mason-registry").get_package
+	local jdtls_path = mason_registry_get_package("jdtls"):get_install_path()
 
 	local jar_path = fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar", true, true)[1]
 	if not jar_path then
@@ -13,20 +15,11 @@ vim.schedule(function()
 		return
 	end
 
-	local jdebug_path = mason_registry.get_package("java-debug-adapter"):get_install_path()
-	local jtest_path = mason_registry.get_package("java-test"):get_install_path()
+	local jdebug_path = mason_registry_get_package("java-debug-adapter"):get_install_path()
+	local jtest_path = mason_registry_get_package("java-test"):get_install_path()
 
 	local uname = uv.os_uname().sysname
-	if uname == "Linux" then
-		uname = "linux"
-	elseif uname == "Darwin" then
-		uname = "mac"
-	elseif uname == "Windows" then
-		uname = "win"
-	else
-		require("utils.notify").error("Unsupported OS: " .. uname)
-		return
-	end
+	uname = uname == "Linux" and "linux" or uname == "Darwin" and "mac" or "win"
 
 	local root_markers = { ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }
 	local root_dir = fs.dirname(fs.find(root_markers, { upward = true })[1])
@@ -35,11 +28,7 @@ vim.schedule(function()
 	local workspace_dir = fn.stdpath("cache") .. "/site/java/workspace-root/" .. project_name
 	if fn.isdirectory(workspace_dir) == 0 then fn.mkdir(workspace_dir, "p") end
 
-	local bundles =
-		fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true)
-	vim.list_extend(bundles, fn.glob(jtest_path .. "/extension/server/*.jar", true, true))
-
-	local get_java_path = function()
+	local function java()
 		return fn.filereadable("/usr/lib/jvm/java-17-openjdk/bin/java") == 1
 				and "/usr/lib/jvm/java-17-openjdk/bin/java"
 			or fn.exepath("java")
@@ -52,6 +41,7 @@ vim.schedule(function()
 		require("jdtls.setup").add_commands()
 
 		require("plugins.configs.lsp.default").on_attach(client, bufnr)
+
 		require("lspsaga").init_lsp_saga()
 	end
 
@@ -60,7 +50,7 @@ vim.schedule(function()
 
 	local config = {
 		cmd = {
-			get_java_path(),
+			java(),
 			"-Declipse.application=org.eclipse.jdt.ls.core.id1",
 			"-Dosgi.bundles.defaultStartLevel=4",
 			"-Declipse.product=org.eclipse.jdt.ls.core.product",
@@ -171,7 +161,10 @@ vim.schedule(function()
 		},
 		init_options = {
 			extendedClientCapabilities = extendedClientCapabilities,
-			bundles = bundles,
+			bundles = vim.list_extend(
+				fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true),
+				fn.glob(jtest_path .. "/extension/server/*.jar", true, true)
+			),
 		},
 	}
 
