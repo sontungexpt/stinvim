@@ -121,7 +121,6 @@ autocmd({ "VimResized", "WinResized", "WinNew" }, {
 				local vim_height = api.nvim_get_option("lines")
 
 				if args.event == "VimResized" then
-					vim.o.cmdheight = vim.o.cmdheight or 1
 					for index, id in ipairs(win_ids) do
 						local ratio_x = vim.w[id].ratio_x
 						if type(ratio_x) == "table" then
