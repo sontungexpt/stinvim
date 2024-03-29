@@ -8,7 +8,7 @@ local options = {
 	end,
 	open_mapping = [[<C-t>]],
 	on_open = function(term)
-		require("core.plugmap").toggleterm(term.bufnr)
+		require("core.plugmap").terminal(term.bufnr)
 		vim.api.nvim_command("startinsert")
 	end,
 	on_close = function(term) vim.api.nvim_command("stopinsert") end,
@@ -28,8 +28,8 @@ local options = {
 	auto_scroll = true,
 	float_opts = {
 		border = "single", -- single/double/shadow/curved
-		width = math.floor(0.9 * vim.fn.winwidth(0)),
-		height = math.floor(0.85 * vim.fn.winheight(0)),
+		width = math.floor(0.9 * vim.api.nvim_win_get_width(0)),
+		height = math.floor(0.85 * vim.api.nvim_win_get_height(0)),
 		winblend = 3,
 	},
 	winbar = {

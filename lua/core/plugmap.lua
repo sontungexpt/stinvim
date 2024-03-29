@@ -198,16 +198,17 @@ autocmd("LspAttach", {
 	end,
 })
 
-M.toggleterm = function(bufnr)
+M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
 	map("n", "q", "<cmd>close<CR>", { buffer = bufnr })
 	-- kill terminal buffer
-	map("t", "<C-q>", "<C-\\><C-n>:q!<cr>")
-	map("t", "<A-q>", "<C-\\><C-n>:q!<cr>")
-	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
+	map("t", "<C-q>", [[<C-\><C-n>:q!<cr>]])
+	map("t", "<A-q>", [[<C-\><C-n>:q!<cr>]])
 
+	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
 	map("t", "jj", [[<C-\><C-n>]], { buffer = bufnr })
+
 	map("t", "<C-h>", [[<Cmd>wincmd h<CR>]], { buffer = bufnr })
 	map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], { buffer = bufnr })
 	map("t", "<C-k>", [[<Cmd>wincmd k<CR>]], { buffer = bufnr })
