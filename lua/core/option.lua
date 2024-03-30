@@ -17,13 +17,6 @@ vim.env.PATH = fn.stdpath("data")
 	.. (fn.has("win32") ~= 0 and ";" or ":")
 	.. vim.env.PATH
 
--- --Syntax
--- cmd("syntax enable")
--- cmd("syntax on")
-
--- cmd("filetype plugin on")
--- cmd("filetype plugin indent on")
-
 -- File to identify project root
 g.stinvim_root_markers = {
 	".git",

@@ -30,6 +30,49 @@ local get_installed_packages = function()
 	return {}
 end
 
+local function update_all_packages()
+	schedule(function()
+		local registry = require("mason-registry")
+		registry.update(vim.schedule_wrap(function(success, updated_registries)
+			if success then
+				local installed_pkgs = registry.get_installed_packages()
+				local running = #installed_pkgs
+
+				if running > 0 then
+					local updated = false
+					for _, pkg in ipairs(installed_pkgs) do
+						pkg:check_new_version(function(update_available, version)
+							if update_available then
+								require("utils.notify").info("Updating" .. pkg.name .. "to" .. version.latest_version)
+
+								pkg:install():on("closed", function()
+									updated = true
+									running = running - 1
+									if running == 0 then
+										require("utils.notify").info("Mason: Update all packages completed")
+									end
+								end)
+								return
+							end
+							running = running - 1
+						end)
+					end
+
+					if running == 0 then
+						if updated then
+							require("utils.notify").info("Mason: Update all packages completed")
+						else
+							require("utils.notify").info("Mason: All packages are up to date")
+						end
+					end
+				end
+			else
+				require("utils.notify").error("Failed to update registries")
+			end
+		end))
+	end, 100)
+end
+
 local sync_packages = function()
 	schedule(function()
 		local utils = require("utils")
@@ -60,9 +103,11 @@ local sync_packages = function()
 								require("utils.notify").info("Mason: Sync packages successfully")
 							end
 							utils.close_buffers_matching("mason", "filetype")
+							update_all_packages()
 						end
 					end)
 				elseif uninstall_trigger then
+					update_all_packages()
 					utils.close_buffers_matching("mason", "filetype")
 					require("utils.notify").info("Mason: Removing unused packages successfully")
 				end
@@ -71,12 +116,11 @@ local sync_packages = function()
 	end, 100)
 end
 
-M.extend_command = function()
-	api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
-end
-
 -------------------- Auto commands --------------------
 M.entry = function()
+	api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
+	api.nvim_create_user_command("MasonUpdateAllPackages", update_all_packages, { nargs = 0 })
+
 	api.nvim_create_autocmd("User", {
 		once = true,
 		pattern = { "VeryLazy", "LazyVimStarted" },

@@ -195,7 +195,7 @@ autocmd("LspAttach", {
 	end,
 })
 
-M.toggleterm = function(bufnr)
+M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
 	map("n", "q", "<cmd>close<CR>", { buffer = bufnr })
