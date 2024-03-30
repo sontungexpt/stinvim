@@ -410,6 +410,7 @@ local plugins = {
 
 	{
 		"williamboman/mason.nvim",
+		build=":MasonUpdate",
 		cmd = {
 			"Mason",
 			"MasonLog",
