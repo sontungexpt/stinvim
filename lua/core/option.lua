@@ -41,7 +41,7 @@ g.skip_ts_context_commentstring_module = true
 o.completeopt = "menu,menuone,noselect"
 
 -- disable nvim intro
-opt.shortmess:append("sI")
+opt.shortmess:append("I")
 
 -- Don't show mode since we have a statusline
 o.showmode = false
@@ -65,26 +65,25 @@ o.textwidth = 100
 o.number = true
 o.numberwidth = 2
 o.relativenumber = false
-o.cmdheight = 1
+-- o.cmdheight = 1 -- default
 
 --Encoding
 o.encoding = "utf-8"
 o.mouse = fn.isdirectory("/system") == 1 and "v" or "a" -- Enable mouse support on android system
 o.mousemoveevent = true
 
-o.incsearch = true
-o.hlsearch = true
+-- o.incsearch = true -- default
+-- o.hlsearch = true -- default
 
 --Tabs & indentation
 o.tabstop = 2
 o.softtabstop = 2
 o.shiftwidth = 2
 o.expandtab = true
-o.autoindent = true
+-- o.autoindent = true -- default
 o.smartindent = true
-o.smarttab = true
-o.backspace = "indent,eol,start"
-o.copyindent = true
+-- o.smarttab = true -- default
+-- o.backspace = "indent,eol,start" -- default
 
 --Undo file
 o.undofile = true
@@ -108,47 +107,21 @@ o.cursorcolumn = true
 
 --Appearance
 o.termguicolors = true
-o.background = "dark"
+-- o.background = "dark" -- default
 o.signcolumn = "yes"
 
 --List
 o.list = true
-opt.listchars:append {
-	-- tab = "▸ ",
-	tab = "  ",
-	trail = "·",
-}
+-- tab = "▸ ",
+o.listchars = "tab:  ,trail:·"
 
 --Clipboard
-opt.clipboard:append { "unnamedplus" }
+o.clipboard = "unnamedplus"
 
 --Split window
 o.splitbelow = true
 o.splitright = true
 o.winminwidth = 5
 
-opt.wildignore:append {
-	"*.pyc",
-	"*.o",
-	"*.class",
-	"*.obj",
-	"*.svn",
-	"*.swp",
-	"*.swo",
-	"*.exe",
-	"*.dll",
-	"*.so",
-	"*.dylib",
-	"*.jar",
-	"*.zip",
-	"*.tar.gz",
-	"*.tar.bz2",
-	"*.rar",
-	"*.tar.xz",
-	"*.tar.zst",
-	"*.tar.lz",
-	"*.hg",
-	"*.DS_Store",
-	"*.min.*",
-	"node_modules",
-}
+o.wildignore =
+	"*.pyc,*.o,*.class,*.obj,*.svn,*.swp,*.swo,*.exe,*.dll,*.so,*.dylib,*.jar,*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz,*.tar.zst,*.tar.lz,*.hg,*.DS_Store,*.min.*,node_modules"
