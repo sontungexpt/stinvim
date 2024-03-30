@@ -410,8 +410,6 @@ local plugins = {
 
 	{
 		"williamboman/mason.nvim",
-		build = ":MasonUpdate",
-		init = require("plugins.extensions.mason").extend_command,
 		cmd = {
 			"Mason",
 			"MasonLog",

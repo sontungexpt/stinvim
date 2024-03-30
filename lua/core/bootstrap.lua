@@ -34,7 +34,7 @@ M.lazy = function(install_path)
 	})
 end
 
-M.load_plugin_extensions = function(install_path)
+M.load_plugin_extensions = function()
 	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir
 		or fn.stdpath("config") .. "/lua/plugins/extensions"
 
@@ -94,7 +94,7 @@ M.boot = function(install_path)
 
 	vim.opt.rtp:prepend(install_path)
 
-	M.load_plugin_extensions(install_path)
+	M.load_plugin_extensions()
 
 	require("plugins")
 end

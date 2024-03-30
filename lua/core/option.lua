@@ -11,13 +11,6 @@ g.loaded_ruby_provider = 0
 -- g.ruby_host_prog = "~/.rbenv/versions/3.2.2/bin/neovim-ruby-host"
 -- g.python3_host_prog = "~/.venv/bin/python3"
 
--- --Syntax
--- cmd("syntax enable")
--- cmd("syntax on")
-
--- cmd("filetype plugin on")
--- cmd("filetype plugin indent on")
-
 -- File to identify project root
 g.stinvim_root_markers = {
 	".git",
