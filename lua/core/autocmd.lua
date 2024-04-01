@@ -1,4 +1,4 @@
-local api = vim.api
+local api, type = vim.api, type
 local cmd, autocmd = api.nvim_command, api.nvim_create_autocmd
 
 local group = api.nvim_create_augroup("STINVIM_CORE_AUTOCMD", { clear = true })
@@ -9,25 +9,48 @@ autocmd({ "VimEnter", "VimLeave" }, {
 	desc = "Update remote plugins",
 })
 
-autocmd("FileType", {
+autocmd("BufWritePre", {
 	group = group,
-	pattern = "help",
-	command = "wincmd L",
-	desc = "Open help in vertical split",
+	command = "silent! %s/\\s\\+$//e | silent! call mkdir(expand('%:p:h'), 'p')",
+	desc = "Remove trailing space and create parent directory if missing",
 })
 
-autocmd("FileType", {
+autocmd({ "FileType", "BufEnter" }, {
 	group = group,
-	pattern = "qf",
-	command = "set nobuflisted",
-	desc = "Don't list quickfix buffers",
-})
+	desc = "Do filetype specific work",
+	callback = function(args)
+		local do_work = function(bufnr, filetype)
+			local work = ({
+				help = "wincmd L", -- Open help in vertical split
+				qf = "set nobuflisted", -- Don't show quickfix in buffer list
+				sh = function()
+					if args.file:match("%.env$") then vim.diagnostic.disable(bufnr) end -- Disable diagnostic for .env files
+				end,
+			})[filetype]
 
-autocmd("BufReadPost", {
-	group = group,
-	pattern = "*.env",
-	callback = function(args) vim.diagnostic.disable(args.buf) end,
-	desc = "Disable diagnostic for .env files",
+			if not work then
+				return
+			elseif vim.b.core_autocmd_ft_loaded then
+				vim.b.core_autocmd_ft_loaded = false
+				return
+			elseif type(work) == "string" then
+				cmd(work)
+			elseif type(work) == "function" then
+				work()
+			end
+
+			vim.b.core_autocmd_ft_loaded = true
+		end
+
+		if args.event == "FileType" then
+			do_work(args.buf, args.match)
+		else
+			vim.defer_fn(function()
+				local bufnr = api.nvim_get_current_buf()
+				do_work(bufnr, api.nvim_buf_get_option(bufnr, "filetype"))
+			end, 10)
+		end
+	end,
 })
 
 autocmd({ "WinLeave", "WinEnter" }, {
@@ -45,18 +68,6 @@ autocmd("TextYankPost", {
 	group = group,
 	command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=120})",
 	desc = "Highlight yanked text",
-})
-
-autocmd("BufWritePre", {
-	group = group,
-	desc = "Create missing directories before writing the buffer",
-	command = "silent! call mkdir(expand('%:p:h'), 'p')",
-})
-
-autocmd("BufWritePre", {
-	group = group,
-	command = ":%s/\\s\\+$//e",
-	desc = "Remove whitespace on save",
 })
 
 autocmd("ModeChanged", {
