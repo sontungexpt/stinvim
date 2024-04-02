@@ -12,43 +12,25 @@ autocmd({ "VimEnter", "VimLeave" }, {
 autocmd("BufWritePre", {
 	group = group,
 	command = "silent! %s/\\s\\+$//e | silent! call mkdir(expand('%:p:h'), 'p')",
-	desc = "Remove trailing space and create parent directory if missing",
+	desc = "Remove trailing whitespace and create parent directory if not exists",
 })
 
-autocmd({ "FileType", "BufEnter" }, {
+autocmd("FileType", {
 	group = group,
 	desc = "Do filetype specific work",
 	callback = function(args)
-		local do_work = function(bufnr, filetype)
-			local work = ({
-				help = "wincmd L", -- Open help in vertical split
-				qf = "set nobuflisted", -- Don't show quickfix in buffer list
-				sh = function()
-					if args.file:match("%.env$") then vim.diagnostic.disable(bufnr) end -- Disable diagnostic for .env files
-				end,
-			})[filetype]
+		local work = ({
+			help = "wincmd L", -- Open help in vertical split
+			qf = "set nobuflisted", -- Don't show quickfix in buffer list
+			sh = function()
+				if args.file:match("%.env$") then vim.diagnostic.disable(args.buf) end
+			end, -- Disable diagnostic for .env files
+		})[args.match]
 
-			if not work then
-				return
-			elseif vim.b.core_autocmd_ft_loaded then
-				vim.b.core_autocmd_ft_loaded = false
-				return
-			elseif type(work) == "string" then
-				cmd(work)
-			elseif type(work) == "function" then
-				work()
-			end
-
-			vim.b.core_autocmd_ft_loaded = true
-		end
-
-		if args.event == "FileType" then
-			do_work(args.buf, args.match)
-		else
-			vim.defer_fn(function()
-				local bufnr = api.nvim_get_current_buf()
-				do_work(bufnr, api.nvim_buf_get_option(bufnr, "filetype"))
-			end, 10)
+		if type(work) == "string" then
+			cmd(work)
+		elseif type(work) == "function" then
+			work()
 		end
 	end,
 })
@@ -116,7 +98,7 @@ autocmd("BufHidden", {
 	group = group,
 	callback = function(event)
 		if event.file == "" and vim.bo[event.buf].buftype == "" and not vim.bo[event.buf].modified then
-			vim.schedule(function() api.nvim_buf_delete(event.buf, { force = true }) end)
+			api.nvim_buf_delete(event.buf, { force = true })
 		end
 	end,
 })
@@ -132,6 +114,7 @@ autocmd({ "VimResized", "WinResized", "WinNew" }, {
 				local vim_height = api.nvim_get_option("lines")
 					- vim.o.cmdheight
 					- (vim.o.laststatus ~= 0 and 1 or 0)
+					- (vim.o.showtabline ~= 0 and 1 or 0)
 
 				if args.event == "VimResized" then
 					for index, id in ipairs(win_ids) do
