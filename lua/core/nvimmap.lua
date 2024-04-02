@@ -208,3 +208,8 @@ autocmd("BufWinEnter", {
 		end
 	end,
 })
+
+autocmd("CmdwinEnter", {
+	desc = "Make q close command history (q: and q?)",
+	command = "nnoremap <silent><buffer><nowait> q :close<CR>",
+})
