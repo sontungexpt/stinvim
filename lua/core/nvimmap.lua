@@ -191,17 +191,20 @@ autocmd("CmdlineEnter", {
 })
 
 autocmd("BufWinEnter", {
-	desc = "Make q close help, man, quickfix, dap floats",
+	desc = "Make q close special buffers",
 	callback = function(args)
 		local map = require("utils.mapper").map
 		local buftype = vim.api.nvim_buf_get_option(args.buf, "buftype")
-		if vim.tbl_contains({ "help", "nofile", "quickfix" }, buftype) then
-			map("n", "q", "<cmd>close<cr>", { buffer = args.buf, nowait = true })
+		for index, type in ipairs { "help", "nofile", "quickfix" } do
+			if buftype == type then
+				map(
+					"n",
+					"q",
+					function() vim.api.nvim_buf_delete(args.buf, { force = true }) end,
+					{ buffer = args.buf, nowait = true }
+				)
+				return
+			end
 		end
 	end,
-})
-
-autocmd("CmdwinEnter", {
-	desc = "Make q close command history (q: and q?)",
-	command = "nnoremap <silent><buffer><nowait> q :close<CR>",
 })
