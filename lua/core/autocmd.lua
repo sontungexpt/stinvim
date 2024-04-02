@@ -114,7 +114,7 @@ autocmd({ "VimResized", "WinResized", "WinNew" }, {
 				local vim_height = api.nvim_get_option("lines")
 					- vim.o.cmdheight
 					- (vim.o.laststatus ~= 0 and 1 or 0)
-					- (vim.o.showtabline ~= 0 and 1 or 0)
+					- (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)
 
 				if args.event == "VimResized" then
 					for index, id in ipairs(win_ids) do
