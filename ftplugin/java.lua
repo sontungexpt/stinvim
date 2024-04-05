@@ -21,8 +21,7 @@ vim.schedule(function()
 	local uname = uv.os_uname().sysname
 	uname = uname == "Linux" and "linux" or uname == "Darwin" and "mac" or "win"
 
-	local root_markers = { ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }
-	local root_dir = fs.dirname(fs.find(root_markers, { upward = true })[1])
+	local root_dir = fs.dirname(fs.find({ ".git", "pom.xml", "build.gradle" }, { upward = true })[1])
 	local project_name = fn.fnamemodify(root_dir, ":p:h:t")
 
 	local workspace_dir = fn.stdpath("cache") .. "/site/java/workspace-root/" .. project_name
@@ -32,17 +31,6 @@ vim.schedule(function()
 		return fn.filereadable("/usr/lib/jvm/java-17-openjdk/bin/java") == 1
 				and "/usr/lib/jvm/java-17-openjdk/bin/java"
 			or fn.exepath("java")
-	end
-
-	local on_attach = function(client, bufnr)
-		jdtls.setup_dap { hotcodereplace = "auto" }
-
-		require("jdtls.dap").setup_dap_main_class_configs()
-		require("jdtls.setup").add_commands()
-
-		require("plugins.configs.lsp.default").on_attach(client, bufnr)
-
-		require("lspsaga").init_lsp_saga()
 	end
 
 	local extendedClientCapabilities = jdtls.extendedClientCapabilities
@@ -73,7 +61,16 @@ vim.schedule(function()
 			workspace_dir,
 		},
 		capabilities = require("plugins.configs.lsp.default").capabilities,
-		on_attach = on_attach,
+		on_attach = function(client, bufnr)
+			jdtls.setup_dap { hotcodereplace = "auto" }
+
+			require("jdtls.dap").setup_dap_main_class_configs()
+			require("jdtls.setup").add_commands()
+
+			require("plugins.configs.lsp.default").on_attach(client, bufnr)
+
+			require("lspsaga").init_lsp_saga()
+		end,
 		root_dir = root_dir,
 		settings = {
 			java = {
