@@ -65,8 +65,6 @@ local config = {
 		require("jdtls.setup").add_commands()
 
 		require("plugins.configs.lsp.default").on_attach(client, bufnr)
-
-		require("lspsaga").init_lsp_saga()
 	end,
 	root_dir = root_dir,
 	settings = {
