@@ -16,6 +16,17 @@ local plugins = {
 	},
 
 	-- {
+	-- 	"folke/tokyonight.nvim",
+	-- 	lazy = false,
+	-- 	priority = 1000,
+	-- 	opts = function() return require("plugins.configs.tokyonight") end,
+	-- 	config = function(_, opts)
+	-- 		require("tokyonight").setup(opts)
+	-- 		vim.cmd([[colorscheme tokyonight]])
+	-- 	end,
+	-- },
+
+	-- {
 	-- 	dir = "/home/stilux/Data/Workspace/neovim-plugins/witch-line",
 	-- 	dependencies = {
 	-- 		"nvim-tree/nvim-web-devicons",
@@ -132,6 +143,7 @@ local plugins = {
 		cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec" },
 		keys = "<C-t>",
 		opts = function() return require("plugins.configs.toggleterm") end,
+		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("toggleterm").setup(opts) end,
 	},
 

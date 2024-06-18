@@ -1,11 +1,10 @@
-local vim = vim
-
 local ok, jdtls = pcall(require, "jdtls")
 if not ok then return end
 
+local vim = vim
 local fn, uv, fs = vim.fn, (vim.uv or vim.loop), vim.fs
-
 local mason_registry_get_package = require("mason-registry").get_package
+
 local jdtls_path = mason_registry_get_package("jdtls"):get_install_path()
 
 local jar_path = fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar", true, true)[1]
@@ -61,9 +60,7 @@ local config = {
 	on_attach = function(client, bufnr)
 		jdtls.setup_dap { hotcodereplace = "auto" }
 
-		require("jdtls.dap").setup_dap_main_class_configs()
 		require("jdtls.setup").add_commands()
-
 		require("plugins.configs.lsp.default").on_attach(client, bufnr)
 	end,
 	root_dir = root_dir,
@@ -93,7 +90,7 @@ local config = {
 			format = {
 				enabled = true,
 				settings = {
-					url = fn.stdpath("config") .. "/lang_servers/intellij-java-google-style.xml",
+					url = fn.stdpath("config") .. "/lang-servers/intellij-java-google-style.xml",
 					profile = "GoogleStyle",
 				},
 			},
@@ -138,10 +135,10 @@ local config = {
 			},
 			configuration = {
 				runtimes = {
-					{
-						name = "JavaSE-11",
-						path = "/usr/lib/jvm/java-11-openjdk/",
-					},
+					-- {
+					-- 	name = "JavaSE-11",
+					-- 	path = "/usr/lib/jvm/java-11-openjdk/",
+					-- },
 					{
 						name = "JavaSE-17",
 						path = "/usr/lib/jvm/java-17-openjdk/",
@@ -155,10 +152,14 @@ local config = {
 		},
 		init_options = {
 			extendedClientCapabilities = extendedClientCapabilities,
-			bundles = vim.list_extend(
-				fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true),
-				fn.glob(jtest_path .. "/extension/server/*.jar", true, true)
-			),
+			bundles = (
+				jdebug_path ~= ""
+				and jtest_path ~= ""
+				and vim.list_extend(
+					fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true),
+					fn.glob(jtest_path .. "/extension/server/*.jar", true, true)
+				)
+			) or nil,
 		},
 	},
 }

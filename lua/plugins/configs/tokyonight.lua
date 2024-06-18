@@ -1,6 +1,6 @@
 local options = {
 	-- style = "storm", -- `storm`, `moon`, a darker variant `night` and `day`
-	style = "moon", -- `storm`, `moon`, a darker variant `night` and `day`
+	style = "night", -- `storm`, `moon`, a darker variant `night` and `day`
 	light_style = "day",
 	transparent = false,
 	terminal_colors = true,
