@@ -70,7 +70,7 @@ local function update_all_packages()
 				require("utils.notify").error("Failed to update registries")
 			end
 		end))
-	end, 100)
+	end)
 end
 
 local sync_packages = function()
@@ -111,9 +111,9 @@ local sync_packages = function()
 					utils.close_buffers_matching("mason", "filetype")
 					require("utils.notify").info("Mason: Removing unused packages successfully")
 				end
-			end, 100)
+			end)
 		end
-	end, 100)
+	end)
 end
 
 -------------------- Auto commands --------------------

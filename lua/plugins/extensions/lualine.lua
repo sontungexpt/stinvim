@@ -3,7 +3,7 @@ local M = {
 }
 
 M.entry = function()
-	local id = nil
+	local id
 	id = vim.api.nvim_create_autocmd("User", {
 		desc = "Auto enable showmode if the window is small",
 		pattern = "LazyLoad",

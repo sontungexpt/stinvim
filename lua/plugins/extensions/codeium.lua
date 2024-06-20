@@ -7,7 +7,7 @@ local is_authenticated = function()
 end
 
 M.entry = function()
-	local id = nil
+	local id
 	id = vim.api.nvim_create_autocmd("User", {
 		pattern = "LazyLoad",
 		desc = "Automatic auth for codeium",

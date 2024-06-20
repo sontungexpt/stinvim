@@ -11,10 +11,13 @@ vim.schedule(function()
 
 	------------------------------ nvimtree ------------------------------
 	map({ "n", "i", "v", "c" }, "<C-b>", function()
-		local filetype = api.nvim_buf_get_option(0, "filetype")
+		local filetype = api.nvim_get_option_value("filetype", { buf = 0 })
 		-- local buftype = api.nvim_buf_get_option(0, "buftype")
-		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then return end
-		api.nvim_command("NvimTreeToggle")
+		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
+			vim.cmd.normal { "<C-b>", bang = true }
+		else
+			api.nvim_command("NvimTreeToggle")
+		end
 	end, { desc = "Toggle NvimTree" })
 
 	------------------------------ Telescope ------------------------------
@@ -228,15 +231,20 @@ M.gitsigns = function(bufnr)
 
 	-- Navigation
 	map1("n", "]g", function()
-		if vim.wo.diff then return "]g" end
-		vim.schedule(gs.next_hunk)
-		return "<Ignore>"
-	end, { expr = true, desc = "Next hunk" })
-	map1("n", "[g", function()
-		if vim.wo.diff then return "[g" end
-		vim.schedule(gs.prev_hunk)
-		return "<Ignore>"
-	end, { expr = true, desc = "Prev hunk" })
+		if vim.wo.diff then
+			vim.cmd.normal { "]g", bang = true }
+		else
+			gs.nav_hunk("next")
+		end
+	end, { desc = "Next hunk" })
+	map("n", "[g", function()
+		if vim.wo.diff then
+			vim.cmd.normal { "[g", bang = true }
+		else
+			gs.nav_hunk("prev")
+		end
+	end, { desc = "Previous hunk" })
+
 	map1("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
 	map1(
 		"v",

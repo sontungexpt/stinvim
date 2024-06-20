@@ -1,4 +1,3 @@
 {
-  "diagnostics.disable": ["undefined-field"]
+  "diagnostics.disable": ["undefined-field", "different-requires"]
 }
-
