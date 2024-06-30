@@ -348,11 +348,13 @@ local plugins = {
 	{
 		"akinsho/flutter-tools.nvim",
 		ft = "dart",
+		event = "BufReadPost */pubspec.yaml",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
-		opts = function() return require("plugins.configs.lsp.flutter-tools") end,
+		opts = function() return require("plugins.configs.flutter-tools") end,
+		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("flutter-tools").setup(opts) end,
 	},
 

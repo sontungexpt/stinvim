@@ -6,7 +6,7 @@ local options = {
 		-- This determines whether notifications are show with `vim.notify` or with the plugin's custom UI
 		-- please note that this option is eventually going to be deprecated and users will need to
 		-- depend on plugins like `nvim-notify` instead.
-		notification_style = "native" | "plugin",
+		-- notification_style = "native" | "plugin",
 	},
 	-- decorations = {
 	-- 	statusline = {
@@ -87,4 +87,5 @@ local options = {
 	-- 	},
 	-- },
 }
+
 return options
