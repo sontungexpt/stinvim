@@ -346,6 +346,17 @@ local plugins = {
 	},
 
 	{
+		"akinsho/flutter-tools.nvim",
+		ft = "dart",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"stevearc/dressing.nvim", -- optional for vim.ui.select
+		},
+		opts = function() return require("plugins.configs.lsp.flutter-tools") end,
+		config = function(_, opts) require("flutter-tools").setup(opts) end,
+	},
+
+	{
 		"glepnir/lspsaga.nvim",
 		cmd = "Lspsaga",
 		dependencies = {

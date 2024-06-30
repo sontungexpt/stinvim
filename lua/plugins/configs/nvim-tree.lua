@@ -120,9 +120,9 @@ local options = {
 			},
 		},
 	},
-	trash = {
-		cmd = "trash-put",
-	},
+	-- trash = {
+	-- 	cmd = "trash-put",
+	-- },
 	ui = {
 		confirm = {
 			remove = true,
