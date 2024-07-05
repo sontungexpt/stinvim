@@ -514,7 +514,7 @@ function M.exists_any_diagnostics(bufnr, line) return diagnostics_cache[bufnr][l
 --- Cleans diagnostics for a buffer.
 ---
 --- @param bufnr integer The buffer number.
---- @param lines_or_diagnostic number|table|nil Specifies the lines or diagnostic to clean, If nil,
+--- @param lines_or_diagnostic number|table|boolean|nil Specifies the lines or diagnostic to clean, If nil,
 --- do nothin
 ---   - If a number (line number): Clears diagnostics at the specified line.
 ---   - If a table:
