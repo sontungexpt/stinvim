@@ -694,6 +694,8 @@ function M.setup(bufnr, opts)
 						opts.inline and last_shown_diagnostic
 					)
 				end
+			elseif opts.inline then
+				M.clean_diagnostics(bufnr, last_shown_diagnostic)
 			end
 
 			prev_cursor_line = current_line
