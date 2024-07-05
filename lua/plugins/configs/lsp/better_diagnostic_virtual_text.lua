@@ -632,6 +632,7 @@ function M.setup(bufnr, opts)
 	local prev_cursor_line = 1 -- The previous line that cursor was on.
 	local text_changing = false
 	local last_shown_diagnostic = nil
+	local prev_diag_changed_trigger_line = -1
 
 	autocmd("DiagnosticChanged", {
 		group = autocmd_group,
@@ -645,7 +646,7 @@ function M.setup(bufnr, opts)
 			local cursor_pos = get_cursor(0)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
-			if text_changing then
+			if text_changing or prev_diag_changed_trigger_line == current_line then
 				_, last_shown_diagnostic, diagnostics_cache[bufnr][current_line] =
 					M.show_cursor_diagnostic(opts, bufnr, current_line, prev_cursor_line, true, last_shown_diagnostic)
 			else
@@ -668,6 +669,8 @@ function M.setup(bufnr, opts)
 					end
 				end
 			end
+
+			prev_diag_changed_trigger_line = current_line
 		end,
 	})
 
@@ -707,6 +710,7 @@ function M.setup(bufnr, opts)
 				M.clean_diagnostics(bufnr, last_shown_diagnostic)
 			end
 
+			if prev_diag_changed_trigger_line ~= current_line then prev_diag_changed_trigger_line = -1 end
 			prev_cursor_line = current_line
 		end,
 	})
