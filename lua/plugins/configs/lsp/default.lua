@@ -2,29 +2,30 @@ local lsp = vim.lsp
 
 local M = {}
 
+local signs_hl = {
+	"DiagnosticSignError",
+	"DiagnosticSignWarn",
+	"DiagnosticSignHint",
+	"DiagnosticSignInfo",
+}
+
+vim.diagnostic.config {
+	signs = {
+		text = require("ui.icons").DiagnosticSign,
+		numhl = signs_hl,
+		texthl = signs_hl,
+	},
+	underline = true,
+	severity_sort = true,
+	update_in_insert = true,
+	virtual_text = false,
+	float = {
+		source = "if_many",
+	},
+}
+
+require("plugins.configs.lsp.better_diagnostic_virtual_text")
 M.on_attach = function(client, bufnr)
-	for _, case in ipairs { "Error", "Info", "Hint", "Warn" } do
-		local hl = "DiagnosticSign" .. case
-		vim.fn.sign_define(hl, {
-			text = require("ui.icons")[hl],
-			numhl = hl,
-			texthl = hl,
-		})
-	end
-
-	vim.diagnostic.config {
-		signs = true,
-		underline = true,
-		severity_sort = true,
-		update_in_insert = false,
-		virtual_text = {
-			prefix = "●",
-		},
-		float = {
-			source = "always",
-		},
-	}
-
 	lsp.handlers["textDocument/signatureHelp"] = lsp.with(lsp.handlers.signature_help, {
 		border = "single",
 		focusable = false,
@@ -32,17 +33,6 @@ M.on_attach = function(client, bufnr)
 	})
 
 	lsp.handlers["textDocument/hover"] = lsp.with(lsp.handlers.hover, { border = "single" })
-
-	lsp.handlers["textDocument/publishDiagnostics"] = lsp.with(lsp.diagnostic.on_publish_diagnostics, {
-		signs = true,
-		underline = true,
-		update_in_insert = true,
-		virtual_text = {
-			prefix = "●",
-			spacing = 4,
-			severity_limit = "Warning",
-		},
-	})
 end
 
 local capabilities = lsp.protocol.make_client_capabilities()

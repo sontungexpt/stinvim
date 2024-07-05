@@ -12,10 +12,7 @@ g.loaded_ruby_provider = 0
 -- g.python3_host_prog = "~/.venv/bin/python3"
 
 -- add binaries installed by mason.nvim to path
-vim.env.PATH = fn.stdpath("data")
-	.. "/mason/bin"
-	.. (fn.has("win32") ~= 0 and ";" or ":")
-	.. vim.env.PATH
+vim.env.PATH = fn.stdpath("data") .. "/mason/bin" .. (fn.has("win32") ~= 0 and ";" or ":") .. vim.env.PATH
 
 -- File to identify project root
 g.stinvim_root_markers = {
@@ -63,8 +60,8 @@ o.textwidth = 100
 
 --Line number
 o.number = true
-o.numberwidth = 2
 o.relativenumber = false
+-- o.numberwidth = 2
 -- o.cmdheight = 1 -- default
 
 --Encoding

@@ -1,9 +1,15 @@
 return {
 	-- diagnostics
-	DiagnosticSignInfo = "",
-	DiagnosticSignHint = "󰌵",
-	DiagnosticSignWarn = "",
-	DiagnosticSignError = "",
+	DiagnosticSign = {
+		Error = "",
+		Warn = "",
+		Hint = "󰌵",
+		Info = "",
+		"",
+		"",
+		"󰌵",
+		"",
+	},
 
 	-- dap
 	DapStopped = "󱞪 ",
