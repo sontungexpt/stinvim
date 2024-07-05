@@ -21,8 +21,7 @@ local default_options = {
 		arrow = "  ",
 		up_arrow = "  ",
 	},
-	-- inline = true,
-	inline = false,
+	inline = true,
 }
 
 local buffers_attached = {}
