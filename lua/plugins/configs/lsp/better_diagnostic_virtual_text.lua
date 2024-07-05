@@ -60,7 +60,6 @@ do
 								line_value[0] = nil -- make sure never loop over this key
 								for _, d in pairs(line_value) do
 									local lnum = d.lnum + 1
-									local end_lnum = d.end_lnum + 1
 									local line_lnum_value = lines[lnum]
 									if line_lnum_value and line_lnum_value[d] and line_lnum_value[0] > 1 then
 										line_lnum_value[d] = nil
