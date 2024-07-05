@@ -214,7 +214,7 @@ end
 ---
 --- @param bufnr integer The buffer number
 --- @param line integer The line number
---- @param computed boolean Whether the diagnostics are computed
+--- @param computed ? boolean Whether the diagnostics are computed
 --- @return table The full list of diagnostics for the line sorted by severity
 --- @return integer The number of diagnostics in the line
 function M.fetch_diagnostics(bufnr, line, computed)
