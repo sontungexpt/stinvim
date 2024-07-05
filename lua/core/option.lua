@@ -57,8 +57,8 @@ o.textwidth = 100
 
 --Line number
 o.number = true
-o.numberwidth = 2
 o.relativenumber = false
+-- o.numberwidth = 2
 -- o.cmdheight = 1 -- default
 
 --Encoding

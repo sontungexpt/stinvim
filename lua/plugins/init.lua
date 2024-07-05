@@ -1,3 +1,4 @@
+---@diagnostic disable: different-requires
 local require = require
 
 local plugins = {
@@ -455,6 +456,7 @@ local plugins = {
 			{
 				-- snippet plugin
 				"L3MON4D3/LuaSnip",
+				build = "make install_jsregexp",
 				dependencies = "rafamadriz/friendly-snippets",
 				config = function() require("plugins.configs.cmp.LuaSnip") end,
 			},
