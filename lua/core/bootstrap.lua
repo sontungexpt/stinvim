@@ -35,8 +35,7 @@ M.lazy = function(install_path)
 end
 
 M.load_plugin_extensions = function()
-	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir
-		or fn.stdpath("config") .. "/lua/plugins/extensions"
+	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir or fn.stdpath("config") .. "/lua/plugins/extensions"
 
 	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
 
@@ -81,9 +80,7 @@ M.boot = function(install_path)
 				vim.schedule(function()
 					fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
 						on_exit = function(_, code)
-							if code == 0 then
-								api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false })
-							end
+							if code == 0 then api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false }) end
 						end,
 					})
 				end)

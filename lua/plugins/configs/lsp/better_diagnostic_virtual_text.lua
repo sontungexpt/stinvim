@@ -3,13 +3,17 @@ local api, fn, diag = vim.api, vim.fn, vim.diagnostic
 local autocmd, augroup, strdisplaywidth, get_cursor, tbl_insert =
 	api.nvim_create_autocmd, api.nvim_create_augroup, fn.strdisplaywidth, api.nvim_win_get_cursor, table.insert
 local ns = api.nvim_create_namespace("stinvim-better-diagnostic-virtual-text")
+
 local SEVERITY_SUFFIXS = { "Error", "Warn", "Info", "Hint" }
+local TAB_LENGTH = strdisplaywidth("\t")
 
 local meta_pairs = function(t)
 	local metatable = getmetatable(t)
 	if metatable and metatable.__pairs then return metatable.__pairs(t) end
 	return pairs(t)
 end
+
+local make_group_name = function(bufnr) return "BetterDiagnosticVirtualText" .. bufnr end
 
 local M = {}
 
@@ -106,18 +110,16 @@ do
 		end,
 	})
 
-	local group = augroup("BetterDiagnosticVirtualTextBufWipeout", { clear = true })
 	setmetatable(buffers_attached, {
 		__newindex = function(t, bufnr, value)
 			autocmd("BufWipeout", {
-				group = group,
 				once = true,
 				buffer = bufnr,
 				callback = function()
 					rawset(t, bufnr, nil)
 					buffers_disabled[bufnr] = nil
 					real_diagnostics_cache[bufnr] = nil
-					pcall(api.nvim_del_augroup_by_name, "BetterDiagnosticVirtualText" .. bufnr)
+					api.nvim_del_augroup_by_name(make_group_name(bufnr))
 				end,
 			})
 			rawset(t, bufnr, value)
@@ -146,7 +148,7 @@ local function wrap_text(text, max_length)
 
 	while line_end < text_length do
 		-- Find the last space before line_end to split the line
-		while line_end > line_start and text:sub(line_end, line_end) ~= " " do
+		while line_end > line_start and text:byte(line_end) ~= 32 do
 			line_end = line_end - 1
 		end
 
@@ -170,7 +172,23 @@ local function wrap_text(text, max_length)
 	return lines, num_line
 end
 
---- Sorts a list using the insertion sort algorithm.
+--- Counts the number of leading spaces in a string. Converts tabs to corresponding spaces.
+---
+--- @param str string The string to count the leading spaces in.
+--- @return number The number of leading spaces in the string.
+--- @return boolean Whether the string is all spaces.
+local function count_initial_spaces(str)
+	local i = 1
+	local sum = 0
+	local byte = str:byte(i)
+	while byte == 32 or byte == 9 do
+		sum = sum + (byte == 32 and 1 or TAB_LENGTH)
+		i = i + 1
+		byte = str:byte(i)
+	end
+	return sum, byte == nil
+end
+
 --- This function modifies the original list.
 --- @param list table The list to sort.
 --- @param comparator function The comparator function.
@@ -212,6 +230,21 @@ local function insert_sorted(list, value, comparator, list_size)
 	return list, new_size
 end
 
+--- Generates a string of spaces of the specified length.
+--- This function optimizes the process of generating a string of spaces by
+--- checking if the length is divisible by numbers from 10 to 2, using precomputed
+--- substrings to minimize the number of calls to `string.rep`.
+--- @param num number The total number of spaces to generate.
+--- @return string A string consisting of `num` spaces.
+local space = function(num)
+	local reps = { " ", "  ", "   ", "    ", "     ", "      ", "       ", "        ", "         ", "          " }
+	local rep = string.rep
+	for i = 10, 2, -1 do
+		if num % i == 0 then return rep(reps[i], num / i) end
+	end
+	return rep(" ", num)
+end
+
 --- Retrieves diagnostics at the line position in the specified buffer.
 --- Diagnostics are filtered and sorted by severity, with the most severe ones first.
 ---
@@ -227,6 +260,7 @@ function M.fetch_diagnostics(bufnr, line, computed)
 	if computed then
 		diagnostics = diag.get(bufnr, { lnum = line - 1 })
 		diagnostics_size = #diagnostics
+		diagnostics_cache[bufnr][line] = diagnostics
 		if diagnostics_size == 0 then return diagnostics, diagnostics_size end
 		insertion_sort(diagnostics, function(d1, d2) return d1.severity < d2.severity end, diagnostics_size)
 	else
@@ -292,8 +326,16 @@ function M.fetch_top_cursor_diagnostic(bufnr, current_line, current_col, compute
 end
 
 --- Format line chunks for virtual text display.
---- @param ui_opts table - The table of UI options.
---- @param line_idx number - The index of the current line.
+---
+--- This function formats the line chunks for virtual text display, considering various options such as severity,
+--- underline symbol, text offsets, and parts to be removed.
+---
+--- @param ui_opts table - The table of UI options. Should contain:
+---     - arrow: string - The symbol used as the left arrow.
+---     - up_arrow: string - The symbol used as the up arrow.
+---     - right_kept_space: number - The space to keep on the right side.
+---     - left_kept_space: number - The space to keep on the left side.
+--- @param line_idx number - The index of the current line (1-based).
 --- @param line_msg string - The message to display on the line.
 --- @param severity number - The severity level of the diagnostic (1 = Error, 2 = Warn, 3 = Info, 4 = Hint).
 --- @param max_line_length number - The maximum length of the line.
@@ -333,21 +375,37 @@ function M.format_line_chunks(
 
 	local message_highlight = hls()
 
-	local arrow_symbol = should_under_line and ui_opts.up_arrow or ui_opts.arrow
-	if first_line then
-		if not removed_parts.arrow then
-			if should_under_line then arrow_symbol = string.rep(" ", virt_text_offset) .. arrow_symbol:gsub("^%s*", "") end
+	if should_under_line then
+		local arrow_symbol = ui_opts.up_arrow:gsub("^%s*", "")
+		local space_offset = space(virt_text_offset)
+		if first_line then
+			if not removed_parts.arrow then
+				tbl_insert(chunks, {
+					space_offset .. arrow_symbol,
+					hls { "BetterDiagnosticVirtualTextArrow", "BetterDiagnosticVirtualTextArrow" .. severity_suffix },
+				})
+			end
+		else
 			tbl_insert(chunks, {
-				arrow_symbol,
-				hls { "BetterDiagnosticVirtualTextArrow", "BetterDiagnosticVirtualTextArrow" .. severity_suffix },
+				space_offset .. space(strdisplaywidth(arrow_symbol)),
+				message_highlight,
 			})
 		end
 	else
-		local offset_space = string.rep(
-			" ",
-			virt_text_offset + strdisplaywidth(should_under_line and arrow_symbol:gsub("^%s*", "") or arrow_symbol)
-		)
-		tbl_insert(chunks, { offset_space, message_highlight })
+		local arrow_symbol = ui_opts.arrow
+		if first_line then
+			if not removed_parts.arrow then
+				tbl_insert(chunks, {
+					arrow_symbol,
+					hls { "BetterDiagnosticVirtualTextArrow", "BetterDiagnosticVirtualTextArrow" .. severity_suffix },
+				})
+			end
+		else
+			tbl_insert(chunks, {
+				space(virt_text_offset + strdisplaywidth(arrow_symbol)),
+				message_highlight,
+			})
+		end
 	end
 
 	if not removed_parts.left_kept_space then
@@ -368,7 +426,7 @@ function M.format_line_chunks(
 	tbl_insert(chunks, { line_msg, message_highlight })
 
 	if not removed_parts.right_kept_space then
-		local last_space = string.rep(" ", max_line_length - strdisplaywidth(line_msg) + ui_opts.right_kept_space)
+		local last_space = space(max_line_length - strdisplaywidth(line_msg) + ui_opts.right_kept_space)
 		tbl_insert(chunks, { last_space, message_highlight })
 	end
 
@@ -395,7 +453,7 @@ local function evaluate_extmark(ui_opts)
 	local window_info = fn.getwininfo(api.nvim_get_current_win())[1] -- First entry
 	local text_area_width = window_info.width - window_info.textoff
 	local current_line = api.nvim_get_current_line()
-	local curr_line_length = strdisplaywidth(current_line)
+	local offset = strdisplaywidth(current_line)
 
 	-- Minimum length to be able to create beautiful virtual text
 	-- Get the text_area_width in case the window is too narrow
@@ -403,7 +461,7 @@ local function evaluate_extmark(ui_opts)
 
 	local left_arrow_length = strdisplaywidth(ui_opts.arrow)
 	local up_arrow_length = strdisplaywidth(ui_opts.up_arrow)
-	local is_under_min_length = text_area_width - curr_line_length
+	local is_under_min_length = text_area_width - offset
 		< MIN_WRAP_LENGTH
 			+ ui_opts.left_kept_space
 			+ ui_opts.right_kept_space
@@ -412,14 +470,13 @@ local function evaluate_extmark(ui_opts)
 	local free_space
 	local arrow_length
 	if is_under_min_length then
-		-- find the first char is not space or tab
-		---@diagnostic disable-next-line: cast-local-type
-		curr_line_length = strdisplaywidth(string.match(current_line, "%s")) - 1
+		local init_spaces, only_space = count_initial_spaces(current_line)
+		offset = only_space and 0 or init_spaces
 		free_space = text_area_width
 		arrow_length = up_arrow_length
 	else
-		curr_line_length = curr_line_length + 1 -- 1 for eol char
-		free_space = text_area_width - curr_line_length
+		offset = offset + 1 -- 1 for eol char
+		free_space = text_area_width - offset
 		arrow_length = left_arrow_length
 	end
 
@@ -456,7 +513,7 @@ local function evaluate_extmark(ui_opts)
 		end
 	end
 
-	return is_under_min_length, curr_line_length, wrap_length, removed_parts
+	return is_under_min_length, offset, wrap_length, removed_parts
 end
 
 --- Generates virtual texts and virtual lines for a diagnostic message.
@@ -468,11 +525,12 @@ end
 --- @param diagnostic table The diagnostic message to generate the virtual texts for.
 --- @return table The list of virtual texts.
 --- @return table The list of virtual lines.
+--- @return integer The offset of the virtual text.
 local function generate_virtual_texts(opts, diagnostic)
 	local ui = opts.ui
 	local should_under_line, offset, wrap_length, removed_parts = evaluate_extmark(ui)
 	local msgs, size = wrap_text(diagnostic.message, wrap_length)
-	if size == 0 then return {}, {} end
+	if size == 0 then return {}, {}, offset end
 
 	local severity = diagnostic.severity
 
@@ -481,7 +539,7 @@ local function generate_virtual_texts(opts, diagnostic)
 	local virt_text =
 		M.format_line_chunks(ui, 1, msgs[1], severity, wrap_length, size == 1, offset, should_under_line, removed_parts)
 	if should_under_line then
-		if size == 1 then return {}, { virt_text } end
+		if size == 1 then return {}, { virt_text }, offset end
 		tbl_insert(virt_lines, virt_text)
 		virt_text = {}
 	end
@@ -493,7 +551,7 @@ local function generate_virtual_texts(opts, diagnostic)
 		)
 	end
 
-	return virt_text, virt_lines
+	return virt_text, virt_lines, offset
 end
 
 --- Tracks the diagnostics for a buffer.
@@ -563,14 +621,14 @@ end
 --- @return table The diagnostic that was shown.
 function M.show_diagnostic(opts, bufnr, diagnostic, clean_opts)
 	if clean_opts then M.clean_diagnostics(bufnr, clean_opts) end
-	local virt_text, virt_lines = generate_virtual_texts(opts or default_options, diagnostic)
+	local virt_text, virt_lines, offset = generate_virtual_texts(opts or default_options, diagnostic)
 	local virtline = diagnostic.lnum
 	local shown_line = api.nvim_buf_set_extmark(bufnr, ns, virtline, 0, {
 		id = virtline + 1,
 		virt_text = virt_text,
 		virt_lines = virt_lines,
-		virt_text_pos = "eol",
-		-- priority = 50,
+		virt_text_win_col = offset,
+		invalidate = not M.exists_any_diagnostics(bufnr, virtline + 1),
 		line_hl_group = "CursorLine",
 	})
 	return shown_line, diagnostic
@@ -626,13 +684,43 @@ function M.get_line_shown(diagnostic) return diagnostic.lnum + 1 end
 --- @param bufnr integer The buffer number.
 function M.setup(bufnr, opts)
 	if buffers_attached[bufnr] then return end
-	local autocmd_group = api.nvim_create_augroup("BetterDiagnosticVirtualText" .. bufnr, { clear = true })
+	local autocmd_group = api.nvim_create_augroup(make_group_name(bufnr), { clear = true })
 	opts = opts and vim.tbl_deep_extend(default_options, opts) or default_options
 
-	local prev_cursor_line = 1 -- The previous line that cursor was on.
+	local prev_line = 1 -- The previous line that cursor was on.
 	local text_changing = false
 	local last_shown_diagnostic = nil
+	local line_count_changed = false
 	local prev_diag_changed_trigger_line = -1
+
+	local function clean_diagnostics(lines_or_diagnostic) M.clean_diagnostics(bufnr, lines_or_diagnostic) end
+
+	local function show_diagnostic(diagnostic)
+		if diagnostic then
+			M.show_diagnostic(opts, bufnr, diagnostic) -- re-render last shown diagnostic
+		end
+	end
+
+	local function show_cursor_diagnostic(current_line, current_col, computed, clean_opts)
+		_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col, computed, clean_opts)
+	end
+
+	local function exists_any_diagnostics(line) return M.exists_any_diagnostics(bufnr, line) end
+
+	local function show_top_severity_diagnostic(line, computed, clean_opts)
+		return M.show_top_severity_diagnostic(opts, bufnr, line, computed, clean_opts)
+	end
+
+	local function show_diagnostics(current_line, current_col)
+		clean_diagnostics(true)
+		for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
+			if line == current_line then
+				show_cursor_diagnostic(current_line, current_col)
+			else
+				show_top_severity_diagnostic(line)
+			end
+		end
+	end
 
 	autocmd("DiagnosticChanged", {
 		group = autocmd_group,
@@ -643,33 +731,27 @@ function M.setup(bufnr, opts)
 				track_diagnostics(bufnr, args.data.diagnostics) -- still need to track the diagnostics in case the buffer is disabled
 				return
 			end
+
 			local cursor_pos = get_cursor(0)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
-			if text_changing or prev_diag_changed_trigger_line == current_line then
-				_, last_shown_diagnostic, diagnostics_cache[bufnr][current_line] =
-					M.show_cursor_diagnostic(opts, bufnr, current_line, prev_cursor_line, true, last_shown_diagnostic)
+			if not line_count_changed and (text_changing or prev_diag_changed_trigger_line == current_line) then
+				show_cursor_diagnostic(current_line, current_col, true, last_shown_diagnostic)
 			else
 				-- If text is not currently changing, it implies that the cursor moved before the diagnostics changed event.
 				-- Therefore, we need to re-track the diagnostics because multiple diagnostics across different lines may have changed simultaneously.
 				track_diagnostics(bufnr, args.data.diagnostics)
 				if opts.inline then
-					if M.exists_any_diagnostics(bufnr, current_line) then
-						_, last_shown_diagnostic =
-							M.show_cursor_diagnostic(opts, bufnr, current_line, current_col, false, last_shown_diagnostic)
+					if exists_any_diagnostics(current_line) then
+						show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
 					end
 				else
-					M.clean_diagnostics(bufnr, true)
-					for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
-						if line == current_line then
-							_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-						else
-							M.show_top_severity_diagnostic(opts, bufnr, line)
-						end
-					end
+					show_diagnostics(current_line, current_col)
 				end
+				line_count_changed = false
 			end
 
+			text_changing = false
 			prev_diag_changed_trigger_line = current_line
 		end,
 	})
@@ -680,6 +762,7 @@ function M.setup(bufnr, opts)
 		---@diagnostic disable-next-line: redefined-local
 		callback = function(args)
 			if buffers_disabled[bufnr] then return end
+
 			if text_changing then -- we had another event for text changing
 				text_changing = false
 				return
@@ -688,30 +771,25 @@ function M.setup(bufnr, opts)
 			local cursor_pos = get_cursor(0)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
-			if M.exists_any_diagnostics(bufnr, current_line) then
-				if current_line == prev_cursor_line then
+			if exists_any_diagnostics(current_line) then
+				if current_line == prev_line then
 					if
 						last_shown_diagnostic
 						and (last_shown_diagnostic.col > current_col or last_shown_diagnostic.end_col - 1 < current_col)
 					then
-						_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
+						show_cursor_diagnostic(current_line, current_col)
 					end
 				else
-					_, last_shown_diagnostic = M.show_cursor_diagnostic(
-						opts,
-						bufnr,
-						current_line,
-						current_col,
-						false,
-						opts.inline and last_shown_diagnostic
-					)
+					show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
 				end
 			elseif opts.inline then
-				M.clean_diagnostics(bufnr, last_shown_diagnostic)
+				clean_diagnostics(last_shown_diagnostic)
+				last_shown_diagnostic = nil
 			end
 
 			if prev_diag_changed_trigger_line ~= current_line then prev_diag_changed_trigger_line = -1 end
-			prev_cursor_line = current_line
+			prev_line = current_line
+			line_count_changed = false
 		end,
 	})
 
@@ -721,18 +799,13 @@ function M.setup(bufnr, opts)
 		group = autocmd_group,
 		callback = function()
 			if buffers_disabled[bufnr] then return end
+
 			if opts.inline then
-				if last_shown_diagnostic then M.show_diagnostic(opts, bufnr, last_shown_diagnostic) end
+				if last_shown_diagnostic then show_diagnostic(last_shown_diagnostic) end
 			else
 				local cursor_pos = get_cursor(0)
 				local current_line, current_col = cursor_pos[1], cursor_pos[2]
-				for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
-					if line == current_line then
-						_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-					else
-						M.show_top_severity_diagnostic(opts, bufnr, line)
-					end
-				end
+				show_diagnostics(current_line, current_col)
 			end
 		end,
 	})
@@ -743,12 +816,12 @@ function M.setup(bufnr, opts)
 			if buffers_disabled[bufnr] then return end
 			text_changing = true
 			if last_line ~= current_line then -- line moved
-				if M.exists_any_diagnostics(bufnr, current_line) then
-					_, last_shown_diagnostic =
-						M.show_cursor_diagnostic(opts, bufnr, current_line, prev_cursor_line, false, last_shown_diagnostic)
+				line_count_changed = true
+				if exists_any_diagnostics(current_line) then
+					show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
 				end
 			elseif last_shown_diagnostic then
-				M.show_diagnostic(opts, bufnr, last_shown_diagnostic) -- re-render last shown diagnostic
+				show_diagnostic(last_shown_diagnostic)
 			end
 		end,
 	})
@@ -757,28 +830,18 @@ function M.setup(bufnr, opts)
 		group = autocmd_group,
 		pattern = { "BetterDiagnosticVirtualTextEnabled", "BetterDiagnosticVirtualTextDisabled" },
 		callback = function(args)
-			local updated_bufnr = args.data
-			if bufnr == updated_bufnr then
+			if bufnr == args.data then
 				if args.match == "BetterDiagnosticVirtualTextEnabled" then
-					if buffers_disabled[bufnr] then
-						local cursor_pos = get_cursor(0)
-						local current_line, current_col = cursor_pos[1], cursor_pos[2]
-						if opts.inline then
-							if M.exists_any_diagnostics(bufnr, current_line) then
-								_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-							end
-						else
-							for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
-								if line == current_line then
-									_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-								else
-									M.show_top_severity_diagnostic(opts, bufnr, line)
-								end
-							end
-						end
+					local cursor_pos = get_cursor(0)
+					local current_line, current_col = cursor_pos[1], cursor_pos[2]
+					if opts.inline then
+						if exists_any_diagnostics(current_line) then show_cursor_diagnostic(current_line, current_col) end
+					else
+						show_diagnostics(current_line, current_col)
 					end
 				else
-					M.clean_diagnostics(updated_bufnr, true)
+					clean_diagnostics(true)
+					last_shown_diagnostic = nil
 				end
 			end
 		end,
@@ -795,25 +858,30 @@ end
 
 if not vim.g.loaded_better_diagnostic_virtual_text_toggle then
 	-- overwrite diagnostic.enable
-	local enable = diag.enable
+	local raw_enable = diag.enable
 	---@diagnostic disable-next-line: duplicate-set-field
 	diag.enable = function(enabled, filter)
-		enable(enabled, filter)
+		raw_enable(enabled, filter)
 		local bufnr = filter and filter.bufnr
 		if not bufnr then return end
+		local bufnr_disabled = buffers_disabled[bufnr] == true
 
 		if not enabled then
-			api.nvim_exec_autocmds("User", {
-				pattern = "BetterDiagnosticVirtualTextDisabled",
-				data = bufnr,
-			})
-			buffers_disabled[bufnr] = true
+			if not bufnr_disabled then -- already disabled
+				buffers_disabled[bufnr] = true
+				api.nvim_exec_autocmds("User", {
+					pattern = "BetterDiagnosticVirtualTextDisabled",
+					data = bufnr,
+				})
+			end
 		else
-			api.nvim_exec_autocmds("User", {
-				pattern = "BetterDiagnosticVirtualTextEnabled",
-				data = bufnr,
-			})
-			buffers_disabled[bufnr] = nil
+			if bufnr_disabled then
+				buffers_disabled[bufnr] = nil
+				api.nvim_exec_autocmds("User", {
+					pattern = "BetterDiagnosticVirtualTextEnabled",
+					data = bufnr,
+				})
+			end
 		end
 	end
 
