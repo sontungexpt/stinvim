@@ -30,11 +30,13 @@ local default_options = {
 
 local buffers_attached = {}
 local buffers_disabled = {}
---- @type table<integer, table<integer, table<string, table>>>>
+-- @type table<integer, table<integer, table<string, table>>>>
 -- bufnr -> line -> address of diagnostic -> diagnostic
 local diagnostics_cache = {}
 do
 	local real_diagnostics_cache = {}
+	function diagnostics_cache:exist(bufnr) return real_diagnostics_cache[bufnr] ~= nil end
+
 	setmetatable(diagnostics_cache, {
 		--- Just for removal the key from the cache
 		__newindex = function(_, bufnr, _) real_diagnostics_cache[bufnr] = nil end,
@@ -125,6 +127,17 @@ do
 			rawset(t, bufnr, value)
 		end,
 	})
+end
+
+--- Tracks the diagnostics for a buffer.
+--- @param bufnr integer The buffer number.
+--- @param diagnostics table The list of diagnostics to track.
+local function track_diagnostics(bufnr, diagnostics)
+	diagnostics_cache[bufnr] = {} -- clear all diagnostics for this buffer
+	local exists_diags_bufnr = diagnostics_cache[bufnr]
+	for _, d in ipairs(diagnostics) do
+		exists_diags_bufnr[d.lnum + 1] = d
+	end
 end
 
 --- Updates the diagnostics cache
@@ -554,17 +567,6 @@ local function generate_virtual_texts(opts, diagnostic)
 	return virt_text, virt_lines, offset
 end
 
---- Tracks the diagnostics for a buffer.
---- @param bufnr integer The buffer number.
---- @param diagnostics table The list of diagnostics to track.
-local function track_diagnostics(bufnr, diagnostics)
-	diagnostics_cache[bufnr] = {} -- clear all diagnostics for this buffer
-	local exists_diags_bufnr = diagnostics_cache[bufnr]
-	for _, d in ipairs(diagnostics) do
-		exists_diags_bufnr[d.lnum + 1] = d
-	end
-end
-
 --- Checks if diagnostics exist for a buffer at a line.
 --- @param bufnr integer The buffer number to check.
 --- @param line integer The line number to check.
@@ -627,8 +629,7 @@ function M.show_diagnostic(opts, bufnr, diagnostic, clean_opts)
 		id = virtline + 1,
 		virt_text = virt_text,
 		virt_lines = virt_lines,
-		virt_text_win_col = offset,
-		invalidate = not M.exists_any_diagnostics(bufnr, virtline + 1),
+		virt_text_pos = "eol",
 		line_hl_group = "CursorLine",
 	})
 	return shown_line, diagnostic
@@ -684,14 +685,18 @@ function M.get_line_shown(diagnostic) return diagnostic.lnum + 1 end
 --- @param bufnr integer The buffer number.
 function M.setup(bufnr, opts)
 	if buffers_attached[bufnr] then return end
+
 	local autocmd_group = api.nvim_create_augroup(make_group_name(bufnr), { clear = true })
-	opts = opts and vim.tbl_deep_extend(default_options, opts) or default_options
+	opts = opts and vim.tbl_deep_extend("force", default_options, opts) or default_options
 
 	local prev_line = 1 -- The previous line that cursor was on.
 	local text_changing = false
 	local last_shown_diagnostic = nil
-	local line_count_changed = false
+	local lines_count_changed = false
 	local prev_diag_changed_trigger_line = -1
+	local buf_writed = false
+
+	if not diagnostics_cache.exist(bufnr) then track_diagnostics(bufnr, diag.get(bufnr)) end
 
 	local function clean_diagnostics(lines_or_diagnostic) M.clean_diagnostics(bufnr, lines_or_diagnostic) end
 
@@ -735,7 +740,7 @@ function M.setup(bufnr, opts)
 			local cursor_pos = get_cursor(0)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
-			if not line_count_changed and (text_changing or prev_diag_changed_trigger_line == current_line) then
+			if not lines_count_changed and (text_changing or prev_diag_changed_trigger_line == current_line) then
 				show_cursor_diagnostic(current_line, current_col, true, last_shown_diagnostic)
 			else
 				-- If text is not currently changing, it implies that the cursor moved before the diagnostics changed event.
@@ -748,7 +753,7 @@ function M.setup(bufnr, opts)
 				else
 					show_diagnostics(current_line, current_col)
 				end
-				line_count_changed = false
+				lines_count_changed = false
 			end
 
 			text_changing = false
@@ -756,7 +761,7 @@ function M.setup(bufnr, opts)
 		end,
 	})
 
-	autocmd({ "CursorMovedI", "CursorMoved" }, {
+	autocmd({ "CursorMovedI", "CursorMoved", "ModeChanged" }, {
 		group = autocmd_group,
 		buffer = bufnr,
 		---@diagnostic disable-next-line: redefined-local
@@ -789,7 +794,7 @@ function M.setup(bufnr, opts)
 
 			if prev_diag_changed_trigger_line ~= current_line then prev_diag_changed_trigger_line = -1 end
 			prev_line = current_line
-			line_count_changed = false
+			lines_count_changed = false
 		end,
 	})
 
@@ -815,8 +820,8 @@ function M.setup(bufnr, opts)
 		on_lines = function(event, _, changedtick, first_line, last_line, current_line, prev_byte_count)
 			if buffers_disabled[bufnr] then return end
 			text_changing = true
-			if last_line ~= current_line then -- line moved
-				line_count_changed = true
+			if last_line ~= current_line then -- added or removed line
+				lines_count_changed = true
 				if exists_any_diagnostics(current_line) then
 					show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
 				end
