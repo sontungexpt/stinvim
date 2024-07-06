@@ -686,7 +686,7 @@ function M.get_line_shown(diagnostic) return diagnostic.lnum + 1 end
 function M.setup(bufnr, opts)
 	if buffers_attached[bufnr] then return end
 
-	local autocmd_group = api.nvim_create_augroup(make_group_name(bufnr), { clear = true })
+	local autocmd_group = augroup(make_group_name(bufnr), { clear = true })
 	opts = opts and vim.tbl_deep_extend("force", default_options, opts) or default_options
 
 	local prev_line = 1 -- The previous line that cursor was on.
@@ -747,9 +747,7 @@ function M.setup(bufnr, opts)
 				-- Therefore, we need to re-track the diagnostics because multiple diagnostics across different lines may have changed simultaneously.
 				track_diagnostics(bufnr, args.data.diagnostics)
 				if opts.inline then
-					if exists_any_diagnostics(current_line) then
-						show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
-					end
+					show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
 				else
 					show_diagnostics(current_line, current_col)
 				end
@@ -822,9 +820,7 @@ function M.setup(bufnr, opts)
 			text_changing = true
 			if last_line ~= current_line then -- added or removed line
 				lines_count_changed = true
-				if exists_any_diagnostics(current_line) then
-					show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
-				end
+				show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
 			elseif last_shown_diagnostic then
 				show_diagnostic(last_shown_diagnostic)
 			end
