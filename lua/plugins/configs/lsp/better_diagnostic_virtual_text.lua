@@ -689,12 +689,11 @@ function M.setup(bufnr, opts)
 
 	local prev_line = 1 -- The previous line that cursor was on.
 	local text_changing = false
-	local last_shown_diagnostic = nil
+	local prev_cursor_diagnostic = nil
 	local lines_count_changed = false
 	local prev_diag_changed_trigger_line = -1
-	local buf_writed = false
 
-	if not diagnostics_cache.exist(bufnr) then track_diagnostics(bufnr, diag.get(bufnr)) end
+	if not diagnostics_cache:exist(bufnr) then track_diagnostics(bufnr, diag.get(bufnr)) end
 
 	local function clean_diagnostics(lines_or_diagnostic) M.clean_diagnostics(bufnr, lines_or_diagnostic) end
 
@@ -705,7 +704,7 @@ function M.setup(bufnr, opts)
 	end
 
 	local function show_cursor_diagnostic(current_line, current_col, computed, clean_opts)
-		_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col, computed, clean_opts)
+		_, prev_cursor_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col, computed, clean_opts)
 	end
 
 	local function exists_any_diagnostics(line) return M.exists_any_diagnostics(bufnr, line) end
@@ -739,13 +738,13 @@ function M.setup(bufnr, opts)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
 			if not lines_count_changed and (text_changing or prev_diag_changed_trigger_line == current_line) then
-				show_cursor_diagnostic(current_line, current_col, true, last_shown_diagnostic)
+				show_cursor_diagnostic(current_line, current_col, true, prev_cursor_diagnostic)
 			else
 				-- If text is not currently changing, it implies that the cursor moved before the diagnostics changed event.
 				-- Therefore, we need to re-track the diagnostics because multiple diagnostics across different lines may have changed simultaneously.
 				track_diagnostics(bufnr, args.data.diagnostics)
 				if opts.inline then
-					show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
+					show_cursor_diagnostic(current_line, current_col, false, prev_cursor_diagnostic)
 				else
 					show_diagnostics(current_line, current_col)
 				end
@@ -775,17 +774,17 @@ function M.setup(bufnr, opts)
 			if exists_any_diagnostics(current_line) then
 				if current_line == prev_line then
 					if
-						last_shown_diagnostic
-						and (last_shown_diagnostic.col > current_col or last_shown_diagnostic.end_col - 1 < current_col)
+						prev_cursor_diagnostic
+						and (prev_cursor_diagnostic.col > current_col or prev_cursor_diagnostic.end_col - 1 < current_col)
 					then
 						show_cursor_diagnostic(current_line, current_col)
 					end
 				else
-					show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
+					show_cursor_diagnostic(current_line, current_col, false, prev_cursor_diagnostic)
 				end
 			elseif opts.inline then
-				clean_diagnostics(last_shown_diagnostic)
-				last_shown_diagnostic = nil
+				clean_diagnostics(prev_cursor_diagnostic)
+				prev_cursor_diagnostic = nil
 			end
 
 			if prev_diag_changed_trigger_line ~= current_line then prev_diag_changed_trigger_line = -1 end
@@ -802,7 +801,7 @@ function M.setup(bufnr, opts)
 			if buffers_disabled[bufnr] then return end
 
 			if opts.inline then
-				if last_shown_diagnostic then show_diagnostic(last_shown_diagnostic) end
+				if prev_cursor_diagnostic then show_diagnostic(prev_cursor_diagnostic) end
 			else
 				local cursor_pos = get_cursor(0)
 				local current_line, current_col = cursor_pos[1], cursor_pos[2]
@@ -818,9 +817,9 @@ function M.setup(bufnr, opts)
 			text_changing = true
 			if last_line ~= current_line then -- added or removed line
 				lines_count_changed = true
-				show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
-			elseif last_shown_diagnostic then
-				show_diagnostic(last_shown_diagnostic)
+				show_cursor_diagnostic(current_line, prev_line, false, prev_cursor_diagnostic)
+			elseif prev_cursor_diagnostic then
+				show_diagnostic(prev_cursor_diagnostic)
 			end
 		end,
 	})
@@ -840,7 +839,7 @@ function M.setup(bufnr, opts)
 					end
 				else
 					clean_diagnostics(true)
-					last_shown_diagnostic = nil
+					prev_cursor_diagnostic = nil
 				end
 			end
 		end,
