@@ -747,9 +747,7 @@ function M.setup(bufnr, opts)
 				-- Therefore, we need to re-track the diagnostics because multiple diagnostics across different lines may have changed simultaneously.
 				track_diagnostics(bufnr, args.data.diagnostics)
 				if opts.inline then
-					if exists_any_diagnostics(current_line) then
-						show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
-					end
+					show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
 				else
 					show_diagnostics(current_line, current_col)
 				end
@@ -818,13 +816,12 @@ function M.setup(bufnr, opts)
 	-- Attach to the buffer to rerender diagnostics virtual text when text changes.
 	api.nvim_buf_attach(bufnr, false, {
 		on_lines = function(event, _, changedtick, first_line, last_line, current_line, prev_byte_count)
+			print("text_changing")
 			if buffers_disabled[bufnr] then return end
 			text_changing = true
 			if last_line ~= current_line then -- added or removed line
 				lines_count_changed = true
-				if exists_any_diagnostics(current_line) then
-					show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
-				end
+				show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
 			elseif last_shown_diagnostic then
 				show_diagnostic(last_shown_diagnostic)
 			end
