@@ -686,7 +686,7 @@ function M.get_line_shown(diagnostic) return diagnostic.lnum + 1 end
 function M.setup(bufnr, opts)
 	if buffers_attached[bufnr] then return end
 
-	local autocmd_group = api.nvim_create_augroup(make_group_name(bufnr), { clear = true })
+	local autocmd_group = augroup(make_group_name(bufnr), { clear = true })
 	opts = opts and vim.tbl_deep_extend("force", default_options, opts) or default_options
 
 	local prev_line = 1 -- The previous line that cursor was on.
@@ -816,7 +816,6 @@ function M.setup(bufnr, opts)
 	-- Attach to the buffer to rerender diagnostics virtual text when text changes.
 	api.nvim_buf_attach(bufnr, false, {
 		on_lines = function(event, _, changedtick, first_line, last_line, current_line, prev_byte_count)
-			print("text_changing")
 			if buffers_disabled[bufnr] then return end
 			text_changing = true
 			if last_line ~= current_line then -- added or removed line
