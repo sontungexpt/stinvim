@@ -337,12 +337,12 @@ local plugins = {
 	--------------------------------------------------- LSP ---------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
-		dependencies = {
-			"sontungexpt/better-diagnostic-virtual-text",
-			config = function(_, opts) require("better-diagnostic-virtual-text").setup(opts) end,
-		},
 		event = "User FilePostLazyLoaded",
 		config = function() require("plugins.configs.lsp.lspconfig") end,
+	},
+
+	{
+		"sontungexpt/better-diagnostic-virtual-text",
 	},
 
 	{
