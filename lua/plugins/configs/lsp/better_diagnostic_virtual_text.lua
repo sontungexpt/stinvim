@@ -3,6 +3,7 @@ local api, fn, diag = vim.api, vim.fn, vim.diagnostic
 local autocmd, augroup, strdisplaywidth, get_cursor, tbl_insert =
 	api.nvim_create_autocmd, api.nvim_create_augroup, fn.strdisplaywidth, api.nvim_win_get_cursor, table.insert
 local ns = api.nvim_create_namespace("stinvim-better-diagnostic-virtual-text")
+
 local SEVERITY_SUFFIXS = { "Error", "Warn", "Info", "Hint" }
 local TAB_LENGTH = strdisplaywidth("\t")
 
@@ -11,6 +12,8 @@ local meta_pairs = function(t)
 	if metatable and metatable.__pairs then return metatable.__pairs(t) end
 	return pairs(t)
 end
+
+local make_group_name = function(bufnr) return "BetterDiagnosticVirtualText" .. bufnr end
 
 local M = {}
 
@@ -107,18 +110,16 @@ do
 		end,
 	})
 
-	local group = augroup("BetterDiagnosticVirtualTextBufWipeout", { clear = true })
 	setmetatable(buffers_attached, {
 		__newindex = function(t, bufnr, value)
 			autocmd("BufWipeout", {
-				group = group,
 				once = true,
 				buffer = bufnr,
 				callback = function()
 					rawset(t, bufnr, nil)
 					buffers_disabled[bufnr] = nil
 					real_diagnostics_cache[bufnr] = nil
-					pcall(api.nvim_del_augroup_by_name, "BetterDiagnosticVirtualText" .. bufnr)
+					api.nvim_del_augroup_by_name(make_group_name(bufnr))
 				end,
 			})
 			rawset(t, bufnr, value)
@@ -259,6 +260,7 @@ function M.fetch_diagnostics(bufnr, line, computed)
 	if computed then
 		diagnostics = diag.get(bufnr, { lnum = line - 1 })
 		diagnostics_size = #diagnostics
+		diagnostics_cache[bufnr][line] = diagnostics
 		if diagnostics_size == 0 then return diagnostics, diagnostics_size end
 		insertion_sort(diagnostics, function(d1, d2) return d1.severity < d2.severity end, diagnostics_size)
 	else
@@ -626,9 +628,7 @@ function M.show_diagnostic(opts, bufnr, diagnostic, clean_opts)
 		virt_text = virt_text,
 		virt_lines = virt_lines,
 		virt_text_win_col = offset,
-		priority = 50,
-		-- virt_text_pos = "eol",
-		invalidate = not M.exists_any_diagnostics(bufnr, virtline),
+		invalidate = not M.exists_any_diagnostics(bufnr, virtline + 1),
 		line_hl_group = "CursorLine",
 	})
 	return shown_line, diagnostic
@@ -684,13 +684,43 @@ function M.get_line_shown(diagnostic) return diagnostic.lnum + 1 end
 --- @param bufnr integer The buffer number.
 function M.setup(bufnr, opts)
 	if buffers_attached[bufnr] then return end
-	local autocmd_group = api.nvim_create_augroup("BetterDiagnosticVirtualText" .. bufnr, { clear = true })
+	local autocmd_group = api.nvim_create_augroup(make_group_name(bufnr), { clear = true })
 	opts = opts and vim.tbl_deep_extend(default_options, opts) or default_options
 
-	local prev_cursor_line = 1 -- The previous line that cursor was on.
+	local prev_line = 1 -- The previous line that cursor was on.
 	local text_changing = false
 	local last_shown_diagnostic = nil
+	local line_count_changed = false
 	local prev_diag_changed_trigger_line = -1
+
+	local function clean_diagnostics(lines_or_diagnostic) M.clean_diagnostics(bufnr, lines_or_diagnostic) end
+
+	local function show_diagnostic(diagnostic)
+		if diagnostic then
+			M.show_diagnostic(opts, bufnr, diagnostic) -- re-render last shown diagnostic
+		end
+	end
+
+	local function show_cursor_diagnostic(current_line, current_col, computed, clean_opts)
+		_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col, computed, clean_opts)
+	end
+
+	local function exists_any_diagnostics(line) return M.exists_any_diagnostics(bufnr, line) end
+
+	local function show_top_severity_diagnostic(line, computed, clean_opts)
+		return M.show_top_severity_diagnostic(opts, bufnr, line, computed, clean_opts)
+	end
+
+	local function show_diagnostics(current_line, current_col)
+		clean_diagnostics(true)
+		for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
+			if line == current_line then
+				show_cursor_diagnostic(current_line, current_col)
+			else
+				show_top_severity_diagnostic(line)
+			end
+		end
+	end
 
 	autocmd("DiagnosticChanged", {
 		group = autocmd_group,
@@ -701,33 +731,27 @@ function M.setup(bufnr, opts)
 				track_diagnostics(bufnr, args.data.diagnostics) -- still need to track the diagnostics in case the buffer is disabled
 				return
 			end
+
 			local cursor_pos = get_cursor(0)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
-			if text_changing or prev_diag_changed_trigger_line == current_line then
-				_, last_shown_diagnostic, diagnostics_cache[bufnr][current_line] =
-					M.show_cursor_diagnostic(opts, bufnr, current_line, prev_cursor_line, true, last_shown_diagnostic)
+			if not line_count_changed and (text_changing or prev_diag_changed_trigger_line == current_line) then
+				show_cursor_diagnostic(current_line, current_col, true, last_shown_diagnostic)
 			else
 				-- If text is not currently changing, it implies that the cursor moved before the diagnostics changed event.
 				-- Therefore, we need to re-track the diagnostics because multiple diagnostics across different lines may have changed simultaneously.
 				track_diagnostics(bufnr, args.data.diagnostics)
 				if opts.inline then
-					if M.exists_any_diagnostics(bufnr, current_line) then
-						_, last_shown_diagnostic =
-							M.show_cursor_diagnostic(opts, bufnr, current_line, current_col, false, last_shown_diagnostic)
+					if exists_any_diagnostics(current_line) then
+						show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
 					end
 				else
-					M.clean_diagnostics(bufnr, true)
-					for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
-						if line == current_line then
-							_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-						else
-							M.show_top_severity_diagnostic(opts, bufnr, line)
-						end
-					end
+					show_diagnostics(current_line, current_col)
 				end
+				line_count_changed = false
 			end
 
+			text_changing = false
 			prev_diag_changed_trigger_line = current_line
 		end,
 	})
@@ -738,6 +762,7 @@ function M.setup(bufnr, opts)
 		---@diagnostic disable-next-line: redefined-local
 		callback = function(args)
 			if buffers_disabled[bufnr] then return end
+
 			if text_changing then -- we had another event for text changing
 				text_changing = false
 				return
@@ -746,30 +771,25 @@ function M.setup(bufnr, opts)
 			local cursor_pos = get_cursor(0)
 			local current_line, current_col = cursor_pos[1], cursor_pos[2]
 
-			if M.exists_any_diagnostics(bufnr, current_line) then
-				if current_line == prev_cursor_line then
+			if exists_any_diagnostics(current_line) then
+				if current_line == prev_line then
 					if
 						last_shown_diagnostic
 						and (last_shown_diagnostic.col > current_col or last_shown_diagnostic.end_col - 1 < current_col)
 					then
-						_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
+						show_cursor_diagnostic(current_line, current_col)
 					end
 				else
-					_, last_shown_diagnostic = M.show_cursor_diagnostic(
-						opts,
-						bufnr,
-						current_line,
-						current_col,
-						false,
-						opts.inline and last_shown_diagnostic
-					)
+					show_cursor_diagnostic(current_line, current_col, false, last_shown_diagnostic)
 				end
 			elseif opts.inline then
-				M.clean_diagnostics(bufnr, last_shown_diagnostic)
+				clean_diagnostics(last_shown_diagnostic)
+				last_shown_diagnostic = nil
 			end
 
 			if prev_diag_changed_trigger_line ~= current_line then prev_diag_changed_trigger_line = -1 end
-			prev_cursor_line = current_line
+			prev_line = current_line
+			line_count_changed = false
 		end,
 	})
 
@@ -779,18 +799,13 @@ function M.setup(bufnr, opts)
 		group = autocmd_group,
 		callback = function()
 			if buffers_disabled[bufnr] then return end
+
 			if opts.inline then
-				if last_shown_diagnostic then M.show_diagnostic(opts, bufnr, last_shown_diagnostic) end
+				if last_shown_diagnostic then show_diagnostic(last_shown_diagnostic) end
 			else
 				local cursor_pos = get_cursor(0)
 				local current_line, current_col = cursor_pos[1], cursor_pos[2]
-				for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
-					if line == current_line then
-						_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-					else
-						M.show_top_severity_diagnostic(opts, bufnr, line)
-					end
-				end
+				show_diagnostics(current_line, current_col)
 			end
 		end,
 	})
@@ -801,12 +816,12 @@ function M.setup(bufnr, opts)
 			if buffers_disabled[bufnr] then return end
 			text_changing = true
 			if last_line ~= current_line then -- line moved
-				if M.exists_any_diagnostics(bufnr, current_line) then
-					_, last_shown_diagnostic =
-						M.show_cursor_diagnostic(opts, bufnr, current_line, prev_cursor_line, false, last_shown_diagnostic)
+				line_count_changed = true
+				if exists_any_diagnostics(current_line) then
+					show_cursor_diagnostic(current_line, prev_line, false, last_shown_diagnostic)
 				end
 			elseif last_shown_diagnostic then
-				M.show_diagnostic(opts, bufnr, last_shown_diagnostic) -- re-render last shown diagnostic
+				show_diagnostic(last_shown_diagnostic)
 			end
 		end,
 	})
@@ -815,28 +830,18 @@ function M.setup(bufnr, opts)
 		group = autocmd_group,
 		pattern = { "BetterDiagnosticVirtualTextEnabled", "BetterDiagnosticVirtualTextDisabled" },
 		callback = function(args)
-			local updated_bufnr = args.data
-			if bufnr == updated_bufnr then
+			if bufnr == args.data then
 				if args.match == "BetterDiagnosticVirtualTextEnabled" then
-					if buffers_disabled[bufnr] then
-						local cursor_pos = get_cursor(0)
-						local current_line, current_col = cursor_pos[1], cursor_pos[2]
-						if opts.inline then
-							if M.exists_any_diagnostics(bufnr, current_line) then
-								_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-							end
-						else
-							for line, diagnostics in meta_pairs(diagnostics_cache[bufnr]) do
-								if line == current_line then
-									_, last_shown_diagnostic = M.show_cursor_diagnostic(opts, bufnr, current_line, current_col)
-								else
-									M.show_top_severity_diagnostic(opts, bufnr, line)
-								end
-							end
-						end
+					local cursor_pos = get_cursor(0)
+					local current_line, current_col = cursor_pos[1], cursor_pos[2]
+					if opts.inline then
+						if exists_any_diagnostics(current_line) then show_cursor_diagnostic(current_line, current_col) end
+					else
+						show_diagnostics(current_line, current_col)
 					end
 				else
-					M.clean_diagnostics(updated_bufnr, true)
+					clean_diagnostics(true)
+					last_shown_diagnostic = nil
 				end
 			end
 		end,
@@ -853,25 +858,30 @@ end
 
 if not vim.g.loaded_better_diagnostic_virtual_text_toggle then
 	-- overwrite diagnostic.enable
-	local enable = diag.enable
+	local raw_enable = diag.enable
 	---@diagnostic disable-next-line: duplicate-set-field
 	diag.enable = function(enabled, filter)
-		enable(enabled, filter)
+		raw_enable(enabled, filter)
 		local bufnr = filter and filter.bufnr
 		if not bufnr then return end
+		local bufnr_disabled = buffers_disabled[bufnr] == true
 
 		if not enabled then
-			api.nvim_exec_autocmds("User", {
-				pattern = "BetterDiagnosticVirtualTextDisabled",
-				data = bufnr,
-			})
-			buffers_disabled[bufnr] = true
+			if not bufnr_disabled then -- already disabled
+				buffers_disabled[bufnr] = true
+				api.nvim_exec_autocmds("User", {
+					pattern = "BetterDiagnosticVirtualTextDisabled",
+					data = bufnr,
+				})
+			end
 		else
-			api.nvim_exec_autocmds("User", {
-				pattern = "BetterDiagnosticVirtualTextEnabled",
-				data = bufnr,
-			})
-			buffers_disabled[bufnr] = nil
+			if bufnr_disabled then
+				buffers_disabled[bufnr] = nil
+				api.nvim_exec_autocmds("User", {
+					pattern = "BetterDiagnosticVirtualTextEnabled",
+					data = bufnr,
+				})
+			end
 		end
 	end
 
