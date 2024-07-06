@@ -817,7 +817,7 @@ function M.setup(bufnr, opts)
 			text_changing = true
 			if last_line ~= current_line then -- added or removed line
 				lines_count_changed = true
-				show_cursor_diagnostic(current_line, prev_line, false, prev_cursor_diagnostic)
+				show_cursor_diagnostic(current_line, nil, false, prev_cursor_diagnostic)
 			elseif prev_cursor_diagnostic then
 				show_diagnostic(prev_cursor_diagnostic)
 			end
