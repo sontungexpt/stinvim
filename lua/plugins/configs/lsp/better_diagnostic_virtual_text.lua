@@ -4,6 +4,7 @@ local autocmd, augroup, strdisplaywidth, get_cursor, tbl_insert =
 	api.nvim_create_autocmd, api.nvim_create_augroup, fn.strdisplaywidth, api.nvim_win_get_cursor, table.insert
 local ns = api.nvim_create_namespace("stinvim-better-diagnostic-virtual-text")
 local SEVERITY_SUFFIXS = { "Error", "Warn", "Info", "Hint" }
+local TAB_LENGTH = strdisplaywidth("\t")
 
 local meta_pairs = function(t)
 	local metatable = getmetatable(t)
@@ -146,7 +147,7 @@ local function wrap_text(text, max_length)
 
 	while line_end < text_length do
 		-- Find the last space before line_end to split the line
-		while line_end > line_start and text:sub(line_end, line_end) ~= " " do
+		while line_end > line_start and text:byte(line_end) ~= 32 do
 			line_end = line_end - 1
 		end
 
@@ -170,7 +171,23 @@ local function wrap_text(text, max_length)
 	return lines, num_line
 end
 
---- Sorts a list using the insertion sort algorithm.
+--- Counts the number of leading spaces in a string. Converts tabs to corresponding spaces.
+---
+--- @param str string The string to count the leading spaces in.
+--- @return number The number of leading spaces in the string.
+--- @return boolean Whether the string is all spaces.
+local function count_initial_spaces(str)
+	local i = 1
+	local sum = 0
+	local byte = str:byte(i)
+	while byte == 32 or byte == 9 do
+		sum = sum + (byte == 32 and 1 or TAB_LENGTH)
+		i = i + 1
+		byte = str:byte(i)
+	end
+	return sum, byte == nil
+end
+
 --- This function modifies the original list.
 --- @param list table The list to sort.
 --- @param comparator function The comparator function.
@@ -210,6 +227,21 @@ local function insert_sorted(list, value, comparator, list_size)
 	end
 	list[i] = value
 	return list, new_size
+end
+
+--- Generates a string of spaces of the specified length.
+--- This function optimizes the process of generating a string of spaces by
+--- checking if the length is divisible by numbers from 10 to 2, using precomputed
+--- substrings to minimize the number of calls to `string.rep`.
+--- @param num number The total number of spaces to generate.
+--- @return string A string consisting of `num` spaces.
+local space = function(num)
+	local reps = { " ", "  ", "   ", "    ", "     ", "      ", "       ", "        ", "         ", "          " }
+	local rep = string.rep
+	for i = 10, 2, -1 do
+		if num % i == 0 then return rep(reps[i], num / i) end
+	end
+	return rep(" ", num)
 end
 
 --- Retrieves diagnostics at the line position in the specified buffer.
@@ -292,8 +324,16 @@ function M.fetch_top_cursor_diagnostic(bufnr, current_line, current_col, compute
 end
 
 --- Format line chunks for virtual text display.
---- @param ui_opts table - The table of UI options.
---- @param line_idx number - The index of the current line.
+---
+--- This function formats the line chunks for virtual text display, considering various options such as severity,
+--- underline symbol, text offsets, and parts to be removed.
+---
+--- @param ui_opts table - The table of UI options. Should contain:
+---     - arrow: string - The symbol used as the left arrow.
+---     - up_arrow: string - The symbol used as the up arrow.
+---     - right_kept_space: number - The space to keep on the right side.
+---     - left_kept_space: number - The space to keep on the left side.
+--- @param line_idx number - The index of the current line (1-based).
 --- @param line_msg string - The message to display on the line.
 --- @param severity number - The severity level of the diagnostic (1 = Error, 2 = Warn, 3 = Info, 4 = Hint).
 --- @param max_line_length number - The maximum length of the line.
@@ -333,21 +373,37 @@ function M.format_line_chunks(
 
 	local message_highlight = hls()
 
-	local arrow_symbol = should_under_line and ui_opts.up_arrow or ui_opts.arrow
-	if first_line then
-		if not removed_parts.arrow then
-			if should_under_line then arrow_symbol = string.rep(" ", virt_text_offset) .. arrow_symbol:gsub("^%s*", "") end
+	if should_under_line then
+		local arrow_symbol = ui_opts.up_arrow:gsub("^%s*", "")
+		local space_offset = space(virt_text_offset)
+		if first_line then
+			if not removed_parts.arrow then
+				tbl_insert(chunks, {
+					space_offset .. arrow_symbol,
+					hls { "BetterDiagnosticVirtualTextArrow", "BetterDiagnosticVirtualTextArrow" .. severity_suffix },
+				})
+			end
+		else
 			tbl_insert(chunks, {
-				arrow_symbol,
-				hls { "BetterDiagnosticVirtualTextArrow", "BetterDiagnosticVirtualTextArrow" .. severity_suffix },
+				space_offset .. space(strdisplaywidth(arrow_symbol)),
+				message_highlight,
 			})
 		end
 	else
-		local offset_space = string.rep(
-			" ",
-			virt_text_offset + strdisplaywidth(should_under_line and arrow_symbol:gsub("^%s*", "") or arrow_symbol)
-		)
-		tbl_insert(chunks, { offset_space, message_highlight })
+		local arrow_symbol = ui_opts.arrow
+		if first_line then
+			if not removed_parts.arrow then
+				tbl_insert(chunks, {
+					arrow_symbol,
+					hls { "BetterDiagnosticVirtualTextArrow", "BetterDiagnosticVirtualTextArrow" .. severity_suffix },
+				})
+			end
+		else
+			tbl_insert(chunks, {
+				space(virt_text_offset + strdisplaywidth(arrow_symbol)),
+				message_highlight,
+			})
+		end
 	end
 
 	if not removed_parts.left_kept_space then
@@ -368,7 +424,7 @@ function M.format_line_chunks(
 	tbl_insert(chunks, { line_msg, message_highlight })
 
 	if not removed_parts.right_kept_space then
-		local last_space = string.rep(" ", max_line_length - strdisplaywidth(line_msg) + ui_opts.right_kept_space)
+		local last_space = space(max_line_length - strdisplaywidth(line_msg) + ui_opts.right_kept_space)
 		tbl_insert(chunks, { last_space, message_highlight })
 	end
 
@@ -395,7 +451,7 @@ local function evaluate_extmark(ui_opts)
 	local window_info = fn.getwininfo(api.nvim_get_current_win())[1] -- First entry
 	local text_area_width = window_info.width - window_info.textoff
 	local current_line = api.nvim_get_current_line()
-	local curr_line_length = strdisplaywidth(current_line)
+	local offset = strdisplaywidth(current_line)
 
 	-- Minimum length to be able to create beautiful virtual text
 	-- Get the text_area_width in case the window is too narrow
@@ -403,7 +459,7 @@ local function evaluate_extmark(ui_opts)
 
 	local left_arrow_length = strdisplaywidth(ui_opts.arrow)
 	local up_arrow_length = strdisplaywidth(ui_opts.up_arrow)
-	local is_under_min_length = text_area_width - curr_line_length
+	local is_under_min_length = text_area_width - offset
 		< MIN_WRAP_LENGTH
 			+ ui_opts.left_kept_space
 			+ ui_opts.right_kept_space
@@ -412,14 +468,13 @@ local function evaluate_extmark(ui_opts)
 	local free_space
 	local arrow_length
 	if is_under_min_length then
-		-- find the first char is not space or tab
-		---@diagnostic disable-next-line: cast-local-type
-		curr_line_length = strdisplaywidth(string.match(current_line, "%s")) - 1
+		local init_spaces, only_space = count_initial_spaces(current_line)
+		offset = only_space and 0 or init_spaces
 		free_space = text_area_width
 		arrow_length = up_arrow_length
 	else
-		curr_line_length = curr_line_length + 1 -- 1 for eol char
-		free_space = text_area_width - curr_line_length
+		offset = offset + 1 -- 1 for eol char
+		free_space = text_area_width - offset
 		arrow_length = left_arrow_length
 	end
 
@@ -456,7 +511,7 @@ local function evaluate_extmark(ui_opts)
 		end
 	end
 
-	return is_under_min_length, curr_line_length, wrap_length, removed_parts
+	return is_under_min_length, offset, wrap_length, removed_parts
 end
 
 --- Generates virtual texts and virtual lines for a diagnostic message.
@@ -468,11 +523,12 @@ end
 --- @param diagnostic table The diagnostic message to generate the virtual texts for.
 --- @return table The list of virtual texts.
 --- @return table The list of virtual lines.
+--- @return integer The offset of the virtual text.
 local function generate_virtual_texts(opts, diagnostic)
 	local ui = opts.ui
 	local should_under_line, offset, wrap_length, removed_parts = evaluate_extmark(ui)
 	local msgs, size = wrap_text(diagnostic.message, wrap_length)
-	if size == 0 then return {}, {} end
+	if size == 0 then return {}, {}, offset end
 
 	local severity = diagnostic.severity
 
@@ -481,7 +537,7 @@ local function generate_virtual_texts(opts, diagnostic)
 	local virt_text =
 		M.format_line_chunks(ui, 1, msgs[1], severity, wrap_length, size == 1, offset, should_under_line, removed_parts)
 	if should_under_line then
-		if size == 1 then return {}, { virt_text } end
+		if size == 1 then return {}, { virt_text }, offset end
 		tbl_insert(virt_lines, virt_text)
 		virt_text = {}
 	end
@@ -493,7 +549,7 @@ local function generate_virtual_texts(opts, diagnostic)
 		)
 	end
 
-	return virt_text, virt_lines
+	return virt_text, virt_lines, offset
 end
 
 --- Tracks the diagnostics for a buffer.
@@ -563,14 +619,16 @@ end
 --- @return table The diagnostic that was shown.
 function M.show_diagnostic(opts, bufnr, diagnostic, clean_opts)
 	if clean_opts then M.clean_diagnostics(bufnr, clean_opts) end
-	local virt_text, virt_lines = generate_virtual_texts(opts or default_options, diagnostic)
+	local virt_text, virt_lines, offset = generate_virtual_texts(opts or default_options, diagnostic)
 	local virtline = diagnostic.lnum
 	local shown_line = api.nvim_buf_set_extmark(bufnr, ns, virtline, 0, {
 		id = virtline + 1,
 		virt_text = virt_text,
 		virt_lines = virt_lines,
-		virt_text_pos = "eol",
-		-- priority = 50,
+		virt_text_win_col = offset,
+		priority = 50,
+		-- virt_text_pos = "eol",
+		invalidate = not M.exists_any_diagnostics(bufnr, virtline),
 		line_hl_group = "CursorLine",
 	})
 	return shown_line, diagnostic

@@ -23,7 +23,7 @@ autocmd("FileType", {
 			help = "wincmd L", -- Open help in vertical split
 			qf = "set nobuflisted", -- Don't show quickfix in buffer list
 			sh = function()
-				if args.file:match("%.env$") then vim.diagnostic.disable(args.buf) end
+				if args.file:match("%.env$") then vim.diagnostic.enable(false, { bufnr = args.buf }) end
 			end, -- Disable diagnostic for .env files
 		})[args.match]
 
