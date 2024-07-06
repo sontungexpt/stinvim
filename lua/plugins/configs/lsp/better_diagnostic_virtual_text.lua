@@ -53,8 +53,7 @@ do
 					---@diagnostic disable-next-line: redundant-return-value
 					__pairs = function(_) return pairs(lines) end,
 
-					-- __index = function(t1, line) return lines[line] end,
-					__index = function(t1, line) return lines[line] end,
+					__index = function(_, line) return lines[line] end,
 
 					--- Tracks the existence of diagnostics for a buffer at a line.
 					--- @param line integer The lnum of the diagnostic being tracked in 1-based index. It's also the line where the diagnostic is located in the buffer
