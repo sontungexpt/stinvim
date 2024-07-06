@@ -537,12 +537,11 @@ end
 --- @param diagnostic table The diagnostic message to generate the virtual texts for.
 --- @return table The list of virtual texts.
 --- @return table The list of virtual lines.
---- @return integer The offset of the virtual text.
 local function generate_virtual_texts(opts, diagnostic)
 	local ui = opts.ui
 	local should_under_line, offset, wrap_length, removed_parts = evaluate_extmark(ui)
 	local msgs, size = wrap_text(diagnostic.message, wrap_length)
-	if size == 0 then return {}, {}, offset end
+	if size == 0 then return {}, {} end
 
 	local severity = diagnostic.severity
 
@@ -551,7 +550,7 @@ local function generate_virtual_texts(opts, diagnostic)
 	local virt_text =
 		M.format_line_chunks(ui, 1, msgs[1], severity, wrap_length, size == 1, offset, should_under_line, removed_parts)
 	if should_under_line then
-		if size == 1 then return {}, { virt_text }, offset end
+		if size == 1 then return {}, { virt_text } end
 		tbl_insert(virt_lines, virt_text)
 		virt_text = {}
 	end
@@ -563,7 +562,7 @@ local function generate_virtual_texts(opts, diagnostic)
 		)
 	end
 
-	return virt_text, virt_lines, offset
+	return virt_text, virt_lines
 end
 
 --- Checks if diagnostics exist for a buffer at a line.
@@ -612,17 +611,17 @@ end
 --- Displays a diagnostic for a buffer, optionally cleaning existing diagnostics before showing the new one.
 --- This function sets virtual text and lines for the diagnostic and highlights the line where the diagnostic is shown.
 --- The line where the diagnostic is shown is also the start line of the diagnostic.
---- @param opts ? table Options for displaying the diagnostic. If not provided, the default options are used.
+--- @param opts  table|nil Options for displaying the diagnostic. If not provided, the default options are used.
 --- @param bufnr integer The buffer number.
 --- @param diagnostic table The diagnostic to show.
---- @param clean_opts ? number|table Options for cleaning diagnostics before showing the new one.
+--- @param clean_opts  number|table|nil Options for cleaning diagnostics before showing the new one.
 ---                     If a number is provided, it is treated as an extmark ID to delete.
 ---                     If a table is provided, it should contain line numbers or a range to clear.
 --- @return integer The start line of the diagnostic where it was shown.
 --- @return table The diagnostic that was shown.
 function M.show_diagnostic(opts, bufnr, diagnostic, clean_opts)
 	if clean_opts then M.clean_diagnostics(bufnr, clean_opts) end
-	local virt_text, virt_lines, offset = generate_virtual_texts(opts or default_options, diagnostic)
+	local virt_text, virt_lines = generate_virtual_texts(opts or default_options, diagnostic)
 	local virtline = diagnostic.lnum
 	local shown_line = api.nvim_buf_set_extmark(bufnr, ns, virtline, 0, {
 		id = virtline + 1,
@@ -636,11 +635,11 @@ end
 
 --- Shows the highest severity diagnostic at the line for a buffer, optionally cleaning existing diagnostics before showing the new one.
 ---
---- @param opts ? table Options for displaying the diagnostic. If not provided, the default options are used.
+--- @param opts table|nil Options for displaying the diagnostic. If not provided, the default options are used.
 --- @param bufnr integer The buffer number.
---- @param current_line ? integer The current line number. Defaults to the cursor line.
---- @param computed ? boolean Computes the diagnostics if true else uses the cache diagnostics. Defaults to false.
---- @param clean_opts ? number|table Options for cleaning diagnostics before showing the new one.
+--- @param current_line  integer|nil The current line number. Defaults to the cursor line.
+--- @param computed  boolean|nil Computes the diagnostics if true else uses the cache diagnostics. Defaults to false.
+--- @param clean_opts number|table|nil Options for cleaning diagnostics before showing the new one.
 --- @return integer The line number where the diagnostic was shown.
 --- @return table|nil The diagnostic that was shown. nil if no diagnostics were shown.
 --- @return table The list of diagnostics at the line.
