@@ -3,6 +3,7 @@ local require = require
 
 local plugins = {
 	--------------------------------------------------- Theme ---------------------------------------------------
+	---
 	{
 		"sontungexpt/witch",
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/witch",
@@ -396,6 +397,10 @@ local plugins = {
 		"neovim/nvim-lspconfig",
 		event = "User FilePostLazyLoaded",
 		config = function() require("plugins.configs.lsp.lspconfig") end,
+	},
+
+	{
+		"sontungexpt/better-diagnostic-virtual-text",
 	},
 
 	{
