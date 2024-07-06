@@ -136,6 +136,6 @@ autocmd({ "VimResized", "WinResized", "WinNew" }, {
 					end
 				end
 			end
-		end, 0)
+		end)
 	end,
 })
