@@ -1,6 +1,11 @@
 local vim = vim
 local api, fn = vim.api, vim.fn
 
+if vim.version().minor < 10 then
+	api.nvim_err_writeln("Error: Bootstrap requires at least nvim 0.10")
+	return
+end
+
 local M = {}
 
 local function echo(str)
@@ -13,25 +18,24 @@ M.lazy = function(install_path)
 	echo("  Installing lazy.nvim and plugins ...")
 
 	local repo = "https://github.com/folke/lazy.nvim.git"
-	fn.jobstart({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, {
-		on_exit = function(_, code)
-			if code == 0 then
-				api.nvim_create_autocmd("User", {
-					once = true,
-					pattern = "LazyDone",
-					callback = function()
-						echo("󰏔 Plugins installed successfully!")
-						require("utils").close_buffers_matching("lazy", "filetype")
-					end,
-				})
 
-				echo(" lazy.nvim installed successfully!")
-				M.boot(install_path)
-			else
-				api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
-			end
-		end,
-	})
+	vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, nil, function(args)
+		if args.code == 0 then
+			api.nvim_create_autocmd("User", {
+				once = true,
+				pattern = "LazyDone",
+				callback = function()
+					echo("󰏔 Plugins installed successfully!")
+					require("utils").close_buffers_matching("lazy", "filetype")
+				end,
+			})
+
+			echo(" lazy.nvim installed successfully!")
+			M.boot(install_path)
+		else
+			api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
+		end
+	end)
 end
 
 M.load_plugin_extensions = function()
@@ -54,32 +58,36 @@ M.boot = function(install_path)
 	})
 
 	autocmd({ "UIEnter", "BufEnter", "BufNewFile" }, {
-		group = augroup("StinvimLazyEvents", { clear = true }),
+		group = augroup("StinvimLazyEvents", {}),
 		callback = function(args)
 			if args.event == "UIEnter" then vim.g.ui_entered = true end
 
-			if vim.g.ui_entered and args.file ~= "" and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile" then
+			if
+				vim.g.ui_entered
+				and args.file ~= ""
+				and api.nvim_get_option_value("buftype", { buf = args.buf }) ~= "nofile"
+			then
 				api.nvim_del_augroup_by_name("StinvimLazyEvents")
 				vim.schedule(function()
-					api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded", modeline = false })
-					vim.schedule(function() api.nvim_exec_autocmds("Filetype", { buffer = args.buf }) end, 100)
-				end, 100)
+					api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded" })
+					vim.schedule(function() api.nvim_exec_autocmds("Filetype", { buffer = args.buf }) end)
+				end)
 			end
 		end,
 	})
 
 	autocmd("BufEnter", {
-		group = augroup("StinvimGitLazyLoad", { clear = true }),
+		group = augroup("StinvimGitLazyLoad", {}),
 		callback = function(args)
-			if args.file ~= "" and api.nvim_buf_get_option(args.buf, "buftype") ~= "nofile" then
+			if args.file ~= "" and api.nvim_get_option_value("buftype", { buf = args.buf }) ~= "nofile" then
 				api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
 				vim.schedule(function()
-					fn.jobstart({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, {
-						on_exit = function(_, code)
-							if code == 0 then api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded", modeline = false }) end
-						end,
-					})
-				end, 100)
+					vim.system({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, nil, function(o)
+						vim.schedule(function()
+							if o.code == 0 then api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded" }) end
+						end)
+					end)
+				end)
 			end
 		end,
 	})
