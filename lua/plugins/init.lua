@@ -236,6 +236,15 @@ local plugins = {
 	},
 
 	{
+		"OXY2DEV/markview.nvim",
+		ft = "markdown",
+		dependencies = {
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-tree/nvim-web-devicons",
+		},
+	},
+
+	{
 		"aklt/plantuml-syntax",
 		ft = "plantuml",
 		event = "BufEnter *.wsd,*.pu,*.puml,*.plantuml",
