@@ -1,14 +1,15 @@
-local lsp = vim.lsp
-
 local M = {}
-local signs_hl = {
-	"DiagnosticSignError",
-	"DiagnosticSignWarn",
-	"DiagnosticSignHint",
-	"DiagnosticSignInfo",
-}
 
 if not vim.g.stinvim_general_lsp_config_loaded then
+	local lsp = vim.lsp
+
+	local signs_hl = {
+		"DiagnosticSignError",
+		"DiagnosticSignWarn",
+		"DiagnosticSignHint",
+		"DiagnosticSignInfo",
+	}
+
 	vim.diagnostic.config {
 		signs = {
 			text = require("ui.icons").DiagnosticSign,
