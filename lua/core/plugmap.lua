@@ -27,15 +27,10 @@ vim.schedule(function()
 	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 	map("n", "<leader>fu", "<cmd>Telescope grep_string<cr>", { desc = "Find word under cursor" })
 	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
-	map(
-		"n",
-		"<leader>fd",
-		"<cmd>Telescope diagnostics<cr>",
-		{ desc = "Find diagnostics in the current buffer" }
-	)
 	------------------------------ Todo-comments ------------------------------
 	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todo comments" })
 
+	map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", { desc = "Find diagnostics in the current buffer" })
 	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Find command history" })
 
 	------------------------------ Todo-comments ------------------------------
@@ -53,17 +48,11 @@ vim.schedule(function()
 	end, { desc = "Next todo comment" })
 
 	map("n", "[T", function()
-		load_mod(
-			"todo-comments",
-			function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end
-		)
+		load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end)
 	end, { desc = "Previous error/ warning comment" })
 
 	map("n", "]T", function()
-		load_mod(
-			"todo-comments",
-			function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end
-		)
+		load_mod("todo-comments", function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end)
 	end, { desc = "Next error/ warning comment" })
 
 	------------------------------ ccc ------------------------------
@@ -79,7 +68,7 @@ vim.schedule(function()
 	-- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
 
 	------------------------------ Markdown preview ------------------------------
-	map("n", "<Leader>pm", "<Plug>MarkdownPreviewToggle", { desc = "Toggle markdown preview" })
+	map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle markdown preview" })
 
 	------------------------------ wilder ------------------------------
 	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
@@ -246,19 +235,9 @@ M.gitsigns = function(bufnr)
 	end, { desc = "Previous hunk" })
 
 	map1("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
-	map1(
-		"v",
-		"<leader>gs",
-		function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end,
-		{ desc = "Stage hunk" }
-	)
+	map1("v", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, { desc = "Stage hunk" })
 	map1("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
-	map1(
-		"v",
-		"<leader>gr",
-		function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end,
-		{ desc = "Reset hunk" }
-	)
+	map1("v", "<leader>gr", function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end, { desc = "Reset hunk" })
 	map1("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
 	map1("n", "<leader>gR", gs.reset_buffer, { desc = "Reset buffer" })
 	map1("n", "<leader>gp", gs.preview_hunk, { desc = "Preview hunk" })
