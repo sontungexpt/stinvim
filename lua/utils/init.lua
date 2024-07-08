@@ -4,29 +4,19 @@ local M = {}
 
 --- Get the root directory of the project.
 ---
---- @param opts table|nil: Options to be applied in vim.fs.find
---- @return string: The root directory path of the project
-M.find_root = function(opts)
-	opts = type(opts) == "table" and opts or {}
-
-	local markers = opts.markers
-		or vim.g.stinvim_root_markers
-		or {
-			".git",
-			"package.json", -- npm
-			"Cargo.toml", -- rust
-			"build.zig", -- zig
-			"stylua.toml", -- lua
-			"lazy-lock.json", -- nvim config
-			"gradlew", -- java
-			"mvnw", -- java
-		}
-
-	opts.upward = true
-	opts.stop = vim.loop.os_homedir()
-
-	local marker_file_path = vim.fs.find(markers, opts)[1]
-	return marker_file_path and vim.fs.dirname(marker_file_path)
+--- @param source string|integer Buffer number (0 for current buffer) or file path to begin the search from
+--- @return string|nil: The root directory path of the project
+M.find_root = function(source, markers)
+	return vim.fs.root(source or 0, markers or vim.g.stinvim_root_markers or {
+		".git",
+		"package.json", -- npm
+		"Cargo.toml", -- rust
+		"build.zig", -- zig
+		"stylua.toml", -- lua
+		"lazy-lock.json", -- nvim config
+		"gradlew", -- java
+		"mvnw", -- java
+	})
 end
 
 --- Executes a specified command using vim.api.nvim_command
@@ -81,12 +71,12 @@ end
 --- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
 	if not api.nvim_buf_is_valid(bufnr) then return end
-	if type(matches) == "string" and api.nvim_buf_get_option(bufnr, condition_name or "filetype") == matches then
+	local condition = api.nvim_get_option_value(condition_name or "filetype", { buf = bufnr })
+	if type(matches) == "string" and condition == matches then
 		api.nvim_buf_delete(bufnr, { force = true })
 	elseif type(matches) == "table" then
-		local buffer_condition = api.nvim_buf_get_option(bufnr, condition_name or "filetype")
 		for _, match in ipairs(matches) do
-			if buffer_condition == match then
+			if condition == match then
 				api.nvim_buf_delete(bufnr, { force = true })
 				return
 			end

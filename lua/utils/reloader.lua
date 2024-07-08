@@ -29,9 +29,7 @@ M.hot_reload = function(quiet)
 		if #failed_modules == 0 then
 			require("utils.notify").info("Reloaded options and nvimmap successfully")
 		else
-			require("utils.notify").error(
-				"Error while reloading core modules: " .. table.concat(failed_modules, "\n")
-			)
+			require("utils.notify").error("Error while reloading core modules: " .. table.concat(failed_modules, "\n"))
 		end
 	end
 end
