@@ -25,7 +25,8 @@ vim.diagnostic.config {
 }
 
 M.on_attach = function(client, bufnr)
-	require("better-diagnostic-virtual-text").setup_buf(bufnr, nil)
+	-- require("better-diagnostic-virtual-text").setup_buf(bufnr, { inline = false })
+	require("better-diagnostic-virtual-text").setup_buf(bufnr, { inline = true })
 	lsp.handlers["textDocument/signatureHelp"] = lsp.with(lsp.handlers.signature_help, {
 		border = "single",
 		focusable = false,

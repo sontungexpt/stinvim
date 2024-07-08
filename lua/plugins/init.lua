@@ -235,14 +235,14 @@ local plugins = {
 		config = function() vim.g.mkdp_auto_close = 0 end,
 	},
 
-	{
-		"OXY2DEV/markview.nvim",
-		ft = "markdown",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-			"nvim-tree/nvim-web-devicons",
-		},
-	},
+	-- {
+	-- 	"OXY2DEV/markview.nvim",
+	-- 	ft = "markdown",
+	-- 	dependencies = {
+	-- 		"nvim-treesitter/nvim-treesitter",
+	-- 		"nvim-tree/nvim-web-devicons",
+	-- 	},
+	-- },
 
 	{
 		"aklt/plantuml-syntax",
@@ -410,7 +410,7 @@ local plugins = {
 
 	{
 		"sontungexpt/better-diagnostic-virtual-text",
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
 	},
 
 	{

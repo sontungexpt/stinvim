@@ -70,8 +70,7 @@ vim.schedule(function()
 			return ":vertical resize +1<CR>"
 		else
 			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
-			local win_center_x =
-				math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			local win_center_x = math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
 			if win_center_x < vim_center_x then
 				return ":vertical resize +1<CR>"
 			else
@@ -87,8 +86,7 @@ vim.schedule(function()
 			return ":vertical resize -1<CR>"
 		else
 			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
-			local win_center_x =
-				math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			local win_center_x = math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
 			if win_center_x > vim_center_x then
 				return ":vertical resize -1<CR>"
 			else
@@ -104,8 +102,7 @@ vim.schedule(function()
 			return ":resize -1<CR>"
 		else
 			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
-			local win_center_y =
-				math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			local win_center_y = math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
 			if win_center_y > vim_center_y then
 				return ":resize -1<CR>"
 			else
@@ -121,8 +118,7 @@ vim.schedule(function()
 			return ":resize +1<CR>"
 		else
 			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
-			local win_center_y =
-				math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			local win_center_y = math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
 			if win_center_y < vim_center_y then
 				return ":resize +1<CR>"
 			else
@@ -164,7 +160,7 @@ end)
 autocmd("CmdlineEnter", {
 	once = true,
 	desc = "Make autoclose brackets, quotes in command mode",
-	callback = function(args)
+	callback = function()
 		local map = require("utils.mapper").map
 		local bracket_pairs = {
 			{ "(", ")" },
@@ -190,26 +186,11 @@ autocmd("CmdlineEnter", {
 	end,
 })
 
-autocmd("BufWinEnter", {
+autocmd({ "BufWinEnter", "CmdwinEnter" }, {
 	desc = "Make q close special buffers",
 	callback = function(args)
-		local map = require("utils.mapper").map
-		local buftype = vim.api.nvim_buf_get_option(args.buf, "buftype")
-		for index, type in ipairs { "help", "nofile", "quickfix" } do
-			if buftype == type then
-				map(
-					"n",
-					"q",
-					function() vim.api.nvim_buf_delete(args.buf, { force = true }) end,
-					{ buffer = args.buf, nowait = true }
-				)
-				return
-			end
-		end
+		local buftype = vim.api.nvim_get_option_value("buftype", { buf = args.buf })
+		if args.event == "BufWinEnter" and not vim.list_contains({ "help", "nofile", "quickfix" }, buftype) then return end
+		require("utils.mapper").map("n", "q", "<cmd>close<cr>", { buffer = args.buf })
 	end,
-})
-
-autocmd("CmdwinEnter", {
-	desc = "Make q close command history (q: and q?)",
-	command = "nnoremap <silent><buffer><nowait> q :close<CR>",
 })

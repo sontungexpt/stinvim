@@ -23,9 +23,7 @@ autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
 
 			fn.jobstart({ "ibus", "engine", engines[args.event] }, {
 				on_exit = function(_, code)
-					if code == 0 then
-						require("utils.notify").info("Switched ibus engine to " .. engines[args.event])
-					end
+					if code == 0 then require("utils.notify").info("Switched ibus engine to " .. engines[args.event]) end
 				end,
 			})
 		end

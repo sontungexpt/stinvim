@@ -19,6 +19,7 @@ local OPTIONS = {
 --- @param map_to function|string: The key or function to be executed by the key map.
 --- @param opts table|number|nil: Options to be applied in vim.keymap.set (default: 1)
 --- @param extend_opts table|nil: Extension or overriding of opts if opts is a number.
+--- @see vim.keymap.set.Opts
 M.map = function(mode, key, map_to, opts, extend_opts)
 	if type(opts) == "table" then
 		set_keymap(mode, key, map_to, deep_extend("force", OPTIONS[1], opts))
