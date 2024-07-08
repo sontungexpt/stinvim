@@ -9,10 +9,7 @@ local plugins = {
 		priority = 1000,
 		lazy = false,
 		-- opts = require("plugins.configs.witch"),
-		config = function(_, opts)
-			---@diagnostic disable-next-line: different-requires
-			require("witch").setup()
-		end,
+		opts = {},
 	},
 
 	{
@@ -22,7 +19,7 @@ local plugins = {
 			"nvim-tree/nvim-web-devicons",
 		},
 		event = "User FilePostLazyLoaded",
-		config = function(_, opts) require("sttusline").setup() end,
+		opts = {},
 	},
 
 	-- {
@@ -55,8 +52,8 @@ local plugins = {
 			"TSInstallFromGrammar",
 		},
 		build = ":TSUpdate",
+		main = "nvim-treesitter.configs",
 		opts = function() return require("plugins.configs.nvim-treesitter") end,
-		config = function(_, opts) require("nvim-treesitter.configs").setup(opts) end,
 	},
 
 	-- {
@@ -86,7 +83,8 @@ local plugins = {
 	{
 		"sontungexpt/stcursorword",
 		event = { "CursorHold", "CursorMoved" },
-		config = function(_, opts) require("stcursorword").setup() end,
+		main = "stcursorword",
+		opts = {},
 	},
 
 	{
@@ -94,7 +92,8 @@ local plugins = {
 		branch = "mini",
 		cmd = "URLOpenUnderCursor",
 		event = { "CursorHold", "CursorMoved" },
-		config = function(_, opts) require("url-open").setup() end,
+		main = "url-open",
+		opts = {},
 	},
 
 	-- {
@@ -108,15 +107,14 @@ local plugins = {
 		"akinsho/toggleterm.nvim",
 		cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec" },
 		keys = "<C-t>",
+		main = "toggleterm",
 		opts = function() return require("plugins.configs.toggleterm") end,
-		config = function(_, opts) require("toggleterm").setup(opts) end,
 	},
 
 	{
 		"kylechui/nvim-surround",
 		keys = { "ys", "ds", "cs" },
-		---@diagnostic disable-next-line: missing-fields
-		config = function() require("nvim-surround").setup {} end,
+		opts = {},
 	},
 
 	{
@@ -181,21 +179,23 @@ local plugins = {
 		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
 		event = "User FilePostLazyLoaded",
+		-- main = "nvim-highlight-colors",
 		opts = function() return require("plugins.configs.highlight-colors") end,
-		config = function(_, opts) require("nvim-highlight-colors").setup(opts) end,
 	},
 
 	{
 		"uga-rosa/ccc.nvim",
 		cmd = "CccPick",
-		config = function() require("ccc").setup {} end,
+		main = "ccc",
+		opts = {},
 	},
 
 	{
 		"iamcco/markdown-preview.nvim",
-		ft = "markdown",
+		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
+		ft = { "markdown" },
 		build = function() vim.fn["mkdp#util#install"]() end,
-		config = function() vim.g.mkdp_auto_close = 0 end,
+		config = function() vim.g.mkdp_auto_close = 1 end,
 	},
 
 	{
