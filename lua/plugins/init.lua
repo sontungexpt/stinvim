@@ -409,7 +409,7 @@ local plugins = {
 
 	{
 		"sontungexpt/better-diagnostic-virtual-text",
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
 	},
 
 	{
