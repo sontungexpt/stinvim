@@ -48,9 +48,7 @@ local function update_all_packages()
 								pkg:install():on("closed", function()
 									updated = true
 									running = running - 1
-									if running == 0 then
-										require("utils.notify").info("Mason: Update all packages completed")
-									end
+									if running == 0 then require("utils.notify").info("Mason: Update all packages completed") end
 								end)
 								return
 							end
@@ -70,7 +68,7 @@ local function update_all_packages()
 				require("utils.notify").error("Failed to update registries")
 			end
 		end))
-	end, 100)
+	end)
 end
 
 local sync_packages = function()
@@ -80,7 +78,7 @@ local sync_packages = function()
 			local installed_packages = get_installed_packages()
 			local ensured_packages = get_ensured_packages()
 
-			local packages_to_remove = utils.find_unique_array_items(installed_packages, ensured_packages)
+			local packages_to_remove = require("utils.tbl").find_unique_array_items(installed_packages, ensured_packages)
 			local uninstall_trigger = false
 
 			if next(packages_to_remove) then
@@ -89,7 +87,7 @@ local sync_packages = function()
 			end
 
 			schedule(function()
-				local packages_to_install = utils.find_unique_array_items(ensured_packages, installed_packages)
+				local packages_to_install = require("utils.tbl").find_unique_array_items(ensured_packages, installed_packages)
 				if next(packages_to_install) then
 					pcall(api.nvim_command, "MasonInstall " .. table.concat(packages_to_install, " "))
 
@@ -111,9 +109,9 @@ local sync_packages = function()
 					utils.close_buffers_matching("mason", "filetype")
 					require("utils.notify").info("Mason: Removing unused packages successfully")
 				end
-			end, 100)
+			end)
 		end
-	end, 100)
+	end)
 end
 
 -------------------- Auto commands --------------------
