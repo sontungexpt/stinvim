@@ -1,4 +1,4 @@
-local set_keymap, deep_extend = vim.keymap.set, vim.tbl_deep_extend
+local set_keymap, tbl_extend = vim.keymap.set, require("utils.tbl").extend
 
 local M = {}
 
@@ -22,9 +22,9 @@ local OPTIONS = {
 --- @see vim.keymap.set.Opts
 M.map = function(mode, key, map_to, opts, extend_opts)
 	if type(opts) == "table" then
-		set_keymap(mode, key, map_to, deep_extend("force", OPTIONS[1], opts))
+		set_keymap(mode, key, map_to, tbl_extend(OPTIONS[1], opts, true))
 	elseif type(extend_opts) == "table" then
-		set_keymap(mode, key, map_to, deep_extend("force", OPTIONS[opts] or OPTIONS[1], extend_opts))
+		set_keymap(mode, key, map_to, tbl_extend(OPTIONS[opts] or OPTIONS[1], extend_opts, true))
 	else
 		set_keymap(mode, key, map_to, OPTIONS[opts] or OPTIONS[1])
 	end

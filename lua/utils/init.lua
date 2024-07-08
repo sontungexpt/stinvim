@@ -19,33 +19,6 @@ M.find_root = function(source, markers)
 	})
 end
 
---- Finds the items in the source table that are not present in the target table.
----
---- @param source table The source table to find unique items that are not in target table
---- @param target table The target table to compare with the source table
---- @return table The unique items in source table that are not in target table
---- @return integer The number of unique items found
-M.find_unique_array_items = function(source, target)
-	if next(source) == nil then return target, #target end
-
-	local founds = {}
-	local unique_items = {}
-
-	for _, value in ipairs(target) do
-		founds[value] = true
-	end
-
-	local index = 0
-	for _, value in ipairs(source) do
-		if not founds[value] then
-			index = index + 1
-			unique_items[index] = value
-		end
-	end
-
-	return unique_items, index
-end
-
 --- Executes a specified command using vim.api.nvim_command
 --- and optionally displays success or error messages.
 ---
