@@ -2,9 +2,7 @@ local M = {
 	enabled = true,
 }
 
-local is_authenticated = function()
-	return vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.codeium/config.json") == 1
-end
+local is_authenticated = function() return vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.codeium/config.json") == 1 end
 
 M.entry = function()
 	local id

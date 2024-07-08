@@ -10,7 +10,7 @@ local plugins = {
 		priority = 1000,
 		-- branch = "develop",
 		lazy = false,
-		-- opts = require("plugins.configs.witch"),
+		-- opts = require("plugins.configs.witch"),ini
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("witch").setup()
@@ -410,7 +410,7 @@ local plugins = {
 
 	{
 		"sontungexpt/better-diagnostic-virtual-text",
-		dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
 	},
 
 	{
