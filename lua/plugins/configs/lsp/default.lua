@@ -33,7 +33,12 @@ if not vim.g.stinvim_general_lsp_config_loaded then
 
 	lsp.handlers["textDocument/hover"] = lsp.with(lsp.handlers.hover, { border = "single" })
 
-	M.on_attach = function(client, bufnr) require("better-diagnostic-virtual-text.api").setup_buf(bufnr, nil) end
+	M.on_attach = function(client, bufnr)
+		require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
+			inline = true,
+			-- ui = { above = true },
+		})
+	end
 
 	local capabilities = lsp.protocol.make_client_capabilities()
 		or require("lspconfig").util.default_config.capabilities
