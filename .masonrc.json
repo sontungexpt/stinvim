@@ -1,6 +1,7 @@
 [
   "java-test",
   "jdtls",
+  "nvim-java",
   "java-debug-adapter",
   "lua-language-server",
   "stylua",

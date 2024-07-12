@@ -6,7 +6,7 @@ local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
 local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
 local M = {
-	enabled = true,
+	enabled = false,
 }
 
 local get_ensured_packages = function()

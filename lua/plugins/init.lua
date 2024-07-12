@@ -80,6 +80,20 @@ local plugins = {
 		opts = function() return require("plugins.configs.nvim-treesitter") end,
 	},
 
+	{
+		"williamboman/mason.nvim",
+		build = ":MasonUpdate",
+		cmd = {
+			"Mason",
+			"MasonLog",
+			"MasonUpdate",
+			"MasonInstall",
+			"MasonUninstall",
+			"MasonUninstallAll",
+		},
+		opts = function() return require("plugins.configs.mason") end,
+	},
+
 	-- {
 	-- 	"windwp/nvim-ts-autotag",
 	-- 	dependencies = {
@@ -185,29 +199,27 @@ local plugins = {
 		dependencies = {
 			"HiPhish/rainbow-delimiters.nvim",
 		},
-		opts = {
-			indent = {
-				char = "│",
-			},
-			scope = {
-				highlight = {
-					"RainbowDelimiterRed",
-					"RainbowDelimiterYellow",
-					"RainbowDelimiterBlue",
-					"RainbowDelimiterOrange",
-					"RainbowDelimiterGreen",
-					"RainbowDelimiterViolet",
-					"RainbowDelimiterCyan",
-				},
-				char = "│",
-			},
-		},
-		config = function(_, opts)
+		opts = function()
 			local hooks = require("ibl.hooks")
-
 			hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
 
-			require("ibl").setup(opts)
+			return {
+				indent = {
+					char = "│",
+				},
+				scope = {
+					highlight = {
+						"RainbowDelimiterRed",
+						"RainbowDelimiterYellow",
+						"RainbowDelimiterBlue",
+						"RainbowDelimiterOrange",
+						"RainbowDelimiterGreen",
+						"RainbowDelimiterViolet",
+						"RainbowDelimiterCyan",
+					},
+					char = "│",
+				},
+			}
 		end,
 	},
 
@@ -215,7 +227,6 @@ local plugins = {
 		"sontungexpt/nvim-highlight-colors",
 		cmd = "HighlightColorsOn",
 		event = "User FilePostLazyLoaded",
-		-- main = "nvim-highlight-colors",
 		opts = function() return require("plugins.configs.highlight-colors") end,
 	},
 
@@ -263,14 +274,14 @@ local plugins = {
 			},
 			render_on_write = true,
 		},
-		config = function(_, opts) require("plantuml").setup(opts) end,
+		main = "plantuml",
 	},
 
 	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
 		opts = function() return require("plugins.configs.whichkey") end,
-		config = function(_, opts) require("which-key").setup(opts) end,
+		main = "which-key",
 	},
 
 	{
@@ -284,10 +295,10 @@ local plugins = {
 			{ "zR", mode = "n", desc = "Fold all lines" },
 		},
 		dependencies = "kevinhwang91/promise-async",
-		opts = function() return require("plugins.configs.nvim-ufo") end,
-		config = function(_, opts)
+		main = "ufo",
+		opts = function()
 			vim.opt.foldenable = true -- enable folding when plugin is loaded
-			require("ufo").setup(opts)
+			return require("plugins.configs.nvim-ufo")
 		end,
 	},
 
@@ -295,8 +306,8 @@ local plugins = {
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
+		main = "copilot",
 		opts = function() return require("plugins.configs.copilot") end,
-		config = function(_, opts) require("copilot").setup(opts) end,
 	},
 
 	-- {
@@ -324,7 +335,7 @@ local plugins = {
 			"NvimTreeOpen",
 		},
 		opts = function() return require("plugins.configs.nvim-tree") end,
-		config = function(_, opts) require("nvim-tree").setup(opts) end,
+		main = "nvim-tree",
 	},
 
 	{
@@ -372,8 +383,8 @@ local plugins = {
 			{ "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
 		},
 		-- because prehook is call so it need to return from a function
+		main = "Comment",
 		opts = function() return require("plugins.configs.comment.Comment") end,
-		config = function(_, opts) require("Comment").setup(opts) end,
 	},
 
 	{
@@ -381,8 +392,9 @@ local plugins = {
 		cmd = { "TodoTelescope", "TodoQuickFix" },
 		dependencies = "nvim-lua/plenary.nvim",
 		event = { "CursorHold", "CmdlineEnter", "CursorMoved" },
+		main = "todo-comments",
+		opts = {},
 		-- opts = require("plugins.configs.comment.todo-comments"),
-		config = function(_, opts) require("todo-comments").setup {} end,
 	},
 
 	--------------------------------------------------- Git supporter ---------------------------------------------------
@@ -390,14 +402,14 @@ local plugins = {
 		"lewis6991/gitsigns.nvim",
 		event = "User GitLazyLoaded",
 		opts = function() return require("plugins.configs.git.gitsigns") end,
-		config = function(_, opts) require("gitsigns").setup(opts) end,
+		main = "gitsigns",
 	},
 
 	{
 		"akinsho/git-conflict.nvim",
 		event = "User GitLazyLoaded",
 		opts = function() return require("plugins.configs.git.git-conflict") end,
-		config = function(_, opts) require("git-conflict").setup(opts) end,
+		main = "git-conflict",
 	},
 
 	--------------------------------------------------- LSP ---------------------------------------------------
@@ -413,9 +425,9 @@ local plugins = {
 	},
 
 	{
+		-- config is in ftplugin/java.lua
 		"mfussenegger/nvim-jdtls",
 		ft = "java",
-		-- config is in ftplugin/java.lua
 	},
 
 	{
@@ -427,8 +439,7 @@ local plugins = {
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
 		opts = function() return require("plugins.configs.flutter-tools") end,
-		---@diagnostic disable-next-line: different-requires
-		config = function(_, opts) require("flutter-tools").setup(opts) end,
+		main = "flutter-tools",
 	},
 
 	{
@@ -442,25 +453,7 @@ local plugins = {
 			"nvim-treesitter/nvim-treesitter",
 		},
 		opts = function() return require("plugins.configs.lsp.lspsaga") end,
-		config = function(_, opts)
-			---@diagnostic disable-next-line: different-requires
-			require("lspsaga").setup(opts)
-		end,
-	},
-
-	{
-		"williamboman/mason.nvim",
-		build = ":MasonUpdate",
-		cmd = {
-			"Mason",
-			"MasonLog",
-			"MasonUpdate",
-			"MasonInstall",
-			"MasonUninstall",
-			"MasonUninstallAll",
-		},
-		opts = function() return require("plugins.configs.mason") end,
-		config = function(_, opts) require("mason").setup(opts) end,
+		main = "lspsaga",
 	},
 
 	{
@@ -492,8 +485,7 @@ local plugins = {
 		cmd = "ConformInfo",
 		event = "BufWritePre",
 		opts = function() return require("plugins.configs.conform") end,
-		---@diagnostic disable-next-line: different-requires
-		config = function(_, opts) require("conform").setup(opts) end,
+		main = "conform",
 	},
 
 	--------------------------------------------------- Debugger  ---------------------------------------------------
@@ -508,7 +500,7 @@ local plugins = {
 			"nvim-neotest/nvim-nio",
 		},
 		opts = function() require("plugins.configs.dap.dapui") end,
-		config = function(_, opts) require("dapui").setup(opts) end,
+		main = "dap-ui",
 	},
 }
 

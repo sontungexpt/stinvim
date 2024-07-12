@@ -77,6 +77,10 @@ local lsp_servers = {
 		},
 	},
 
+	{
+		name = "jdtls",
+	},
+
 	--rust
 	{
 		name = "rust_analyzer",

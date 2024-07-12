@@ -32,8 +32,37 @@ vim.schedule(function()
 	map("n", "<Tab>", ">>_")
 	map("n", "<S-Tab>", "<<_")
 
+	local uv = vim.uv or vim.loop
+	local timerj = uv.new_timer()
+	local waitj = false
 	--Back to normal mode
-	map({ "i", "c" }, "jj", "<esc>", 2)
+	map({ "i", "c" }, "j", function()
+		timerj:stop()
+		if waitj then
+			local cursor = vim.api.nvim_win_get_cursor(0)
+			local col = cursor[2]
+
+			if col > 0 then
+				local line = cursor[1] - 1
+				local left_char = vim.api.nvim_buf_get_text(0, line, col - 1, line, col, {})[1]
+				if left_char == "j" then
+					waitj = false
+					return "<bs><esc>"
+				end
+			end
+		end
+
+		timerj:start(
+			vim.o.updatetime or 300,
+			0,
+			vim.schedule_wrap(function()
+				waitj = false
+				timerj:stop()
+			end)
+		)
+		waitj = true
+		return "j"
+	end, 7)
 
 	--Save file as the traditional way
 	map({ "n", "i", "v", "c" }, "<C-s>", "<cmd>w<cr>", 2)

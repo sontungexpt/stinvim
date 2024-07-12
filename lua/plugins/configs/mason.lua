@@ -1,4 +1,4 @@
-local options = {
+return {
 	-- auto sync the installed packages with ensure_installed when open nvim
 	auto_sync = true,
 
@@ -63,5 +63,3 @@ local options = {
 	},
 	max_concurrent_installers = 10,
 }
-
-return options

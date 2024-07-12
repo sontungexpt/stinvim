@@ -7,6 +7,7 @@ if not snip_status_ok then return end
 local api, fn = vim.api, vim.fn
 
 cmp.setup {
+	enabled = function() return vim.fn.reg_recording() == "" end,
 	snippet = {
 		expand = function(args)
 			luasnip.lsp_expand(args.body) -- For `luasnip` users.
