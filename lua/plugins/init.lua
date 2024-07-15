@@ -224,10 +224,17 @@ local plugins = {
 	},
 
 	{
-		"sontungexpt/nvim-highlight-colors",
-		cmd = "HighlightColorsOn",
+		"brenoprata10/nvim-highlight-colors",
+		cmd = "HighlightColors",
 		event = "User FilePostLazyLoaded",
-		opts = function() return require("plugins.configs.highlight-colors") end,
+		opts = {
+			render = "background", -- or 'foreground' or 'virtual'
+			enable_tailwind = true,
+		},
+		config = function(_, opts)
+			require("nvim-highlight-colors").setup(opts)
+			vim.api.nvim_command("HighlightColors On")
+		end,
 	},
 
 	{
@@ -240,7 +247,6 @@ local plugins = {
 	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-		ft = { "markdown" },
 		build = function() vim.fn["mkdp#util#install"]() end,
 		config = function() vim.g.mkdp_auto_close = 1 end,
 	},
