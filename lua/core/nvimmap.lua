@@ -160,10 +160,10 @@ vim.schedule(function()
 	map("n", "=", "<C-W>=")
 
 	--Change the layout to horizontal
-	map("n", "gv", "<C-w>t<C-w>H")
+	map("n", "gv", "<C-w>t<C-w>H", { desc = "Change the layout to vertical" })
 
 	--Change the layout to vertical
-	map("n", "gh", "<C-w>t<C-w>K")
+	map("n", "gh", "<C-w>t<C-w>K", { desc = "Change the layout to horizontally" })
 
 	-- Split horizontally
 	map("n", "<A-s>", "<cmd>split<CR>")
