@@ -230,6 +230,10 @@ local plugins = {
 		opts = {
 			render = "background", -- or 'foreground' or 'virtual'
 			enable_tailwind = true,
+			exclude_filetypes = {},
+			exclude_buftypes = {
+				"nofile",
+			},
 		},
 		config = function(_, opts)
 			require("nvim-highlight-colors").setup(opts)

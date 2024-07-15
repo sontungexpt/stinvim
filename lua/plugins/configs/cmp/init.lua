@@ -29,6 +29,7 @@ cmp.setup {
 	formatting = {
 		fields = { "kind", "abbr", "menu" },
 		format = function(entry, vim_item)
+			local color_item = require("nvim-highlight-colors").format(entry, { kind = vim_item.kind })
 			vim_item.kind = require("ui.icons.lspkind")[vim_item.kind]
 			vim_item.menu = ({
 				nvim_lsp = "λ ",
@@ -39,6 +40,10 @@ cmp.setup {
 				copilot = " ",
 				Copilot = " ",
 			})[entry.source.name]
+			if color_item.abbr_hl_group then
+				vim_item.kind_hl_group = color_item.abbr_hl_group
+				vim_item.kind = color_item.abbr
+			end
 			return vim_item
 		end,
 	},

@@ -39,4 +39,5 @@ return {
 	Copilot = "",
 	Codeium = "",
 	TabNine = "",
+	Emoji = "󰓧",
 }
