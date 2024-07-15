@@ -36,7 +36,7 @@ if not vim.g.stinvim_general_lsp_config_loaded then
 	M.on_attach = function(client, bufnr)
 		require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
 			inline = true,
-			-- ui = { above = true },
+			ui = { above = true },
 		})
 	end
 

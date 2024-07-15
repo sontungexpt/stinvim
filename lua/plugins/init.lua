@@ -257,19 +257,18 @@ local plugins = {
 	{
 		"aklt/plantuml-syntax",
 		ft = "plantuml",
-		event = "BufEnter *.wsd,*.pu,*.puml,*.plantuml",
 	},
 
 	{
 		"https://gitlab.com/itaranto/plantuml.nvim",
-		event = "BufWritePre *.wsd,*.pu,*.puml,*.plantuml",
+		ft = "plantuml",
 		cmd = "PlantUml",
 		opts = {
 			renderer = {
 				type = "image",
 				options = {
 					prog = "feh",
-					dark_mode = false,
+					dark_mode = true,
 				},
 			},
 			render_on_write = true,

@@ -5,5 +5,9 @@ vim.filetype.add {
 		rasi = "rasi",
 		html = "html",
 		zsh = "sh",
+		plantuml = "plantuml",
+		wsd = "plantuml",
+		pu = "plantuml",
+		puml = "plantuml",
 	},
 }
