@@ -371,7 +371,7 @@ local plugins = {
 				opts = {
 					enable_autocmd = false,
 				},
-				config = function(_, opts) require("ts_context_commentstring").setup(opts) end,
+				main = "ts_context_commentstring",
 			},
 		},
 		keys = {
