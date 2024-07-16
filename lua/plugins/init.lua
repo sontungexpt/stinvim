@@ -255,14 +255,16 @@ local plugins = {
 		config = function() vim.g.mkdp_auto_close = 1 end,
 	},
 
-	-- {
-	-- 	"OXY2DEV/markview.nvim",
-	-- 	ft = "markdown",
-	-- 	dependencies = {
-	-- 		"nvim-treesitter/nvim-treesitter",
-	-- 		"nvim-tree/nvim-web-devicons",
-	-- 	},
-	-- },
+	{
+		"OXY2DEV/markview.nvim",
+		ft = "markdown",
+		dependencies = {
+			-- You may not need this if you don't lazy load
+			-- Or if the parsers are in your $RUNTIMEPATH
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-tree/nvim-web-devicons",
+		},
+	},
 
 	{
 		"aklt/plantuml-syntax",
