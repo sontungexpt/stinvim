@@ -13,7 +13,7 @@ local function echo(str)
 	api.nvim_echo({ { str, "Bold" } }, true, {})
 end
 
-M.lazy = function(install_path)
+function M.lazy(install_path)
 	--------- lazy.nvim ---------------
 	echo("  Installing lazy.nvim and plugins ...")
 
@@ -38,7 +38,7 @@ M.lazy = function(install_path)
 	end)
 end
 
-M.load_plugin_extensions = function()
+function M.load_plugin_extensions()
 	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir or fn.stdpath("config") .. "/lua/plugins/extensions"
 
 	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
@@ -49,7 +49,7 @@ M.load_plugin_extensions = function()
 	end
 end
 
-M.boot = function(install_path)
+function M.boot(install_path)
 	local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
 
 	autocmd("CmdlineEnter", {
