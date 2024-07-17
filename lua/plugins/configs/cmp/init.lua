@@ -4,10 +4,7 @@ if not cmp_status_ok then return end
 local snip_status_ok, luasnip = pcall(require, "luasnip")
 if not snip_status_ok then return end
 
-local api, fn = vim.api, vim.fn
-
 cmp.setup {
-	enabled = function() return vim.fn.reg_recording() == "" end,
 	snippet = {
 		expand = function(args)
 			luasnip.lsp_expand(args.body) -- For `luasnip` users.
@@ -15,7 +12,8 @@ cmp.setup {
 	},
 	sources = {
 		{ name = "path" },
-		{ name = "nvim_lsp", keyword_length = 1 },
+		{ name = "dotenv" },
+		{ name = "nvim_lsp" },
 		{ name = "buffer", keyword_length = 3 },
 		{ name = "luasnip", keyword_length = 4 },
 		{ name = "nvim_lua", keyword_length = 2 },
@@ -67,7 +65,7 @@ cmp.setup {
 			if cmp.visible() then
 				cmp.select_next_item()
 			elseif luasnip.expand_or_jumpable() then
-				fn.feedkeys(api.nvim_replace_termcodes("<Plug>luasnip-expand-or-jump", true, true, true), "")
+				luasnip.expand_or_jump()
 			else
 				fallback()
 			end
@@ -76,7 +74,7 @@ cmp.setup {
 			if cmp.visible() then
 				cmp.select_prev_item()
 			elseif luasnip.jumpable(-1) then
-				fn.feedkeys(api.nvim_replace_termcodes("<Plug>luasnip-jump-prev", true, true, true), "")
+				luasnip.jump(-1)
 			else
 				fallback()
 			end

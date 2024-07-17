@@ -486,6 +486,7 @@ local plugins = {
 				"hrsh7th/cmp-nvim-lsp",
 				"hrsh7th/cmp-nvim-lua",
 				"saadparwaiz1/cmp_luasnip",
+				"SergioRibera/cmp-dotenv",
 			},
 		},
 		config = function() require("plugins.configs.cmp") end,
