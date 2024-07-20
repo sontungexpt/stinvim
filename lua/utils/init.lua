@@ -115,4 +115,6 @@ M.close_buffers = function(matches)
 	end)
 end
 
-return M
+return setmetatable(M, {
+	__index = function(_, key) return require("utils." .. key) end,
+})
