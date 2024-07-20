@@ -70,7 +70,7 @@ end
 --- @param matches string|table The filetypes or buffer types to close.
 --- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
-	if not api.nvim_buf_is_valid(bufnr) then return end
+	if not api.nvim_buf_is_loaded(bufnr) then return end
 	local condition = api.nvim_get_option_value(condition_name or "filetype", { buf = bufnr })
 	if type(matches) == "string" and condition == matches then
 		api.nvim_buf_delete(bufnr, { force = true })
