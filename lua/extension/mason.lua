@@ -30,7 +30,47 @@ local get_installed_packages = function()
 	return installed_packages
 end
 
-local function update_pkgs()
+local caculate_pkgs = function()
+	local ensure_pkgs = get_ensured_packages()
+	local installed_pkgs = get_installed_packages()
+
+	local ensure_pkgs_size = #ensure_pkgs
+	local installed_pkgs_size = #installed_pkgs
+
+	if ensure_pkgs_size == 0 or installed_pkgs_size == 0 then
+		return installed_pkgs, installed_pkgs_size, ensure_pkgs, ensure_pkgs_size
+	end
+
+	local ensure_pkgs_map = {}
+	for i = 1, ensure_pkgs_size do
+		ensure_pkgs_map[ensure_pkgs[i]] = true
+	end
+
+	local pkgs_to_remove = {}
+	local pkgs_to_remove_size = 0
+
+	for i = 1, installed_pkgs_size do
+		local pkg = installed_pkgs[i]
+		if not ensure_pkgs_map[pkg] then
+			pkgs_to_remove_size = pkgs_to_remove_size + 1
+			pkgs_to_remove[pkgs_to_remove_size] = pkg
+		else
+			ensure_pkgs_map[pkg] = nil
+		end
+	end
+
+	local pkgs_to_install = {}
+	local pkgs_to_install_size = 0
+
+	for pkg, _ in pairs(ensure_pkgs_map) do
+		pkgs_to_install_size = pkgs_to_install_size + 1
+		pkgs_to_install[pkgs_to_install_size] = pkg
+	end
+
+	return pkgs_to_remove, pkgs_to_remove_size, pkgs_to_install, pkgs_to_install_size
+end
+
+local update_pkgs = function()
 	schedule(function()
 		local registry = require("mason-registry")
 		registry.update(vim.schedule_wrap(function(success, _)
@@ -57,41 +97,33 @@ end
 
 local clean_pkgs = function()
 	schedule(function()
-		local installed_packages = get_installed_packages()
-		local ensured_packages = get_ensured_packages()
-
-		local packages_to_remove = require("utils.tbl").find_unique_array_items(installed_packages, ensured_packages)
+		local packages_to_remove =
+			require("utils.tbl").find_unique_array_items(get_installed_packages(), get_ensured_packages())
 		if next(packages_to_remove) then
 			pcall(api.nvim_command, "MasonUninstall " .. table.concat(packages_to_remove, " "))
-			require("utils").close_buffers_matching("mason", "filetype")
+			require("utils.notify").info("Mason: Cleaned packages")
 		end
-		require("utils.notify").info("Mason: Cleaned packages")
 	end)
 end
 
 local sync_pkgs = function()
 	schedule(function()
-		local installed_packages = get_installed_packages()
-		local ensured_packages = get_ensured_packages()
+		local pkgs_to_remove, pkgs_to_remove_size, pkgs_to_install, pkgs_to_install_size = caculate_pkgs()
 
-		local packages_to_remove = require("utils.tbl").find_unique_array_items(installed_packages, ensured_packages)
-
-		if next(packages_to_remove) and require("mason.settings").current.auto_sync then
-			pcall(api.nvim_command, "MasonUninstall " .. table.concat(packages_to_remove, " "))
+		if pkgs_to_remove_size > 0 and require("mason.settings").current.auto_sync then
+			pcall(api.nvim_command, "MasonUninstall " .. table.concat(pkgs_to_remove, " "))
 			require("utils").close_buffers_matching("mason", "filetype")
 		end
 
 		schedule(function()
-			local packages_to_install = require("utils.tbl").find_unique_array_items(ensured_packages, installed_packages)
-			if next(packages_to_install) then
-				pcall(api.nvim_command, "MasonInstall " .. table.concat(packages_to_install, " "))
+			if pkgs_to_install_size > 0 then
+				pcall(api.nvim_command, "MasonInstall " .. table.concat(pkgs_to_install, " "))
 				require("utils").close_buffers_matching("mason", "filetype")
 
-				local count = #packages_to_install
 				require("mason-registry"):on("package:install:success", function(pkg)
 					require("utils.notify").info("Mason: Installed " .. pkg.name)
-					count = count - 1
-					if count == 0 then update_pkgs() end
+					pkgs_to_install_size = pkgs_to_install_size - 1
+					if pkgs_to_install_size == 0 then update_pkgs() end
 				end)
 			end
 		end)
