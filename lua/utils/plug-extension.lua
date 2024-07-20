@@ -29,7 +29,7 @@ M.touch_plug_extension = function(filename)
 		filename = fn.fnamemodify(filename, ":r") .. ".lua"
 	end
 
-	local new_file_path = (vim.g.stinvim_plugin_extension_dir or vim.fn.stdpath("config") .. "/lua/plugins/extensions")
+	local new_file_path = (vim.g.stinvim_plugin_extension_dir or vim.fn.stdpath("config") .. "/lua/extension")
 		.. "/"
 		.. filename
 
