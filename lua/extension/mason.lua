@@ -1,7 +1,7 @@
 local vim = vim
 local api, fn, schedule = vim.api, vim.fn, vim.schedule
 
-local MASON_CONFIG_MODULE = "plugins.configs.mason"
+local MASON_CONFIG_MODULE = "config.mason"
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
 local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
 
