@@ -170,16 +170,10 @@ autocmd("LspAttach", {
 		map("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>")
 
 		map("n", "[e", function()
-			load_mod(
-				"lspsaga.diagnostic",
-				function(diagnostic) diagnostic:goto_prev { severity = vim.diagnostic.severity.ERROR } end
-			)
+			load_mod("lspsaga.diagnostic", function(diagnostic) diagnostic:goto_prev { severity = 1 } end)
 		end)
 		map("n", "]e", function()
-			load_mod(
-				"lspsaga.diagnostic",
-				function(diagnostic) diagnostic:goto_next { severity = vim.diagnostic.severity.ERROR } end
-			)
+			load_mod("lspsaga.diagnostic", function(diagnostic) diagnostic:goto_next { severity = 1 } end)
 		end)
 
 		map("n", "<leader>so", "<cmd>Lspsaga outline<CR>")
@@ -194,9 +188,8 @@ M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
 	map("n", "q", "<cmd>close<CR>", { buffer = bufnr })
-	-- kill terminal buffer
-	map("t", "<C-q>", [[<C-\><C-n>:q!<cr>]])
-	map("t", "<A-q>", [[<C-\><C-n>:q!<cr>]])
+	map({ "n", "t" }, "<C-q>", "<cmd>close<CR>", { buffer = bufnr })
+	map({ "n", "t" }, "<A-q>", "<cmd>close<CR>", { buffer = bufnr })
 
 	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
 	map("t", "jj", [[<C-\><C-n>]], { buffer = bufnr })
