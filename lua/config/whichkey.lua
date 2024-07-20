@@ -1,5 +1,5 @@
 local options = {
-	win = {
+	win= {
 		border = "single", -- none/single/double/shadow
 	},
 }

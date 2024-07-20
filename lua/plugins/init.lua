@@ -10,7 +10,7 @@ local plugins = {
 		priority = 1000,
 		-- branch = "develop",
 		lazy = false,
-		-- opts = require("plugins.configs.witch"),
+		-- opts = require("config.witch"),
 		opts = {},
 	},
 
@@ -34,6 +34,7 @@ local plugins = {
 	-- 	-- opts = require("plugins.configs.sttusline"),
 	-- 	config = function(_, opts) require("witch-line").setup(opts) end,
 	-- },
+
 	{
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline",
 		-- event = "UIEnter",
@@ -52,7 +53,7 @@ local plugins = {
 	-- 		"nvim-tree/nvim-web-devicons",
 	-- 	},
 	-- 	event = "User FilePostLazyLoaded",
-	-- 	opts = require("plugins.configs.bufferline"),
+	-- 	opts = require("config.bufferline"),
 	-- 	config = function(_, opts) require("bufferline").setup(opts) end,
 	-- },
 
@@ -77,7 +78,7 @@ local plugins = {
 		},
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
-		opts = function() return require("plugins.configs.nvim-treesitter") end,
+		opts = function() return require("config.nvim-treesitter") end,
 	},
 
 	{
@@ -158,7 +159,7 @@ local plugins = {
 		cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec" },
 		keys = "<C-t>",
 		main = "toggleterm",
-		opts = function() return require("plugins.configs.toggleterm") end,
+		opts = function() return require("config.toggleterm") end,
 	},
 
 	{
@@ -170,7 +171,7 @@ local plugins = {
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		-- opts = function() return require("plugins.configs.nvim-autopairs") end,
+		-- opts = function() return require("config.nvim-autopairs") end,
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("nvim-autopairs").setup(opts)
@@ -189,7 +190,7 @@ local plugins = {
 	-- 	},
 	-- 	build = ":UpdateRemotePlugins",
 	-- 	event = "CmdlineEnter",
-	-- 	config = function() require("plugins.configs.wilder") end,
+	-- 	config = function() require("config.wilder") end,
 	-- },
 
 	{
@@ -291,8 +292,7 @@ local plugins = {
 	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
-		opts = function() return require("plugins.configs.whichkey") end,
-		main = "which-key",
+		opts = function() return require("config.whichkey") end,
 	},
 
 	{
@@ -309,7 +309,7 @@ local plugins = {
 		main = "ufo",
 		opts = function()
 			vim.opt.foldenable = true -- enable folding when plugin is loaded
-			return require("plugins.configs.nvim-ufo")
+			return require("config.nvim-ufo")
 		end,
 	},
 
@@ -318,7 +318,12 @@ local plugins = {
 		cmd = "Copilot",
 		event = "InsertEnter",
 		main = "copilot",
-		opts = function() return require("plugins.configs.copilot") end,
+		opts = function()
+			if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.config/github-copilot/hosts.json") == 0 then
+				vim.api.nvim_command("Copilot auth")
+			end
+			return require("plugins.configs.copilot")
+		end,
 	},
 
 	-- {
@@ -327,6 +332,10 @@ local plugins = {
 	-- 	event = "InsertEnter",
 	-- 	cmd = "Codeium",
 	-- 	config = function()
+	-- 		if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.codeium/config.json") == 0 then
+	-- 			vim.api.nvim_command("Codeium Auth")
+	-- 		end
+
 	-- 		vim.g.codeium_no_map_tab = true
 	-- 		local map = require("utils.mapper").map
 	-- 		map("i", "<A-Tab>", "codeium#Accept()", 7)
@@ -345,7 +354,7 @@ local plugins = {
 			"NvimTreeFocus",
 			"NvimTreeOpen",
 		},
-		opts = function() return require("plugins.configs.nvim-tree") end,
+		opts = function() return require("config.nvim-tree") end,
 		main = "nvim-tree",
 	},
 
@@ -360,7 +369,7 @@ local plugins = {
 			-- "nvim-telescope/telescope-media-files.nvim",
 			"nvim-telescope/telescope-fzy-native.nvim",
 		},
-		opts = function() return require("plugins.configs.telescope") end,
+		opts = function() return require("config.telescope") end,
 		config = function(_, opts)
 			local telescope = require("telescope")
 			telescope.setup(opts)
@@ -395,7 +404,7 @@ local plugins = {
 		},
 		-- because prehook is call so it need to return from a function
 		main = "Comment",
-		opts = function() return require("plugins.configs.comment.Comment") end,
+		opts = function() return require("config.comment.Comment") end,
 	},
 
 	{
@@ -405,29 +414,29 @@ local plugins = {
 		event = { "CursorHold", "CmdlineEnter", "CursorMoved" },
 		main = "todo-comments",
 		opts = {},
-		-- opts = require("plugins.configs.comment.todo-comments"),
+		-- opts = require("config.comment.todo-comments"),
 	},
 
 	--------------------------------------------------- Git supporter ---------------------------------------------------
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "User GitLazyLoaded",
-		opts = function() return require("plugins.configs.git.gitsigns") end,
 		main = "gitsigns",
+		opts = function() return require("config.git.gitsigns") end,
 	},
 
 	{
 		"akinsho/git-conflict.nvim",
 		event = "User GitLazyLoaded",
-		opts = function() return require("plugins.configs.git.git-conflict") end,
 		main = "git-conflict",
+		opts = function() return require("config.git.git-conflict") end,
 	},
 
 	--------------------------------------------------- LSP ---------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
 		event = "User FilePostLazyLoaded",
-		config = function() require("plugins.configs.lsp.lspconfig") end,
+		config = function() require("config.lsp.lspconfig") end,
 	},
 
 	{
@@ -449,8 +458,8 @@ local plugins = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
-		opts = function() return require("plugins.configs.flutter-tools") end,
 		main = "flutter-tools",
+		opts = function() return require("config.flutter-tools") end,
 	},
 
 	{
@@ -463,8 +472,23 @@ local plugins = {
 			--Please make sure you install markdown and markdown_inline parser
 			"nvim-treesitter/nvim-treesitter",
 		},
-		opts = function() return require("plugins.configs.lsp.lspsaga") end,
 		main = "lspsaga",
+		opts = function() return require("config.lsp.lspsaga") end,
+	},
+
+	{
+		"williamboman/mason.nvim",
+		build = ":MasonUpdate",
+		cmd = {
+			"Mason",
+			"MasonLog",
+			"MasonUpdate",
+			"MasonInstall",
+			"MasonUninstall",
+			"MasonUninstallAll",
+		},
+		opts = function() return require("config.mason") end,
+		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
 	{
@@ -476,7 +500,7 @@ local plugins = {
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
 				dependencies = "rafamadriz/friendly-snippets",
-				config = function() require("plugins.configs.cmp.LuaSnip") end,
+				config = function() require("config.cmp.LuaSnip") end,
 			},
 
 			-- cmp sources plugins
@@ -489,15 +513,15 @@ local plugins = {
 				"SergioRibera/cmp-dotenv",
 			},
 		},
-		config = function() require("plugins.configs.cmp") end,
+		config = function() require("config.cmp") end,
 	},
 
 	{
 		"stevearc/conform.nvim",
 		cmd = "ConformInfo",
 		event = "BufWritePre",
-		opts = function() return require("plugins.configs.conform") end,
 		main = "conform",
+		opts = function() return require("config.conform") end,
 	},
 
 	--------------------------------------------------- Debugger  ---------------------------------------------------
@@ -506,14 +530,14 @@ local plugins = {
 		dependencies = {
 			{
 				"mfussenegger/nvim-dap",
-				config = function() require("plugins.configs.dap") end,
+				config = function() require("config.dap") end,
 			},
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 		},
-		opts = function() require("plugins.configs.dap.dapui") end,
 		main = "dap-ui",
+		opts = function() require("config.dap.dapui") end,
 	},
 }
 
-require("lazy").setup(plugins, require("plugins.configs.lazy-nvim"))
+require("lazy").setup(plugins, require("config.lazy-nvim"))
