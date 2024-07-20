@@ -1,4 +1,3 @@
----@diagnostic disable: different-requires
 local require = require
 
 local plugins = {
@@ -92,7 +91,7 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
-    main = "mason",
+		main = "mason",
 		opts = function() return require("config.mason") end,
 	},
 

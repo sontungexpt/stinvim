@@ -20,23 +20,23 @@ function M.lazy(install_path)
 	local repo = "https://github.com/folke/lazy.nvim.git"
 
 	vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, nil, function(args)
-    vim.schedule(function()
-		if args.code == 0 then
-			api.nvim_create_autocmd("User", {
-				once = true,
-				pattern = "LazyDone",
-				callback = function()
-					echo("󰏔 Plugins installed successfully!")
-					require("utils").close_buffers_matching("lazy", "filetype")
-				end,
-			})
+		vim.schedule(function()
+			if args.code == 0 then
+				api.nvim_create_autocmd("User", {
+					once = true,
+					pattern = "LazyDone",
+					callback = function()
+						echo("󰏔 Plugins installed successfully!")
+						require("utils").close_buffers_matching("lazy", "filetype")
+					end,
+				})
 
-			echo(" lazy.nvim installed successfully!")
-			M.boot(install_path)
-		else
-			api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
-		end
-    end)
+				echo(" lazy.nvim installed successfully!")
+				M.boot(install_path)
+			else
+				api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
+			end
+		end)
 	end)
 end
 
