@@ -173,7 +173,6 @@ local plugins = {
 		event = "InsertEnter",
 		-- opts = function() return require("config.nvim-autopairs") end,
 		config = function(_, opts)
-			---@diagnostic disable-next-line: different-requires
 			require("nvim-autopairs").setup(opts)
 			local cmp_status_ok, cmp = pcall(require, "cmp")
 			local cmp_autopairs_status_ok, cmp_autopairs = pcall(require, "nvim-autopairs.completion.cmp")
@@ -292,6 +291,7 @@ local plugins = {
 	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
+		main = "which-key",
 		opts = function() return require("config.whichkey") end,
 	},
 
@@ -502,8 +502,8 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
+		main = "mason",
 		opts = function() return require("config.mason") end,
-		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
 	{
@@ -550,7 +550,7 @@ local plugins = {
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 		},
-		main = "dap-ui",
+		main = "dapui",
 		opts = function() require("config.dap.dapui") end,
 	},
 }
