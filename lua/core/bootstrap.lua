@@ -39,7 +39,7 @@ M.lazy = function(install_path)
 end
 
 M.load_plugin_extensions = function()
-	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir or fn.stdpath("config") .. "/lua/plugins/extensions"
+	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir or fn.stdpath("config") .. "/lua/extension"
 
 	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
 

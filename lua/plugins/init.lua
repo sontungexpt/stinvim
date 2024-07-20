@@ -8,7 +8,7 @@ local plugins = {
 		"sontungexpt/witch",
 		priority = 1000,
 		lazy = false,
-		-- opts = require("plugins.configs.witch"),
+		-- opts = require("config.witch"),
 		opts = {},
 	},
 
@@ -28,7 +28,7 @@ local plugins = {
 	-- 		"nvim-tree/nvim-web-devicons",
 	-- 	},
 	-- 	event = "User FilePostLazyLoaded",
-	-- 	opts = require("plugins.configs.bufferline"),
+	-- 	opts = require("config.bufferline"),
 	-- 	config = function(_, opts) require("bufferline").setup(opts) end,
 	-- },
 
@@ -53,7 +53,7 @@ local plugins = {
 		},
 		build = ":TSUpdate",
 		main = "nvim-treesitter.configs",
-		opts = function() return require("plugins.configs.nvim-treesitter") end,
+		opts = function() return require("config.nvim-treesitter") end,
 	},
 
 	-- {
@@ -108,7 +108,7 @@ local plugins = {
 		cmd = { "ToggleTerm", "ToggleTermToggleAll", "TermExec" },
 		keys = "<C-t>",
 		main = "toggleterm",
-		opts = function() return require("plugins.configs.toggleterm") end,
+		opts = function() return require("config.toggleterm") end,
 	},
 
 	{
@@ -120,7 +120,7 @@ local plugins = {
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		-- opts = function() return require("plugins.configs.nvim-autopairs") end,
+		-- opts = function() return require("config.nvim-autopairs") end,
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("nvim-autopairs").setup(opts)
@@ -139,7 +139,7 @@ local plugins = {
 	-- 	},
 	-- 	build = ":UpdateRemotePlugins",
 	-- 	event = "CmdlineEnter",
-	-- 	config = function() require("plugins.configs.wilder") end,
+	-- 	config = function() require("config.wilder") end,
 	-- },
 
 	{
@@ -180,7 +180,7 @@ local plugins = {
 		cmd = "HighlightColorsOn",
 		event = "User FilePostLazyLoaded",
 		-- main = "nvim-highlight-colors",
-		opts = function() return require("plugins.configs.highlight-colors") end,
+		opts = function() return require("config.highlight-colors") end,
 	},
 
 	{
@@ -201,7 +201,7 @@ local plugins = {
 	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
-		opts = function() return require("plugins.configs.whichkey") end,
+		opts = function() return require("config.whichkey") end,
 		config = function(_, opts) require("which-key").setup(opts) end,
 	},
 
@@ -216,7 +216,7 @@ local plugins = {
 			{ "zR", mode = "n", desc = "Fold all lines" },
 		},
 		dependencies = "kevinhwang91/promise-async",
-		opts = function() return require("plugins.configs.nvim-ufo") end,
+		opts = function() return require("config.nvim-ufo") end,
 		config = function(_, opts)
 			vim.o.foldenable = true -- enable folding when plugin is loaded
 			require("ufo").setup(opts)
@@ -227,7 +227,7 @@ local plugins = {
 	-- 	"zbirenbaum/copilot.lua",
 	-- 	cmd = "Copilot",
 	-- 	event = "InsertEnter",
-	-- 	opts = function() return require("plugins.configs.copilot") end,
+	-- 	opts = function() return require("config.copilot") end,
 	-- 	config = function(_, opts) require("copilot").setup(opts) end,
 	-- },
 
@@ -237,6 +237,10 @@ local plugins = {
 		event = "InsertEnter",
 		cmd = "Codeium",
 		config = function()
+			if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.codeium/config.json") == 0 then
+				vim.api.nvim_command("Codeium Auth")
+			end
+
 			vim.g.codeium_no_map_tab = true
 			local map = require("utils.mapper").map
 			map("i", "<A-Tab>", "codeium#Accept()", 7)
@@ -255,7 +259,7 @@ local plugins = {
 			"NvimTreeFocus",
 			"NvimTreeOpen",
 		},
-		opts = function() return require("plugins.configs.nvim-tree") end,
+		opts = function() return require("config.nvim-tree") end,
 		config = function(_, opts) require("nvim-tree").setup(opts) end,
 	},
 
@@ -270,7 +274,7 @@ local plugins = {
 			-- "nvim-telescope/telescope-media-files.nvim",
 			"nvim-telescope/telescope-fzy-native.nvim",
 		},
-		opts = function() return require("plugins.configs.telescope") end,
+		opts = function() return require("config.telescope") end,
 		config = function(_, opts)
 			local telescope = require("telescope")
 			telescope.setup(opts)
@@ -304,7 +308,7 @@ local plugins = {
 			{ "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
 		},
 		-- because prehook is call so it need to return from a function
-		opts = function() return require("plugins.configs.comment.Comment") end,
+		opts = function() return require("config.comment.Comment") end,
 		config = function(_, opts) require("Comment").setup(opts) end,
 	},
 
@@ -315,7 +319,7 @@ local plugins = {
 			"nvim-lua/plenary.nvim",
 		},
 		event = { "CursorHold", "CmdlineEnter", "CursorMoved" },
-		-- opts = require("plugins.configs.comment.todo-comments"),
+		-- opts = require("config.comment.todo-comments"),
 		config = function(_, opts) require("todo-comments").setup {} end,
 	},
 
@@ -323,14 +327,14 @@ local plugins = {
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "User GitLazyLoaded",
-		opts = function() return require("plugins.configs.git.gitsigns") end,
+		opts = function() return require("config.git.gitsigns") end,
 		config = function(_, opts) require("gitsigns").setup(opts) end,
 	},
 
 	{
 		"akinsho/git-conflict.nvim",
 		event = "User GitLazyLoaded",
-		opts = function() return require("plugins.configs.git.git-conflict") end,
+		opts = function() return require("config.git.git-conflict") end,
 		config = function(_, opts) require("git-conflict").setup(opts) end,
 	},
 
@@ -338,7 +342,7 @@ local plugins = {
 	{
 		"neovim/nvim-lspconfig",
 		event = "User FilePostLazyLoaded",
-		config = function() require("plugins.configs.lsp.lspconfig") end,
+		config = function() require("config.lsp.lspconfig") end,
 	},
 
 	{
@@ -359,7 +363,7 @@ local plugins = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
-		opts = function() return require("plugins.configs.flutter-tools") end,
+		opts = function() return require("config.flutter-tools") end,
 		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("flutter-tools").setup(opts) end,
 	},
@@ -374,7 +378,7 @@ local plugins = {
 			--Please make sure you install markdown and markdown_inline parser
 			"nvim-treesitter/nvim-treesitter",
 		},
-		opts = function() return require("plugins.configs.lsp.lspsaga") end,
+		opts = function() return require("config.lsp.lspsaga") end,
 		config = function(_, opts)
 			---@diagnostic disable-next-line: different-requires
 			require("lspsaga").setup(opts)
@@ -392,7 +396,7 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
-		opts = function() return require("plugins.configs.mason") end,
+		opts = function() return require("config.mason") end,
 		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
@@ -405,7 +409,7 @@ local plugins = {
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
 				dependencies = "rafamadriz/friendly-snippets",
-				config = function() require("plugins.configs.cmp.LuaSnip") end,
+				config = function() require("config.cmp.LuaSnip") end,
 			},
 
 			-- cmp sources plugins
@@ -417,14 +421,14 @@ local plugins = {
 				"saadparwaiz1/cmp_luasnip",
 			},
 		},
-		config = function() require("plugins.configs.cmp") end,
+		config = function() require("config.cmp") end,
 	},
 
 	{
 		"stevearc/conform.nvim",
 		cmd = "ConformInfo",
 		event = "BufWritePre",
-		opts = function() return require("plugins.configs.conform") end,
+		opts = function() return require("config.conform") end,
 		---@diagnostic disable-next-line: different-requires
 		config = function(_, opts) require("conform").setup(opts) end,
 	},
@@ -435,14 +439,14 @@ local plugins = {
 		dependencies = {
 			{
 				"mfussenegger/nvim-dap",
-				config = function() require("plugins.configs.dap") end,
+				config = function() require("config.dap") end,
 			},
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 		},
-		opts = function() require("plugins.configs.dap.dapui") end,
+		opts = function() require("config.dap.dapui") end,
 		config = function(_, opts) require("dapui").setup(opts) end,
 	},
 }
 
-require("lazy").setup(plugins, require("plugins.configs.lazy-nvim"))
+require("lazy").setup(plugins, require("config.lazy-nvim"))

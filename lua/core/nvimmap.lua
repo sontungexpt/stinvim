@@ -190,7 +190,7 @@ autocmd("BufWinEnter", {
 	desc = "Make q close special buffers",
 	callback = function(args)
 		local map = require("utils.mapper").map
-		local buftype = vim.api.nvim_buf_get_option(args.buf, "buftype")
+		local buftype = vim.api.nvim_get_option_value("buftype", {buf = args.buf})
 		for index, type in ipairs { "help", "nofile", "quickfix" } do
 			if buftype == type then
 				map(

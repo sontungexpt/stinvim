@@ -69,7 +69,7 @@ vim.schedule(function()
 	-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 6)
 	--
 	--------------------------------------- dap ---------------------------------------
-	local continue_debugging = require("plugins.configs.dap.utils").continue_debugging
+	local continue_debugging = require("config.dap.utils").continue_debugging
 
 	map("n", "<leader>du", function()
 		load_mod("dapui", function(dapui) dapui.toggle() end)
