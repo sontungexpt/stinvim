@@ -18,7 +18,7 @@ local plugins = {
 	-- 	"folke/tokyonight.nvim",
 	-- 	lazy = false,
 	-- 	priority = 1000,
-	-- 	opts = function() return require("plugins.configs.tokyonight") end,
+	-- 	opts = function() return require("config.tokyonight") end,
 	-- 	config = function(_, opts)
 	-- 		require("tokyonight").setup(opts)
 	-- 		vim.cmd([[colorscheme tokyonight]])
@@ -31,7 +31,7 @@ local plugins = {
 	-- 		"nvim-tree/nvim-web-devicons",
 	-- 	},
 	-- 	init = function() load_on_file_open("witch-line") end,
-	-- 	-- opts = require("plugins.configs.sttusline"),
+	-- 	-- opts = require("config.sttusline"),
 	-- 	config = function(_, opts) require("witch-line").setup(opts) end,
 	-- },
 
@@ -92,7 +92,8 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
-		opts = function() return require("plugins.configs.mason") end,
+    main = "mason",
+		opts = function() return require("config.mason") end,
 	},
 
 	-- {

@@ -116,16 +116,16 @@ end
 
 -------------------- Auto commands --------------------
 M.entry = function()
-	api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
-	api.nvim_create_user_command("MasonUpdateAllPackages", update_all_packages, { nargs = 0 })
-
-	api.nvim_create_autocmd("User", {
+	api.nvim_create_autocmd("User" , {
 		once = true,
 		pattern = { "VeryLazy", "LazyVimStarted" },
 		callback = function()
 			if require(MASON_CONFIG_MODULE).auto_sync then sync_packages() end
 		end,
 	})
+
+	api.nvim_create_user_command("MasonSyncPackages", sync_packages, { nargs = 0 })
+	api.nvim_create_user_command("MasonUpdateAllPackages", update_all_packages, { nargs = 0 })
 end
 
 return M

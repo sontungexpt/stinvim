@@ -23,7 +23,7 @@ g.stinvim_root_markers = {
 	"mvnw", -- java
 }
 
-g.stinvim_plugin_extension_dir = fn.stdpath("config") .. "/lua/plugins/extensions"
+g.stinvim_plugin_extension_dir = fn.stdpath("config") .. "/lua/extension"
 
 -- disable netrw for nvimtree
 g.loaded_netrw = 1

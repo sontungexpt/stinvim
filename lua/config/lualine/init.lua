@@ -1,15 +1,15 @@
 local no_seps = require("configs.lualine.seps").no_seps
 
 -- Components
-local file = require("plugins.configs.lualine.components.file")
-local mode = require("plugins.configs.lualine.components.mode")
-local indent = require("plugins.configs.lualine.components.indent")
-local copilot = require("plugins.configs.lualine.components.copilot")
-local location = require("plugins.configs.lualine.components.location")
-local lsp_servers = require("plugins.configs.lualine.components.lsp_servers")
-local encoding = require("plugins.configs.lualine.components.encoding")
-local diagnostics = require("plugins.configs.lualine.components.diagnostics")
-local git = require("plugins.configs.lualine.components.git")
+local file = require("config.lualine.components.file")
+local mode = require("config.lualine.components.mode")
+local indent = require("config.lualine.components.indent")
+local copilot = require("config.lualine.components.copilot")
+local location = require("config.lualine.components.location")
+local lsp_servers = require("config.lualine.components.lsp_servers")
+local encoding = require("config.lualine.components.encoding")
+local diagnostics = require("config.lualine.components.diagnostics")
+local git = require("config.lualine.components.git")
 
 local configs = {
 	options = {

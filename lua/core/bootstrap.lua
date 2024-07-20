@@ -20,6 +20,7 @@ function M.lazy(install_path)
 	local repo = "https://github.com/folke/lazy.nvim.git"
 
 	vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, nil, function(args)
+    vim.schedule(function()
 		if args.code == 0 then
 			api.nvim_create_autocmd("User", {
 				once = true,
@@ -35,6 +36,7 @@ function M.lazy(install_path)
 		else
 			api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
 		end
+    end)
 	end)
 end
 

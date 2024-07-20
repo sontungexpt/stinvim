@@ -78,12 +78,12 @@ local config = {
 		"-data",
 		workspace_dir,
 	},
-	capabilities = require("plugins.configs.lsp.default").capabilities,
+	capabilities = require("config.lsp.default").capabilities,
 	on_attach = function(client, bufnr)
 		jdtls.setup_dap { hotcodereplace = "auto" }
 
 		require("jdtls.setup").add_commands()
-		require("plugins.configs.lsp.default").on_attach(client, bufnr)
+		require("config.lsp.default").on_attach(client, bufnr)
 	end,
 	root_dir = root_dir,
 	settings = {
