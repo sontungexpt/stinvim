@@ -31,17 +31,26 @@ local get_installed_packages = function()
 end
 
 local caculate_pkgs = function()
-	local ensure_pkgs_map = {}
 	local ensure_pkgs = get_ensured_packages()
-	for _, pkg in ipairs(ensure_pkgs) do
-		ensure_pkgs_map[pkg] = true
+	local installed_pkgs = get_installed_packages()
+
+	local ensure_pkgs_size = #ensure_pkgs
+	local installed_pkgs_size = #installed_pkgs
+
+	if ensure_pkgs_size == 0 or installed_pkgs_size == 0 then
+		return installed_pkgs, installed_pkgs_size, ensure_pkgs, ensure_pkgs_size
+	end
+
+	local ensure_pkgs_map = {}
+	for i = 1, ensure_pkgs_size do
+		ensure_pkgs_map[ensure_pkgs[i]] = true
 	end
 
 	local pkgs_to_remove = {}
 	local pkgs_to_remove_size = 0
 
-	local installed_pkgs = get_installed_packages()
-	for _, pkg in ipairs(installed_pkgs) do
+	for i = 1, installed_pkgs_size do
+		local pkg = installed_pkgs[i]
 		if not ensure_pkgs_map[pkg] then
 			pkgs_to_remove_size = pkgs_to_remove_size + 1
 			pkgs_to_remove[pkgs_to_remove_size] = pkg
