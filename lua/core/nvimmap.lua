@@ -1,6 +1,8 @@
 local autocmd = vim.api.nvim_create_autocmd
 
 vim.schedule(function()
+	local uv = vim.uv or vim.loop
+	local api = vim.api
 	local map = require("utils.mapper").map
 
 	-- Remap for dealing with word wrap
@@ -16,6 +18,10 @@ vim.schedule(function()
 	map("n", "dd", [[match(getline('.'), '^\s*$') != -1 ? '"_dd' : "dd"]], 7)
 	map("n", "dx", "x")
 
+	-- inspect colors
+	map("n", "<M-C>", "<cmd>Inspect<cr>")
+
+	-- Delete empty lines without writing to registers
 	map("n", "x", [[col('.') == 1 && match(getline('.'), '^\s*$') != -1 ? '"_dd$' : '"_x']], 7)
 	map("n", "X", [[col('.') == 1 && match(getline('.'), '^\s*$') != -1 ? '"_dd$' : '"_X']], 7)
 
@@ -28,8 +34,36 @@ vim.schedule(function()
 	map("n", "<Tab>", ">>_")
 	map("n", "<S-Tab>", "<<_")
 
+	local timerj = uv.new_timer()
+	local waitj = false
 	--Back to normal mode
-	map({ "i", "c" }, "jj", "<esc>", 2)
+	map({ "i", "c" }, "j", function()
+		timerj:stop()
+		if waitj then
+			local cursor = api.nvim_win_get_cursor(0)
+			local col = cursor[2]
+
+			if col > 0 then
+				local line = cursor[1] - 1
+				local left_char = api.nvim_buf_get_text(0, line, col - 1, line, col, {})[1]
+				if left_char == "j" then
+					waitj = false
+					return "<bs><esc>"
+				end
+			end
+		end
+
+		timerj:start(
+			vim.o.updatetime or 300,
+			0,
+			vim.schedule_wrap(function()
+				waitj = false
+				timerj:stop()
+			end)
+		)
+		waitj = true
+		return "j"
+	end, 7)
 
 	--Save file as the traditional way
 	map({ "n", "i", "v", "c" }, "<C-s>", "<cmd>w<cr>", 2)
@@ -51,7 +85,14 @@ vim.schedule(function()
 	map({ "n", "v" }, "cd", "<cmd>cd %:p:h<cr>:pwd<cr>", 3)
 
 	--Close Buffer
-	map({ "n", "v" }, "Q", "<cmd>bd<cr>")
+	map({ "n", "v" }, "Q", function()
+		local buf = api.nvim_get_current_buf()
+		if api.nvim_buf_is_valid(buf) and api.nvim_get_option_value("modified", { buf = buf }) then
+			require("utils.notify").warn("Buffer is modified, please save it first.")
+		else
+			api.nvim_buf_delete(buf, {})
+		end
+	end)
 
 	--Clean searching
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
@@ -59,15 +100,14 @@ vim.schedule(function()
 	--Resize Buffer
 	map("n", "<A-l>", function()
 		local winnr = vim.fn.winnr()
-		-- local num = vim.api.nvim_win_get_number(0)
+		-- local num = api.nvim_win_get_number(0)
 		if winnr == vim.fn.winnr("l") then
 			return ":vertical resize -1<CR>"
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
 		else
-			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
-			local win_center_x =
-				math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
+			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
 			if win_center_x < vim_center_x then
 				return ":vertical resize +1<CR>"
 			else
@@ -82,9 +122,8 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize -1<CR>"
 		else
-			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
-			local win_center_x =
-				math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
+			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
 			if win_center_x > vim_center_x then
 				return ":vertical resize -1<CR>"
 			else
@@ -99,9 +138,8 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize -1<CR>"
 		else
-			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
-			local win_center_y =
-				math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
+			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
 			if win_center_y > vim_center_y then
 				return ":resize -1<CR>"
 			else
@@ -116,9 +154,8 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize +1<CR>"
 		else
-			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
-			local win_center_y =
-				math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
+			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
 			if win_center_y < vim_center_y then
 				return ":resize +1<CR>"
 			else
@@ -131,10 +168,10 @@ vim.schedule(function()
 	map("n", "=", "<C-W>=")
 
 	--Change the layout to horizontal
-	map("n", "gv", "<C-w>t<C-w>H")
+	map("n", "gv", "<C-w>t<C-w>H", { desc = "Change the layout to vertical" })
 
 	--Change the layout to vertical
-	map("n", "gh", "<C-w>t<C-w>K")
+	map("n", "gh", "<C-w>t<C-w>K", { desc = "Change the layout to horizontally" })
 
 	-- Split horizontally
 	map("n", "<A-s>", "<cmd>split<CR>")
@@ -160,7 +197,7 @@ end)
 autocmd("CmdlineEnter", {
 	once = true,
 	desc = "Make autoclose brackets, quotes in command mode",
-	callback = function(args)
+	callback = function()
 		local map = require("utils.mapper").map
 		local bracket_pairs = {
 			{ "(", ")" },
@@ -186,26 +223,11 @@ autocmd("CmdlineEnter", {
 	end,
 })
 
-autocmd("BufWinEnter", {
+autocmd({ "BufWinEnter", "CmdwinEnter" }, {
 	desc = "Make q close special buffers",
 	callback = function(args)
-		local map = require("utils.mapper").map
-		local buftype = vim.api.nvim_get_option_value("buftype", {buf = args.buf})
-		for index, type in ipairs { "help", "nofile", "quickfix" } do
-			if buftype == type then
-				map(
-					"n",
-					"q",
-					function() vim.api.nvim_buf_delete(args.buf, { force = true }) end,
-					{ buffer = args.buf, nowait = true }
-				)
-				return
-			end
-		end
+		local buftype = vim.api.nvim_get_option_value("buftype", { buf = args.buf })
+		if args.event == "BufWinEnter" and not vim.list_contains({ "help", "nofile", "quickfix" }, buftype) then return end
+		require("utils.mapper").map("n", "q", "<cmd>close<cr>", { buffer = args.buf })
 	end,
-})
-
-autocmd("CmdwinEnter", {
-	desc = "Make q close command history (q: and q?)",
-	command = "nnoremap <silent><buffer><nowait> q :close<CR>",
 })

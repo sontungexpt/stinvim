@@ -13,8 +13,11 @@ vim.schedule(function()
 	map({ "n", "i", "v", "c" }, "<C-b>", function()
 		local filetype = api.nvim_get_option_value("filetype", { buf = 0 })
 		-- local buftype = api.nvim_buf_get_option(0, "buftype")
-		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then return end
-		api.nvim_command("NvimTreeToggle")
+		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
+			vim.cmd.normal { "<C-b>", bang = true }
+		else
+			api.nvim_command("NvimTreeToggle")
+		end
 	end, { desc = "Toggle NvimTree" })
 
 	------------------------------ Telescope ------------------------------
@@ -24,6 +27,9 @@ vim.schedule(function()
 	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
 	map("n", "<leader>fu", "<cmd>Telescope grep_string<cr>", { desc = "Find word under cursor" })
 	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
+	------------------------------ Todo-comments ------------------------------
+	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todo comments" })
+
 	map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", { desc = "Find diagnostics in the current buffer" })
 	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Find command history" })
 
@@ -164,16 +170,10 @@ autocmd("LspAttach", {
 		map("n", "]d", "<cmd>Lspsaga diagnostic_jump_next<CR>")
 
 		map("n", "[e", function()
-			load_mod(
-				"lspsaga.diagnostic",
-				function(diagnostic) diagnostic:goto_prev { severity = vim.diagnostic.severity.ERROR } end
-			)
+			load_mod("lspsaga.diagnostic", function(diagnostic) diagnostic:goto_prev { severity = 1 } end)
 		end)
 		map("n", "]e", function()
-			load_mod(
-				"lspsaga.diagnostic",
-				function(diagnostic) diagnostic:goto_next { severity = vim.diagnostic.severity.ERROR } end
-			)
+			load_mod("lspsaga.diagnostic", function(diagnostic) diagnostic:goto_next { severity = 1 } end)
 		end)
 
 		map("n", "<leader>so", "<cmd>Lspsaga outline<CR>")
@@ -188,12 +188,13 @@ M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
 	map("n", "q", "<cmd>close<CR>", { buffer = bufnr })
-	-- kill terminal buffer
-	map("t", "<C-q>", "<C-\\><C-n>:q!<cr>")
-	map("t", "<A-q>", "<C-\\><C-n>:q!<cr>")
-	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
+	map("n", "Q", "<cmd>close<CR>", { buffer = bufnr })
+	map({ "n", "t" }, "<C-q>", "<cmd>close<CR>", { buffer = bufnr })
+	map({ "n", "t" }, "<A-q>", "<cmd>close<CR>", { buffer = bufnr })
 
+	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
 	map("t", "jj", [[<C-\><C-n>]], { buffer = bufnr })
+
 	map("t", "<C-h>", [[<Cmd>wincmd h<CR>]], { buffer = bufnr })
 	map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], { buffer = bufnr })
 	map("t", "<C-k>", [[<Cmd>wincmd k<CR>]], { buffer = bufnr })
@@ -213,15 +214,20 @@ M.gitsigns = function(bufnr)
 
 	-- Navigation
 	map1("n", "]g", function()
-		if vim.wo.diff then return "]g" end
-		vim.schedule(gs.next_hunk)
-		return "<Ignore>"
-	end, { expr = true, desc = "Next hunk" })
-	map1("n", "[g", function()
-		if vim.wo.diff then return "[g" end
-		vim.schedule(gs.prev_hunk)
-		return "<Ignore>"
-	end, { expr = true, desc = "Prev hunk" })
+		if vim.wo.diff then
+			vim.cmd.normal { "]g", bang = true }
+		else
+			gs.nav_hunk("next")
+		end
+	end, { desc = "Next hunk" })
+	map("n", "[g", function()
+		if vim.wo.diff then
+			vim.cmd.normal { "[g", bang = true }
+		else
+			gs.nav_hunk("prev")
+		end
+	end, { desc = "Previous hunk" })
+
 	map1("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
 	map1("v", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, { desc = "Stage hunk" })
 	map1("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
