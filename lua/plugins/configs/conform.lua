@@ -30,6 +30,8 @@ local options = {
 		toml = { "taplo" },
 
 		java = { "google-java-format" },
+
+		-- dart = { "dcm_format" },
 	},
 	format_on_save = {
 		timeout_ms = 500,

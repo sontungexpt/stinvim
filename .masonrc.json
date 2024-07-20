@@ -1,8 +1,8 @@
 [
   "java-test",
   "jdtls",
-  "nvim-java",
   "java-debug-adapter",
+  "google-java-format",
   "lua-language-server",
   "stylua",
   "bash-language-server",
@@ -27,6 +27,5 @@
   "json-lsp",
   "tailwindcss-language-server",
   "xmlformatter",
-  "yaml-language-server",
-  "google-java-format"
+  "yaml-language-server"
 ]

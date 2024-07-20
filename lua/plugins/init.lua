@@ -226,7 +226,7 @@ local plugins = {
 	{
 		"brenoprata10/nvim-highlight-colors",
 		cmd = "HighlightColors",
-		event = "User FilePostLazyLoaded",
+		event = { "CursorHold", "CursorMoved" },
 		opts = {
 			render = "background", -- or 'foreground' or 'virtual'
 			enable_tailwind = true,
