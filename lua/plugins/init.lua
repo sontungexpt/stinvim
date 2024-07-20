@@ -317,12 +317,15 @@ local plugins = {
 		"zbirenbaum/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
-		main = "copilot",
-		opts = function()
-			if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.config/github-copilot/hosts.json") == 0 then
-				vim.api.nvim_command("Copilot auth")
-			end
-			return require("plugins.configs.copilot")
+		opts = function() return require("config.copilot") end,
+		config = function(_, opts)
+			require("copilot").setup(opts)
+			vim.schedule(function()
+				if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.config/github-copilot/hosts.json") == 0 then
+					vim.notify("Waiting for Copilot to authenticate", vim.log.levels.INFO, { title = "Copilot" })
+					vim.api.nvim_command("Copilot auth")
+				end
+			end)
 		end,
 	},
 
@@ -429,7 +432,19 @@ local plugins = {
 		"akinsho/git-conflict.nvim",
 		event = "User GitLazyLoaded",
 		main = "git-conflict",
-		opts = function() return require("config.git.git-conflict") end,
+		opts = function()
+			vim.api.nvim_create_autocmd("User", {
+				pattern = { "GitConflictDetected", "GitConflictResolved" },
+				callback = function(args)
+					if args.match == "GitConflictDetected" then
+						require("utils.notify").warn("Conflict detected in " .. args.file)
+					else
+						require("utils.notify").info("Conflict resolved in " .. args.file)
+					end
+				end,
+			})
+			return require("config.git.git-conflict")
+		end,
 	},
 
 	--------------------------------------------------- LSP ---------------------------------------------------
