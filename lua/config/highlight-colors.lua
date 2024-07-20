@@ -1,7 +1,10 @@
 local options = {
-	render = "background", -- or 'foreground' or 'first_column'
+	render = "background", -- or 'foreground' or 'virtual'
 	enable_tailwind = true,
-	enable_named_colors = true,
+	exclude_filetypes = {},
+	exclude_buftypes = {
+		"nofile",
+	},
 }
 
 return options

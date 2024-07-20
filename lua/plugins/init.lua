@@ -1,4 +1,3 @@
----@diagnostic disable: different-requires
 local require = require
 
 local plugins = {
@@ -122,7 +121,6 @@ local plugins = {
 		event = "InsertEnter",
 		-- opts = function() return require("config.nvim-autopairs") end,
 		config = function(_, opts)
-			---@diagnostic disable-next-line: different-requires
 			require("nvim-autopairs").setup(opts)
 			local cmp_status_ok, cmp = pcall(require, "cmp")
 			local cmp_autopairs_status_ok, cmp_autopairs = pcall(require, "nvim-autopairs.completion.cmp")
@@ -168,19 +166,20 @@ local plugins = {
 		},
 		config = function(_, opts)
 			local hooks = require("ibl.hooks")
-
 			hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
-
 			require("ibl").setup(opts)
 		end,
 	},
 
 	{
-		"sontungexpt/nvim-highlight-colors",
-		cmd = "HighlightColorsOn",
-		event = "User FilePostLazyLoaded",
-		-- main = "nvim-highlight-colors",
+		"brenoprata10/nvim-highlight-colors",
+		cmd = "HighlightColors",
+		event = { "CursorHold", "CursorMoved" },
 		opts = function() return require("config.highlight-colors") end,
+		config = function(_, opts)
+			require("nvim-highlight-colors").setup(opts)
+			vim.api.nvim_command("HighlightColors On")
+		end,
 	},
 
 	{
@@ -201,8 +200,8 @@ local plugins = {
 	{
 		"folke/which-key.nvim",
 		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
+		main = "which-key",
 		opts = function() return require("config.whichkey") end,
-		config = function(_, opts) require("which-key").setup(opts) end,
 	},
 
 	{
@@ -216,10 +215,9 @@ local plugins = {
 			{ "zR", mode = "n", desc = "Fold all lines" },
 		},
 		dependencies = "kevinhwang91/promise-async",
-		opts = function() return require("config.nvim-ufo") end,
-		config = function(_, opts)
+		opts = function()
 			vim.o.foldenable = true -- enable folding when plugin is loaded
-			require("ufo").setup(opts)
+			return require("config.nvim-ufo")
 		end,
 	},
 
@@ -308,8 +306,8 @@ local plugins = {
 			{ "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
 		},
 		-- because prehook is call so it need to return from a function
+		main = "Comment",
 		opts = function() return require("config.comment.Comment") end,
-		config = function(_, opts) require("Comment").setup(opts) end,
 	},
 
 	{
@@ -320,22 +318,23 @@ local plugins = {
 		},
 		event = { "CursorHold", "CmdlineEnter", "CursorMoved" },
 		-- opts = require("config.comment.todo-comments"),
-		config = function(_, opts) require("todo-comments").setup {} end,
+		main = "todo-comments",
+		opts = {},
 	},
 
 	--------------------------------------------------- Git supporter ---------------------------------------------------
 	{
 		"lewis6991/gitsigns.nvim",
 		event = "User GitLazyLoaded",
+		main = "gitsigns",
 		opts = function() return require("config.git.gitsigns") end,
-		config = function(_, opts) require("gitsigns").setup(opts) end,
 	},
 
 	{
 		"akinsho/git-conflict.nvim",
 		event = "User GitLazyLoaded",
+		main = "git-conflict",
 		opts = function() return require("config.git.git-conflict") end,
-		config = function(_, opts) require("git-conflict").setup(opts) end,
 	},
 
 	--------------------------------------------------- LSP ---------------------------------------------------
@@ -363,9 +362,8 @@ local plugins = {
 			"nvim-lua/plenary.nvim",
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
+		main = "flutter-tools",
 		opts = function() return require("config.flutter-tools") end,
-		---@diagnostic disable-next-line: different-requires
-		config = function(_, opts) require("flutter-tools").setup(opts) end,
 	},
 
 	{
@@ -378,11 +376,8 @@ local plugins = {
 			--Please make sure you install markdown and markdown_inline parser
 			"nvim-treesitter/nvim-treesitter",
 		},
+		main = "lspsaga",
 		opts = function() return require("config.lsp.lspsaga") end,
-		config = function(_, opts)
-			---@diagnostic disable-next-line: different-requires
-			require("lspsaga").setup(opts)
-		end,
 	},
 
 	{
@@ -396,8 +391,8 @@ local plugins = {
 			"MasonUninstall",
 			"MasonUninstallAll",
 		},
+		main = "mason",
 		opts = function() return require("config.mason") end,
-		config = function(_, opts) require("mason").setup(opts) end,
 	},
 
 	{
@@ -428,9 +423,8 @@ local plugins = {
 		"stevearc/conform.nvim",
 		cmd = "ConformInfo",
 		event = "BufWritePre",
+		main = "conform",
 		opts = function() return require("config.conform") end,
-		---@diagnostic disable-next-line: different-requires
-		config = function(_, opts) require("conform").setup(opts) end,
 	},
 
 	--------------------------------------------------- Debugger  ---------------------------------------------------
@@ -444,8 +438,8 @@ local plugins = {
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 		},
+		main = "dapui",
 		opts = function() require("config.dap.dapui") end,
-		config = function(_, opts) require("dapui").setup(opts) end,
 	},
 }
 
