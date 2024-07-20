@@ -188,6 +188,7 @@ M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
 	map("n", "q", "<cmd>close<CR>", { buffer = bufnr })
+	map("n", "Q", "<cmd>close<CR>", { buffer = bufnr })
 	map({ "n", "t" }, "<C-q>", "<cmd>close<CR>", { buffer = bufnr })
 	map({ "n", "t" }, "<A-q>", "<cmd>close<CR>", { buffer = bufnr })
 

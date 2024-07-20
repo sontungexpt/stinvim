@@ -1,6 +1,8 @@
 local autocmd = vim.api.nvim_create_autocmd
 
 vim.schedule(function()
+	local uv = vim.uv or vim.loop
+	local api = vim.api
 	local map = require("utils.mapper").map
 
 	-- Remap for dealing with word wrap
@@ -32,19 +34,18 @@ vim.schedule(function()
 	map("n", "<Tab>", ">>_")
 	map("n", "<S-Tab>", "<<_")
 
-	local uv = vim.uv or vim.loop
 	local timerj = uv.new_timer()
 	local waitj = false
 	--Back to normal mode
 	map({ "i", "c" }, "j", function()
 		timerj:stop()
 		if waitj then
-			local cursor = vim.api.nvim_win_get_cursor(0)
+			local cursor = api.nvim_win_get_cursor(0)
 			local col = cursor[2]
 
 			if col > 0 then
 				local line = cursor[1] - 1
-				local left_char = vim.api.nvim_buf_get_text(0, line, col - 1, line, col, {})[1]
+				local left_char = api.nvim_buf_get_text(0, line, col - 1, line, col, {})[1]
 				if left_char == "j" then
 					waitj = false
 					return "<bs><esc>"
@@ -84,7 +85,14 @@ vim.schedule(function()
 	map({ "n", "v" }, "cd", "<cmd>cd %:p:h<cr>:pwd<cr>", 3)
 
 	--Close Buffer
-	map({ "n", "v" }, "Q", "<cmd>bd<cr>")
+	map({ "n", "v" }, "Q", function()
+		local buf = api.nvim_get_current_buf()
+		if api.nvim_buf_is_valid(buf) and api.nvim_get_option_value("modified", { buf = buf }) then
+			require("utils.notify").warn("Buffer is modified, please save it first.")
+		else
+			api.nvim_buf_delete(buf, {})
+		end
+	end)
 
 	--Clean searching
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
@@ -92,14 +100,14 @@ vim.schedule(function()
 	--Resize Buffer
 	map("n", "<A-l>", function()
 		local winnr = vim.fn.winnr()
-		-- local num = vim.api.nvim_win_get_number(0)
+		-- local num = api.nvim_win_get_number(0)
 		if winnr == vim.fn.winnr("l") then
 			return ":vertical resize -1<CR>"
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
 		else
-			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
-			local win_center_x = math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
+			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
 			if win_center_x < vim_center_x then
 				return ":vertical resize +1<CR>"
 			else
@@ -114,8 +122,8 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize -1<CR>"
 		else
-			local vim_center_x = math.floor(vim.api.nvim_get_option("columns") / 2)
-			local win_center_x = math.floor(vim.api.nvim_win_get_position(0)[2] + vim.api.nvim_win_get_width(0) / 2)
+			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
+			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
 			if win_center_x > vim_center_x then
 				return ":vertical resize -1<CR>"
 			else
@@ -130,8 +138,8 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize -1<CR>"
 		else
-			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
-			local win_center_y = math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
+			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
 			if win_center_y > vim_center_y then
 				return ":resize -1<CR>"
 			else
@@ -146,8 +154,8 @@ vim.schedule(function()
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize +1<CR>"
 		else
-			local vim_center_y = (vim.api.nvim_get_option("lines") - vim.api.nvim_get_option("cmdheight")) / 2
-			local win_center_y = math.floor(vim.api.nvim_win_get_position(0)[1] + vim.api.nvim_win_get_height(0) / 2)
+			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
+			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
 			if win_center_y < vim_center_y then
 				return ":resize +1<CR>"
 			else
