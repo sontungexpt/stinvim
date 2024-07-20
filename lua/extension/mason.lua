@@ -70,23 +70,33 @@ local caculate_pkgs = function()
 	return pkgs_to_remove, pkgs_to_remove_size, pkgs_to_install, pkgs_to_install_size
 end
 
-local update_pkgs = function()
+--- Update all packages
+--- @param exclued table<string,boolean> packages to be excluded from updating process. Key is package name and value is true
+local update_pkgs = function(exclued)
 	schedule(function()
 		local registry = require("mason-registry")
 		registry.update(vim.schedule_wrap(function(success, _)
 			if success then
 				local installed_pkgs = registry.get_installed_packages()
 				for _, pkg in ipairs(installed_pkgs) do
-					pkg:check_new_version(function(update_available, version)
-						if update_available then
-							require("utils.notify").info("Updating" .. pkg.name .. "to" .. version.latest_version)
-							pkg:install():on(
-								"closed",
-								function() require("utils.notify").info("Mason: Update package " .. pkg.name .. " completed") end
-							)
-							return
-						end
-					end)
+					local pkg_name = pkg.name
+					if not exclued or not exclued[pkg_name] then
+						pkg:check_new_version(function(update_available, version)
+							if update_available then
+								local latest_version = version.latest_version
+								require("utils.notify").info("Updating" .. pkg_name .. "to" .. latest_version)
+								pkg:install():on(
+									"closed",
+									function()
+										require("utils.notify").info(
+											"Mason: Update package " .. pkg_name .. "to version " .. latest_version .. " completed"
+										)
+									end
+								)
+								return
+							end
+						end)
+					end
 				end
 			else
 				require("utils.notify").error("Failed to update registries")
@@ -119,11 +129,13 @@ local sync_pkgs = function()
 			if pkgs_to_install_size > 0 then
 				pcall(api.nvim_command, "MasonInstall " .. table.concat(pkgs_to_install, " "))
 				require("utils").close_buffers_matching("mason", "filetype")
-
+				local exclued_update_pkgs = {}
 				require("mason-registry"):on("package:install:success", function(pkg)
-					require("utils.notify").info("Mason: Installed " .. pkg.name)
+					local pkg_name = pkg.name
+					require("utils.notify").info("Mason: Install package " .. pkg_name .. " completed")
 					pkgs_to_install_size = pkgs_to_install_size - 1
-					if pkgs_to_install_size == 0 then update_pkgs() end
+					exclued_update_pkgs[pkg_name] = true
+					if pkgs_to_install_size == 0 then update_pkgs(exclued_update_pkgs) end
 				end)
 			end
 		end)
@@ -138,7 +150,7 @@ M.entry = function()
 		callback = sync_pkgs,
 	})
 	api.nvim_create_user_command("MasonSyncPackages", sync_pkgs, { nargs = 0 })
-	api.nvim_create_user_command("MasonUpdateAllPackages", update_pkgs, { nargs = 0 })
+	api.nvim_create_user_command("MasonUpdatePackages", update_pkgs, { nargs = 0 })
 	api.nvim_create_user_command("MasonCleanPackages", clean_pkgs, { nargs = 0 })
 end
 
