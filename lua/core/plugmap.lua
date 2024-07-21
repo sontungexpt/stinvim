@@ -199,12 +199,14 @@ M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
 	local close_buf = function() vim.api.nvim_buf_delete(bufnr, { force = true }) end
-	local map1 = function(mode, key, map_to) map(mode, key, map_to, { buffer = bufnr }) end
+	local map1 = function(mode, key, map_to, opts) map(mode, key, map_to, { buffer = bufnr }, opts) end
 
 	map1("n", "q", close_buf)
 	map1("n", "Q", close_buf)
 	map1({ "n", "t" }, "<C-q>", close_buf)
 	map1({ "n", "t" }, "<A-q>", close_buf)
+
+	map1("n", "i", "<cmd>startinsert<CR>")
 
 	map1("t", "<esc>", [[<C-\><C-n>]])
 
@@ -214,7 +216,24 @@ M.terminal = function(bufnr)
 	map1("t", "<C-l>", [[<Cmd>wincmd l<CR>]])
 	map1("t", "<C-w>", [[<C-\><C-n><C-w>]])
 
-	map1({ "n", "t" }, "<C-t>", [[<Cmd>exe v:count1 . "ToggleTerm"<CR>]])
+	do
+		local new_terminal_cmd = ""
+		local pressed_time = 0
+		map1({ "n", "t" }, "<C-t>", function()
+			if (vim.uv or vim.loop).now() - pressed_time < 1500 and new_terminal_cmd ~= "" then
+				vim.api.nvim_input("<bs>")
+				vim.api.nvim_command(new_terminal_cmd)
+			end
+		end)
+		for i = 1, 9, 1 do
+			local istr = tostring(i)
+			map1({ "n", "t" }, istr, function()
+				pressed_time = (vim.uv or vim.loop).now()
+				new_terminal_cmd = istr .. "ToggleTerm"
+				return istr
+			end, { expr = true })
+		end
+	end
 end
 
 M.gitsigns = function(bufnr)

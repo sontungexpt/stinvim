@@ -64,7 +64,6 @@ autocmd("ModeChanged", {
 			["V"] = true,
 			[""] = true,
 		}
-		if newmode == "nt" then require("utils.mapper").map("n", "i", "<cmd>startinsert<CR>", { buffer = args.buf }) end
 		if visual_modes[newmode] then
 			cmd("set relativenumber")
 		else
