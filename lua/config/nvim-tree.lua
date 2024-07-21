@@ -1,5 +1,3 @@
-local M = {}
-
 local on_attach = function(bufnr)
 	local api = require("nvim-tree.api")
 	api.events.subscribe(api.events.Event.TreeOpen, function() vim.wo.statusline = " " end)
