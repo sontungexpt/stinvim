@@ -13,15 +13,15 @@ local function echo(str)
 	api.nvim_echo({ { str, "Bold" } }, true, {})
 end
 
-M.lazy = function(install_path)
+function M.lazy(install_path)
 	--------- lazy.nvim ---------------
 	echo("  Installing lazy.nvim and plugins ...")
 
 	local repo = "https://github.com/folke/lazy.nvim.git"
 
-	vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, nil, function(args)
+	vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, nil, function(out)
 		vim.schedule(function()
-			if args.code == 0 then
+			if out.code == 0 then
 				api.nvim_create_autocmd("User", {
 					once = true,
 					pattern = "LazyDone",
@@ -31,7 +31,7 @@ M.lazy = function(install_path)
 					end,
 				})
 
-				echo(" lazy.nvim installed successfully!")
+				echo(" lazy.nvim installed successfully!. Loading plugins ...")
 				M.boot(install_path)
 			else
 				api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
@@ -51,8 +51,8 @@ M.load_plugin_extensions = function()
 	end
 end
 
-M.boot = function(install_path)
-	local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
+function M.boot(install_path)
+	local autocmd, augroup, schedule = api.nvim_create_autocmd, api.nvim_create_augroup, vim.schedule
 
 	autocmd("CmdlineEnter", {
 		once = true,
@@ -70,9 +70,9 @@ M.boot = function(install_path)
 				and api.nvim_get_option_value("buftype", { buf = args.buf }) ~= "nofile"
 			then
 				api.nvim_del_augroup_by_name("StinvimLazyEvents")
-				vim.schedule(function()
+				schedule(function()
 					api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded" })
-					vim.schedule(function() api.nvim_exec_autocmds("Filetype", { buffer = args.buf }) end)
+					schedule(function() api.nvim_exec_autocmds("Filetype", { buffer = args.buf }) end)
 				end)
 			end
 		end,
@@ -83,12 +83,10 @@ M.boot = function(install_path)
 		callback = function(args)
 			if args.file ~= "" and api.nvim_get_option_value("buftype", { buf = args.buf }) ~= "nofile" then
 				api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
-				vim.schedule(function()
-					vim.system({ "git", "-C", fn.expand("%:p:h"), "rev-parse" }, nil, function(o)
-						vim.schedule(function()
-							if o.code == 0 then api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded" }) end
-						end)
-					end)
+				vim.system({ "git", "-C", vim.fs.dirname(args.file), "rev-parse" }, nil, function(out)
+					if out.code == 0 then
+						schedule(function() api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded" }) end)
+					end
 				end)
 			end
 		end,

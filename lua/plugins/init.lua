@@ -199,7 +199,7 @@ local plugins = {
 
 	{
 		"folke/which-key.nvim",
-		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d" },
+		keys = { "<leader>", "[", "]", '"', "'", "c", "v", "g", "d", "z" },
 		main = "which-key",
 		opts = function() return require("config.whichkey") end,
 	},

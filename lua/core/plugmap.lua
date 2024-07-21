@@ -7,7 +7,7 @@ vim.schedule(function()
 	local load_mod = require("utils").load_mod
 
 	------------------------------ url-open ------------------------------
-	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", { desc = "Open URL under cursor" })
+	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", "Open URL under cursor")
 
 	------------------------------ nvimtree ------------------------------
 	map({ "n", "i", "v", "c" }, "<C-b>", function()
@@ -18,57 +18,59 @@ vim.schedule(function()
 		else
 			api.nvim_command("NvimTreeToggle")
 		end
-	end, { desc = "Toggle NvimTree" })
+	end)
 
 	------------------------------ Telescope ------------------------------
-	map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Find files" })
-	map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
-	map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", { desc = "Find word" })
-	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>", { desc = "Find buffers" })
-	map("n", "<leader>fu", "<cmd>Telescope grep_string<cr>", { desc = "Find word under cursor" })
-	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>", { desc = "Find help tags" })
-	------------------------------ Todo-comments ------------------------------
-	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todo comments" })
+	map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>")
+	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
+	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>")
 
-	map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>", { desc = "Find diagnostics in the current buffer" })
-	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", { desc = "Find command history" })
+	map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", "Telescope find string")
+	map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", "Telescope find string")
+	map("n", "<leader>fw", "<cmd>Telescope grep_string<cr>", "Find word under cursor")
 
 	------------------------------ Todo-comments ------------------------------
-	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todo comments" })
+	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", "Telescope find todo comments")
+
+	map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>")
+	map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", "Find command history")
+
+	------------------------------ Todo-comments ------------------------------
+	map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", "Find todo comments")
 
 	------------------------------ Git conflict ------------------------------
-	map("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
+	map("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", "Git conflict quickfix")
 
 	map("n", "[t", function()
 		load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
-	end, { desc = "Previous todo comment" })
+	end, "Todo comment prev")
 
 	map("n", "]t", function()
 		load_mod("todo-comments", function(todo_comments) todo_comments.jump_next() end)
-	end, { desc = "Next todo comment" })
+	end, "Todo comment next")
 
 	map("n", "[T", function()
 		load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end)
-	end, { desc = "Previous error/ warning comment" })
+	end, "Todo comment prev error or warning")
 
 	map("n", "]T", function()
 		load_mod("todo-comments", function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end)
-	end, { desc = "Next error/ warning comment" })
+	end, "Todo comment next error or warning")
 
 	------------------------------ ccc ------------------------------
-	map({ "n", "i", "v" }, "<A-c>", "<cmd>CccPick<cr>", { desc = "Pick color" })
+	map({ "n", "i", "v" }, "<A-c>", "<cmd>CccPick<cr>", "Color picker")
 
 	------------------------------ ufo ------------------------------
-	map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>")
-	map("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>")
-	map("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>")
-	map("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>")
+	map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>", "Open all folds")
+	map("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>", "Open folds except kind")
+	map("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>", "Close all folds")
+	map("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>", "Close folds with kind")
 
 	------------------------------ Bufferline ------------------------------
 	-- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
 
 	------------------------------ Markdown preview ------------------------------
-	map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle markdown preview" })
+	map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", "Toggle markdown preview")
 
 	------------------------------ wilder ------------------------------
 	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
@@ -79,55 +81,55 @@ vim.schedule(function()
 
 	map("n", "<leader>du", function()
 		load_mod("dapui", function(dapui) dapui.toggle() end)
-	end, { desc = "Toggle DAP UI" })
+	end, "Toggle DAP UI")
 	map("n", "<leader>db", function()
 		load_mod("dap", function(dap) dap.toggle_breakpoint() end)
-	end, { desc = "Toggle breakpoint" })
+	end, "Toggle breakpoint")
 	map("n", "<leader>di", function()
 		load_mod("dap", function(dap) dap.step_into() end)
-	end, { desc = "Step into" })
+	end, "Step into")
 	map("n", "<leader>do", function()
 		load_mod("dap", function(dap) dap.step_over() end)
-	end, { desc = "Step over" })
-	map("n", "<leader>dc", continue_debugging, { desc = "Continue or start debugging" })
+	end, "Step over")
+	map("n", "<leader>dc", continue_debugging, "Continue or start debugging")
 	map("n", "<leader>dd", function()
 		load_mod("dap", function(dap)
 			dap.disconnect()
 			dap.close()
 		end)
-	end, { desc = "Disconnect from debugger" })
+	end, "Disconnect from debugger")
 	map("n", "<F11>", function()
 		load_mod("dap", function(dap) dap.step_into() end)
-	end, { desc = "Step into" })
+	end, "Step into")
 	map("n", "<F12>", function()
 		load_mod("dap", function(dap) dap.step_over() end)
-	end, { desc = "Step over" })
-	map("n", "<F5>", continue_debugging, { desc = "Continue or start debugging" })
+	end, "Step over")
+	map("n", "<F5>", continue_debugging, "Continue or start debugging")
 	map("n", "<F4>", function()
 		load_mod("dap", function(dap)
 			dap.disconnect()
 			dap.close()
 		end)
-	end, { desc = "Disconnect from debugger" })
+	end, "Disconnect from debugger")
 	map("n", "<Leader>dr", function()
 		load_mod("dap", function(dap) dap.repl.open() end)
-	end, { desc = "Open REPL" })
+	end, "Open REPL")
 	map("n", "<Leader>dl", function()
 		load_mod("dap", function(dap) dap.run_last() end)
-	end, { desc = "Run last" })
+	end, "Run last")
 
 	map({ "n", "v" }, "<Leader>dh", function()
 		load_mod("dap.ui.widgets", function(widgets) widgets.hover() end)
-	end, { desc = "Hover widgets" })
+	end, "Hover widgets")
 	map({ "n", "v" }, "<Leader>dp", function()
 		load_mod("dap.ui.widgets", function(widgets) widgets.preview() end)
-	end, { desc = "Preview widgets" })
+	end, "Preview widgets")
 	map("n", "<Leader>df", function()
 		load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
-	end, { desc = "Frames" })
+	end, "Frames")
 	map("n", "<Leader>ds", function()
 		load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
-	end, { desc = "Scopes" })
+	end, "Scopes")
 end)
 
 autocmd("LspAttach", {
@@ -171,10 +173,10 @@ autocmd("LspAttach", {
 
 		map("n", "[e", function()
 			load_mod("lspsaga.diagnostic", function(diagnostic) diagnostic:goto_prev { severity = 1 } end)
-		end)
+		end, "Lspsaga diagnostic_jump_prev error")
 		map("n", "]e", function()
 			load_mod("lspsaga.diagnostic", function(diagnostic) diagnostic:goto_next { severity = 1 } end)
-		end)
+		end, "Lspsaga diagnostic_jump_next error")
 
 		map("n", "<leader>so", "<cmd>Lspsaga outline<CR>")
 
@@ -187,30 +189,30 @@ autocmd("LspAttach", {
 M.terminal = function(bufnr)
 	local map = require("utils.mapper").map
 
-	map("n", "q", "<cmd>close<CR>", { buffer = bufnr })
-	map("n", "Q", "<cmd>close<CR>", { buffer = bufnr })
-	map({ "n", "t" }, "<C-q>", "<cmd>close<CR>", { buffer = bufnr })
-	map({ "n", "t" }, "<A-q>", "<cmd>close<CR>", { buffer = bufnr })
+	local close_buf = function() vim.api.nvim_buf_delete(bufnr, { force = true }) end
+	local map1 = function(mode, key, map_to) map(mode, key, map_to, { buffer = bufnr }) end
 
-	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
-	map("t", "jj", [[<C-\><C-n>]], { buffer = bufnr })
+	map1("n", "q", close_buf)
+	map1("n", "Q", close_buf)
+	map1({ "n", "t" }, "<C-q>", close_buf)
+	map1({ "n", "t" }, "<A-q>", close_buf)
 
-	map("t", "<C-h>", [[<Cmd>wincmd h<CR>]], { buffer = bufnr })
-	map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], { buffer = bufnr })
-	map("t", "<C-k>", [[<Cmd>wincmd k<CR>]], { buffer = bufnr })
-	map("t", "<C-l>", [[<Cmd>wincmd l<CR>]], { buffer = bufnr })
-	map("t", "<C-w>", [[<C-\><C-n><C-w>]], { buffer = bufnr })
-	map({ "n", "t" }, "<C-t>", [[<Cmd>exe v:count1 . "ToggleTerm"<CR>]], { buffer = bufnr })
+	map1("t", "<esc>", [[<C-\><C-n>]])
+
+	map1("t", "<C-h>", [[<Cmd>wincmd h<CR>]])
+	map1("t", "<C-j>", [[<Cmd>wincmd j<CR>]])
+	map1("t", "<C-k>", [[<Cmd>wincmd k<CR>]])
+	map1("t", "<C-l>", [[<Cmd>wincmd l<CR>]])
+	map1("t", "<C-w>", [[<C-\><C-n><C-w>]])
+
+	map1({ "n", "t" }, "<C-t>", [[<Cmd>exe v:count1 . "ToggleTerm"<CR>]])
 end
 
 M.gitsigns = function(bufnr)
 	local map = require("utils.mapper").map
 	local gs = require("gitsigns")
 
-	local function map1(mode, key, map_to, opts)
-		opts.buffer = bufnr
-		map(mode, key, map_to, opts)
-	end
+	local map1 = function(mode, key, map_to, desc) map(mode, key, map_to, { buffer = bufnr, desc = desc }) end
 
 	-- Navigation
 	map1("n", "]g", function()
@@ -219,25 +221,25 @@ M.gitsigns = function(bufnr)
 		else
 			gs.nav_hunk("next")
 		end
-	end, { desc = "Next hunk" })
+	end, "Gitsigns next hunk")
 	map("n", "[g", function()
 		if vim.wo.diff then
 			vim.cmd.normal { "[g", bang = true }
 		else
 			gs.nav_hunk("prev")
 		end
-	end, { desc = "Previous hunk" })
+	end, "Gitsigns previous hunk")
 
-	map1("n", "<leader>gs", gs.stage_hunk, { desc = "Stage hunk" })
-	map1("v", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, { desc = "Stage hunk" })
-	map1("n", "<leader>gr", gs.reset_hunk, { desc = "Reset hunk" })
-	map1("v", "<leader>gr", function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end, { desc = "Reset hunk" })
-	map1("n", "<leader>gu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
-	map1("n", "<leader>gR", gs.reset_buffer, { desc = "Reset buffer" })
-	map1("n", "<leader>gp", gs.preview_hunk, { desc = "Preview hunk" })
-	map1("n", "<leader>gb", gs.toggle_current_line_blame, { desc = "Blame line" })
-	map1("n", "<leader>gd", gs.diffthis, { desc = "Diff this" })
-	map1("n", "<leader>gD", function() gs.diffthis("~") end, { desc = "Diff this" })
+	map1("n", "<leader>gs", gs.stage_hunk, "Gitsigns stage hunk")
+	map1("v", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns stage hunk")
+	map1("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
+	map1("v", "<leader>gr", function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns reset hunk")
+	map1("n", "<leader>gu", gs.undo_stage_hunk, "Gitsigns undo stage hunk")
+	map1("n", "<leader>gR", gs.reset_buffer, "Gitsigns reset buffer")
+	map1("n", "<leader>gp", gs.preview_hunk, "Gitsigns preview hunk")
+	map1("n", "<leader>gb", gs.toggle_current_line_blame, "Gitsigns blame line")
+	map1("n", "<leader>gd", gs.diffthis, "Gitsigns diff this")
+	map1("n", "<leader>gD", function() gs.diffthis("~") end, "Gitsigns diff this")
 end
 
 return M
