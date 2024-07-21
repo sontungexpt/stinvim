@@ -70,6 +70,10 @@ vim.schedule(function()
 	------------------------------ Markdown preview ------------------------------
 	map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle markdown preview" })
 
+	------------------------------ Swagger preview ------------------------------
+	require("utils.swagger")
+	map("n", "<Leader>ps", "<cmd>SwaggerPreviewToggle<CR>", { desc = "Toggle swagger preview" })
+
 	------------------------------ wilder ------------------------------
 	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
 	-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 6)

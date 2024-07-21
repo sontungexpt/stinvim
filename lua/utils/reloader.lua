@@ -26,10 +26,10 @@ M.hot_reload = function(quiet)
 	vim.api.nvim_exec_autocmds("ColorScheme", {})
 
 	if not quiet then -- if not quiet, then notify of result.
-		if #failed_modules == 0 then
-			require("utils.notify").info("Reloaded options and nvimmap successfully")
-		else
+		if next(failed_modules) then
 			require("utils.notify").error("Error while reloading core modules: " .. table.concat(failed_modules, "\n"))
+		else
+			require("utils.notify").info("Reloaded options and nvimmap successfully")
 		end
 	end
 end
