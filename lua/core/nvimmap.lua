@@ -43,7 +43,7 @@ vim.schedule(function()
 		if not waiting then
 			waiting = true
 			first_pressed_time = now
-		elseif now - first_pressed_time < (vim.o.updatetime or 300) then -- waiting
+		elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
 			waiting = false
 			if mode == "c" then
 				api.nvim_input("<esc>")
