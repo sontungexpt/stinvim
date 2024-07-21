@@ -34,10 +34,10 @@ vim.schedule(function()
 	map("n", "<Tab>", ">>_")
 	map("n", "<S-Tab>", "<<_")
 
+	-- Better escape
 	local timerj = uv.new_timer()
 	local waitj = false
-	--Back to normal mode
-	map({ "i", "c" }, "j", function()
+	map({ "i", "c", "t" }, "j", function()
 		timerj:stop()
 		if waitj then
 			local cursor = api.nvim_win_get_cursor(0)
@@ -48,7 +48,7 @@ vim.schedule(function()
 				local left_char = api.nvim_buf_get_text(0, line, col - 1, line, col, {})[1]
 				if left_char == "j" then
 					waitj = false
-					return "<bs><esc>"
+					return api.nvim_get_mode().mode == "t" and [[<bs><C-\><C-n>]] or "<bs><esc>"
 				end
 			end
 		end

@@ -70,9 +70,14 @@ vim.schedule(function()
 	------------------------------ Markdown preview ------------------------------
 	map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", { desc = "Toggle markdown preview" })
 
-	------------------------------ Swagger preview ------------------------------
-	require("utils.swagger")
-	map("n", "<Leader>ps", "<cmd>SwaggerPreviewToggle<CR>", { desc = "Toggle swagger preview" })
+	------------------------------ Swagger ------------------------------
+	api.nvim_create_user_command("SwaggerPreviewStart", function()
+		vim.system({
+			"xdg-open",
+			"http://localhost:8080/swagger-ui/index.html",
+		}, nil, function() end)
+	end, { nargs = 0 })
+	map("n", "<Leader>ps", "<cmd>SwaggerPreviewStart<CR>", { desc = "Open swagger preview" })
 
 	------------------------------ wilder ------------------------------
 	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
@@ -197,7 +202,6 @@ M.terminal = function(bufnr)
 	map({ "n", "t" }, "<A-q>", "<cmd>close<CR>", { buffer = bufnr })
 
 	map("t", "<esc>", [[<C-\><C-n>]], { buffer = bufnr })
-	map("t", "jj", [[<C-\><C-n>]], { buffer = bufnr })
 
 	map("t", "<C-h>", [[<Cmd>wincmd h<CR>]], { buffer = bufnr })
 	map("t", "<C-j>", [[<Cmd>wincmd j<CR>]], { buffer = bufnr })

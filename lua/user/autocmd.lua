@@ -2,33 +2,32 @@ local api, fn = vim.api, vim.fn
 local autocmd, expand = api.nvim_create_autocmd, fn.expand
 local group = api.nvim_create_augroup("UserAutocmd", { clear = true })
 
+local config_dir = fn.stdpath("config")
+
 autocmd("VimEnter", {
 	group = group,
-	pattern = fn.stdpath("config") .. "/**",
-	command = "cd " .. fn.stdpath("config"),
+	pattern = config_dir .. "/**",
+	command = "cd " .. config_dir,
 	desc = "Auto change directory to config folder - support for nvimconfig alias",
 })
 
-autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
-	group = group,
-	desc = "Switch ibus engine",
-	callback = function(args)
-		if vim.env.TERM == "alacritty" then
+if vim.env.TERM == "alacritty" then
+	autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
+		group = group,
+		desc = "Switch ibus engine",
+		callback = function(args)
 			local engines = {
 				VimEnter = "BambooUs",
 				FocusGained = "BambooUs",
 				VimLeave = "Bamboo",
 				FocusLost = "Bamboo",
 			}
-
-			fn.jobstart({ "ibus", "engine", engines[args.event] }, {
-				on_exit = function(_, code)
-					if code == 0 then require("utils.notify").info("Switched ibus engine to " .. engines[args.event]) end
-				end,
-			})
-		end
-	end,
-})
+			vim.system({ "ibus", "engine", engines[args.event] }, {}, function(out)
+				if out.code == 0 then require("utils.notify").info("Switched ibus engine to " .. engines[args.event]) end
+			end)
+		end,
+	})
+end
 
 autocmd("BufWritePost", {
 	group = group,
