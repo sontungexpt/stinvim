@@ -1,4 +1,4 @@
-local set_keymap, tbl_extend = vim.keymap.set, require("utils.tbl").extend
+local set_keymap = vim.keymap.set
 
 local M = {}
 
@@ -10,33 +10,39 @@ local OPTIONS = {
 	{ noremap = true, silent = false },
 	{ noremap = false, silent = false },
 	{ noremap = true, silent = true, nowait = false },
-	{ noremap = true, silent = true, expr = true, replace_keycodes = true },
-	{ noremap = true, silent = true, expr = true, replace_keycodes = true, nowait = true },
+	{ noremap = true, silent = true, expr = true },
+	{ noremap = true, silent = true, expr = true, nowait = true },
 }
 
 --- Set a key mapping in Vim.
 --- @param mode table|string: The mode used for applying the key map.
 --- @param key string: The key you wish to map.
 --- @param map_to function|string: The key or function to be executed by the key map.
---- @param opts ? vim.keymap.set.Opts|number: Options to be applied in vim.keymap.set (default: 1)
---- @param extend_opts ? vim.keymap.set.Opts: Extension or overriding of opts if opts is a number.
+--- @param opts ? table|number|string: If opts is a string, it will be used as the description, else if number it will be used as the default keymap options provided by stinvim else if opts is a table it will be used as vim.keymap.set.Opts
+--- @param extend_opts ? table|string: Extension or overriding of opts if opts is a number, If opts is a string, it will be used as the description,
 --- @see MapperOpts
 --- opts: Can be a number or a `vim.keymap.set.Opts`
---- - `1`: `{ noremap = true, silent = true, nowait = true }`
---- - `2`: `{ noremap = false, silent = true }`
---- - `3`: `{ noremap = true, silent = false }`
---- - `4`: `{ noremap = false, silent = false }`
---- - `5`: `{ noremap = true, silent = true, nowait = false }`
---- - `6`: `{ noremap = true, silent = true, expr = true, replace_keycodes = true }`
---- - `7`: `{ noremap = true, silent = true, expr = true, replace_keycodes = true, nowait = true }`
 M.map = function(mode, key, map_to, opts, extend_opts)
-	if type(opts) == "table" then
-		set_keymap(mode, key, map_to, tbl_extend(OPTIONS[1], opts, true))
-	elseif type(extend_opts) == "table" then
-		set_keymap(mode, key, map_to, tbl_extend(OPTIONS[opts] or OPTIONS[1], extend_opts, true))
+	local opts_type = type(opts)
+	local options
+	if opts_type == "string" then
+		options = OPTIONS[1]
+		options.desc = opts
 	else
-		set_keymap(mode, key, map_to, OPTIONS[opts] or OPTIONS[1])
+		options = opts_type == "table" and require("utils.tbl").extend(OPTIONS[1], opts, true)
+			or OPTIONS[opts or 1]
+			or OPTIONS[1]
+		if extend_opts then
+			local extend_opts_type = type(extend_opts)
+			if extend_opts_type == "string" then
+				options.desc = extend_opts
+			elseif extend_opts_type == "table" then
+				options = require("utils.tbl").extend(options, extend_opts, true)
+			end
+		end
 	end
+	set_keymap(mode, key, map_to, options)
+	options.desc = nil
 end
 
 return M

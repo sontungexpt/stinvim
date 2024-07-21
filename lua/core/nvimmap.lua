@@ -34,34 +34,32 @@ vim.schedule(function()
 	map("n", "<Tab>", ">>_")
 	map("n", "<S-Tab>", "<<_")
 
-	-- Better escape
-	local timerj = uv.new_timer()
-	local waitj = false
+	-- Better escape by jj
+	local waiting = false
+	local first_pressed_time = 0
 	map({ "i", "c", "t" }, "j", function()
-		timerj:stop()
-		if waitj then
-			local cursor = api.nvim_win_get_cursor(0)
-			local col = cursor[2]
-
-			if col > 0 then
-				local line = cursor[1] - 1
-				local left_char = api.nvim_buf_get_text(0, line, col - 1, line, col, {})[1]
-				if left_char == "j" then
-					waitj = false
-					return api.nvim_get_mode().mode == "t" and [[<bs><C-\><C-n>]] or "<bs><esc>"
-				end
+		local mode = api.nvim_get_mode().mode
+		local now = uv.now()
+		if not waiting then
+			waiting = true
+			first_pressed_time = now
+		elseif now - first_pressed_time < (vim.o.updatetime or 300) then -- waiting
+			waiting = false
+			if mode == "c" then
+				api.nvim_input("<esc>")
+				return ""
+			elseif mode == "t" then
+				return [[<bs><C-\><C-n>]]
 			end
+			return "<bs><esc>"
+		else -- waiting
+			first_pressed_time = now -- new waiting
 		end
 
-		timerj:start(
-			vim.o.updatetime or 300,
-			0,
-			vim.schedule_wrap(function()
-				waitj = false
-				timerj:stop()
-			end)
-		)
-		waitj = true
+		if mode == "c" then
+			api.nvim_feedkeys("j", "n", true)
+			return ""
+		end
 		return "j"
 	end, 7)
 
@@ -168,10 +166,10 @@ vim.schedule(function()
 	map("n", "=", "<C-W>=")
 
 	--Change the layout to horizontal
-	map("n", "gv", "<C-w>t<C-w>H", { desc = "Change the layout to vertical" })
+	map("n", "gv", "<C-w>t<C-w>H", "Change the layout to vertical")
 
 	--Change the layout to vertical
-	map("n", "gh", "<C-w>t<C-w>K", { desc = "Change the layout to horizontally" })
+	map("n", "gh", "<C-w>t<C-w>K", "Change the layout to horizontally")
 
 	-- Split horizontally
 	map("n", "<A-s>", "<cmd>split<CR>")
