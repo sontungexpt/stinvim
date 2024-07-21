@@ -4,8 +4,6 @@ if not cmp_status_ok then return end
 local snip_status_ok, luasnip = pcall(require, "luasnip")
 if not snip_status_ok then return end
 
-local api, fn = vim.api, vim.fn
-
 cmp.setup {
 	snippet = {
 		expand = function(args)
@@ -13,13 +11,14 @@ cmp.setup {
 		end,
 	},
 	sources = {
-		{ name = "path" },
-		{ name = "nvim_lsp", keyword_length = 1 },
-		{ name = "buffer", keyword_length = 3 },
+		{ name = "nvim_lsp" },
 		{ name = "luasnip", keyword_length = 4 },
-		{ name = "nvim_lua", keyword_length = 2 },
+		{ name = "path", keyword_length = 3 },
+		{ name = "buffer", keyword_length = 3 },
 		{ name = "copilot", keyword_length = 3 },
-		{ name = "emoji", keyword_length = 2 },
+		{ name = "emoji", keyword_length = 3 },
+		{ name = "dotenv", keyword_length = 3 },
+		{ name = "nvim_lua", keyword_length = 3 },
 	},
 	window = {
 		documentation = cmp.config.window.bordered(),
@@ -29,6 +28,11 @@ cmp.setup {
 		fields = { "kind", "abbr", "menu" },
 		format = function(entry, vim_item)
 			vim_item.kind = require("ui.icons.lspkind")[vim_item.kind]
+			local color_item = require("nvim-highlight-colors").format(entry, { kind = vim_item.kind })
+			if color_item.abbr_hl_group then
+				vim_item.kind_hl_group = color_item.abbr_hl_group
+				vim_item.kind = color_item.abbr
+			end
 			vim_item.menu = ({
 				nvim_lsp = "λ ",
 				luasnip = " ",
@@ -61,7 +65,7 @@ cmp.setup {
 			if cmp.visible() then
 				cmp.select_next_item()
 			elseif luasnip.expand_or_jumpable() then
-        luasnip.expand_or_jump()
+				luasnip.expand_or_jump()
 			else
 				fallback()
 			end
@@ -70,7 +74,7 @@ cmp.setup {
 			if cmp.visible() then
 				cmp.select_prev_item()
 			elseif luasnip.jumpable(-1) then
-        luasnip.jump(-1)
+				luasnip.jump(-1)
 			else
 				fallback()
 			end
