@@ -70,13 +70,12 @@ end
 --- @param matches string|table The filetypes or buffer types to close.
 --- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
-	if not api.nvim_buf_is_loaded(bufnr) then return end
 	local condition = api.nvim_get_option_value(condition_name or "filetype", { buf = bufnr })
 	if type(matches) == "string" and condition == matches then
 		api.nvim_buf_delete(bufnr, { force = true })
 	elseif type(matches) == "table" then
 		for _, match in ipairs(matches) do
-			if condition == match then
+			if type(match) == "string" and condition == match then
 				api.nvim_buf_delete(bufnr, { force = true })
 				return
 			end
@@ -91,7 +90,7 @@ end
 M.close_buffers_matching = function(matches, condition_name)
 	vim.schedule(function()
 		for _, buf in ipairs(api.nvim_list_bufs()) do
-			M.close_buffer_matching(buf, matches, condition_name)
+			if api.nvim_buf_is_loaded(buf) then M.close_buffer_matching(buf, matches, condition_name) end
 		end
 	end)
 end
@@ -101,15 +100,17 @@ end
 --- @param matches number|table The buffer numbers or table with filetypes/buftypes.
 M.close_buffers = function(matches)
 	vim.schedule(function()
-		if type(matches) == "number" and api.nvim_buf_is_valid(matches) then
+		if type(matches) == "number" and api.nvim_buf_is_loaded(matches) then
 			api.nvim_buf_delete(matches, { force = true })
 		elseif type(matches) == "table" then
 			for _, buf in ipairs(matches) do
-				if type(buf) == "number" and api.nvim_buf_is_valid(buf) then api.nvim_buf_delete(buf, { force = true }) end
+				if type(buf) == "number" and api.nvim_buf_is_loaded(buf) then api.nvim_buf_delete(buf, { force = true }) end
 			end
 			for _, buf in ipairs(api.nvim_list_bufs()) do
-				M.close_buffer_matching(buf, matches, "filetype")
-				M.close_buffer_matching(buf, matches, "buftype")
+				if api.nvim_buf_is_loaded(buf) then
+					M.close_buffer_matching(buf, matches, "filetype")
+					M.close_buffer_matching(buf, matches, "buftype")
+				end
 			end
 		end
 	end)
