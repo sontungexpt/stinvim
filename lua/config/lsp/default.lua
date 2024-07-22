@@ -1,6 +1,7 @@
 local M = {}
 
 local lsp = vim.lsp
+local handlers = lsp.handlers
 
 local signs_hl = {
 	"DiagnosticSignError",
@@ -24,20 +25,15 @@ vim.diagnostic.config {
 	},
 }
 
-lsp.handlers["textDocument/signatureHelp"] = lsp.with(lsp.handlers.signature_help, {
+handlers["textDocument/signatureHelp"] = lsp.with(handlers.signature_help, {
 	border = "single",
 	focusable = false,
 	relative = "cursor",
 })
 
-lsp.handlers["textDocument/hover"] = lsp.with(lsp.handlers.hover, { border = "single" })
-
-M.on_attach = function(client, bufnr)
-	require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
-		inline = true,
-		ui = { above = true },
-	})
-end
+handlers["textDocument/hover"] = lsp.with(handlers.hover, {
+	border = "single",
+})
 
 local capabilities = lsp.protocol.make_client_capabilities()
 	or require("lspconfig").util.default_config.capabilities
@@ -72,6 +68,12 @@ capabilities.textDocument.foldingRange = {
 	lineFoldingOnly = true,
 }
 
+M.on_attach = function(client, bufnr)
+	require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
+		inline = true,
+		ui = { above = true },
+	})
+end
 M.capabilities = capabilities
 
 return M

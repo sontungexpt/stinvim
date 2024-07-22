@@ -472,6 +472,12 @@ local plugins = {
 	},
 
 	{
+		"mrcjkb/rustaceanvim",
+		ft = "rust",
+		-- config is in ftplugin/rust.lua
+	},
+
+	{
 		"akinsho/flutter-tools.nvim",
 		ft = "dart",
 		event = "BufReadPost */pubspec.yaml",
