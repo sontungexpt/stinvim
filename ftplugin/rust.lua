@@ -2,21 +2,15 @@
 --
 local executors = require("rustaceanvim.executors")
 vim.g.rustaceanvim = {
-	-- Plugin configuration
-	-- tools = {},
-	--
 	-- LSP configuration
 	server = {
 		on_attach = function(client, bufnr)
 			require("config.lsp.default").on_attach(client, bufnr)
 			-- you can also put keymaps in here
 		end,
-		-- default_settings = {
-		-- 	-- rust-analyzer language server configuration
-		-- 	["rust-analyzer"] = {},
-		-- },
 	},
 
+	-- Plugin configuration
 	tools = {
 		--- how to execute terminal commands
 		--- options right now: termopen / quickfix / toggleterm / vimux
@@ -28,5 +22,7 @@ vim.g.rustaceanvim = {
 		},
 	},
 	-- DAP configuration
-	-- dap = {},
+	-- dap = {
+	-- 	autoload_configurations = false,
+	-- },
 }

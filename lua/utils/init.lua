@@ -95,6 +95,18 @@ M.close_buffers_matching = function(matches, condition_name)
 	end)
 end
 
+--- Fast close all buffers matching the specified filetypes or buffer types.
+---
+--- @param matches string|table The filetypes or buffer types to close.
+--- @param condition_name string Can be "filetype" or "buftype".
+M.close_buffers_matching_fast = function(matches, condition_name)
+	local wins = api.nvim_list_wins()
+	for _, win in ipairs(wins) do
+		local buf = api.nvim_win_get_buf(win)
+		if api.nvim_buf_is_loaded(buf) then M.close_buffer_matching(buf, matches, condition_name) end
+	end
+end
+
 --- Close buffers specified by buffer numbers or filetypes/buftypes.
 ---
 --- @param matches number|table The buffer numbers or table with filetypes/buftypes.

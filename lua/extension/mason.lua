@@ -122,13 +122,13 @@ local sync_pkgs = function()
 
 		if pkgs_to_remove_size > 0 and require("mason.settings").current.auto_sync then
 			pcall(api.nvim_command, "MasonUninstall " .. table.concat(pkgs_to_remove, " "))
-			require("utils").close_buffers_matching("mason", "filetype")
+			require("utils").close_buffers_matching_fast("mason", "filetype")
 		end
 
 		schedule(function()
 			if pkgs_to_install_size > 0 then
 				pcall(api.nvim_command, "MasonInstall " .. table.concat(pkgs_to_install, " "))
-				require("utils").close_buffers_matching("mason", "filetype")
+				require("utils").close_buffers_matching_fast("mason", "filetype")
 				local exclued_update_pkgs = {}
 				require("mason-registry"):on("package:install:success", function(pkg)
 					local pkg_name = pkg.name
