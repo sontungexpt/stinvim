@@ -1,6 +1,8 @@
 local lspconfig = require("lspconfig")
-local on_attach = require("config.lsp.default").on_attach
-local capabilities = require("config.lsp.default").capabilities
+local default = require("config.lsp.default")
+local on_attach = default.on_attach
+local capabilities = default.capabilities
+local on_init = default.on_init
 
 local lsp_servers = {
 
@@ -17,12 +19,6 @@ local lsp_servers = {
 	-- cpp
 	{
 		name = "clangd",
-		config = {
-			on_attach = function(client, bufnr)
-				on_attach(client, bufnr)
-				client.server_capabilities.semanticTokensProvider = nil
-			end,
-		},
 	},
 
 	{
@@ -103,6 +99,7 @@ local lsp_servers = {
 
 for _, server in ipairs(lsp_servers) do
 	local config = server.config or {}
+	config.on_init = on_init
 	config.on_attach = config.on_attach or on_attach
 	config.capabilities = config.capabilities or capabilities
 	lspconfig[server.name].setup(config)

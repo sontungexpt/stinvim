@@ -68,6 +68,9 @@ capabilities.textDocument.foldingRange = {
 	lineFoldingOnly = true,
 }
 
+-- M.on_init = function(client, bufnr)
+-- end
+
 M.on_attach = function(client, bufnr)
 	require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
 		inline = true,
