@@ -48,6 +48,9 @@ local options = {
 		-- dart = { "dcm_format" },
 	},
 
+	default_format_opts = {
+		lsp_format = "fallback",
+	},
 	format_on_save = function(bufnr)
 		if slow_format_filetypes[vim.bo[bufnr].filetype] then return end
 		local function on_format(err)
