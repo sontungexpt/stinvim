@@ -19,6 +19,7 @@
   "codespell",
   "prettierd",
   "eslint-lsp",
+  "eslint_d",
   "css-lsp",
   "html-lsp",
   "svelte-language-server",

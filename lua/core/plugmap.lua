@@ -6,11 +6,28 @@ vim.schedule(function()
 	local map = require("utils.mapper").map
 	local load_mod = require("utils").load_mod
 
+	------------------------------ Conform ------------------------------
+	vim.api.nvim_create_user_command("ConformFormat", function(args)
+		local range = nil
+		if args.count ~= -1 then
+			local end_line = vim.api.nvim_buf_get_lines(0, args.line2 - 1, args.line2, true)[1]
+			range = {
+				start = { args.line1, 0 },
+				["end"] = { args.line2, end_line:len() },
+			}
+		end
+		require("conform").format { async = true, lsp_format = "fallback", range = range }
+	end, { range = true })
+
+	--- Can not use <cmd>ConformFormat<cr> because it will not pass the range to the command
+	--- https://www.reddit.com/r/neovim/comments/17xxehz/how_to_correctly_get_line_ranges_from_command/
+	map({ "n", "x" }, "<leader>b", ":ConformFormat<cr>", "Conform format")
+
 	------------------------------ url-open ------------------------------
-	map({ "n", "v" }, "gx", "<cmd>URLOpenUnderCursor<cr>", "Open URL under cursor")
+	map({ "n", "x" }, "gx", "<cmd>URLOpenUnderCursor<cr>", "Open URL under cursor")
 
 	------------------------------ nvimtree ------------------------------
-	map({ "n", "i", "v", "c" }, "<C-b>", function()
+	map({ "n", "i", "x", "c" }, "<C-b>", function()
 		local filetype = api.nvim_get_option_value("filetype", { buf = 0 })
 		-- local buftype = api.nvim_buf_get_option(0, "buftype")
 		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
@@ -21,7 +38,7 @@ vim.schedule(function()
 	end)
 
 	------------------------------ Telescope ------------------------------
-	map({ "n", "i", "v" }, "<C-p>", "<cmd>Telescope find_files<cr>")
+	map({ "n", "i", "x" }, "<C-p>", "<cmd>Telescope find_files<cr>")
 	map("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
 	map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>")
 
@@ -58,7 +75,7 @@ vim.schedule(function()
 	end, "Todo comment next error or warning")
 
 	------------------------------ ccc ------------------------------
-	map({ "n", "i", "v" }, "<A-c>", "<cmd>CccPick<cr>", "Color picker")
+	map({ "n", "i" }, "<A-c>", "<cmd>CccPick<cr>", "Color picker")
 
 	------------------------------ ufo ------------------------------
 	map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>", "Open all folds")
@@ -154,7 +171,7 @@ autocmd("LspAttach", {
 
 		map("n", "gf", "<cmd>Lspsaga finder<CR>")
 
-		map({ "n", "v" }, "<leader>sa", "<cmd>Lspsaga code_action<CR>")
+		map("n", "<leader>sa", "<cmd>Lspsaga code_action<CR>")
 
 		map("n", "gr", "<cmd>Lspsaga rename<CR>")
 
@@ -221,9 +238,9 @@ M.gitsigns = function(bufnr)
 	end, "Gitsigns previous hunk")
 
 	map1("n", "<leader>gs", gs.stage_hunk, "Gitsigns stage hunk")
-	map1("v", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns stage hunk")
+	map1("x", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns stage hunk")
 	map1("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
-	map1("v", "<leader>gr", function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns reset hunk")
+	map1("x", "<leader>gr", function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns reset hunk")
 	map1("n", "<leader>gu", gs.undo_stage_hunk, "Gitsigns undo stage hunk")
 	map1("n", "<leader>gR", gs.reset_buffer, "Gitsigns reset buffer")
 	map1("n", "<leader>gp", gs.preview_hunk, "Gitsigns preview hunk")
