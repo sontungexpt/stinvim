@@ -42,8 +42,11 @@ local options = {
 		end
 	end,
 	on_open = function(term)
-		require("utils.notify").info("Terminal " .. term.id .. " opened")
 		vim.api.nvim_command("startinsert")
+		vim.defer_fn(
+			function() vim.notify("Terminal " .. term.id .. " opened", vim.log.levels.INFO, { title = "ToggleTerm" }) end,
+			25
+		)
 	end,
 	on_close = function(term) vim.api.nvim_command("stopinsert") end,
 	hide_numbers = true,
