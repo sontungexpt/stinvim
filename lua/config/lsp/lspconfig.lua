@@ -62,19 +62,6 @@ local lsp_servers = {
 		},
 	},
 
-	--rust
-	{
-		name = "rust_analyzer",
-		config = {
-			cmd = {
-				"rustup",
-				"run",
-				"stable",
-				"rust-analyzer",
-			},
-		},
-	},
-
 	-- lua
 	{
 		name = "lua_ls",

@@ -1,25 +1,19 @@
-local fn, api = vim.fn, vim.api
+local fn = vim.fn
 
 local dap = require("dap")
 
 local icons = require("ui.icons")
-local colors = require("ui.colors")
 
 fn.sign_define("DapBreakpoint", {
 	text = icons.DapBreakpoint,
 	numhl = "DapBreakpoint",
 	texthl = "DapBreakpoint",
 })
-api.nvim_set_hl(0, "DapBreakpoint", {
-	fg = colors.red,
-})
+
 fn.sign_define("DapStopped", {
 	text = icons.DapStopped,
 	numhl = "DapStopped",
 	texthl = "DapStopped",
-})
-api.nvim_set_hl(0, "DapStopped", {
-	fg = colors.green,
 })
 
 local ok, dapui = pcall(require, "dapui")
@@ -34,9 +28,7 @@ if ok then
 end
 
 local function get_bin_path(adapter_name, custom_path)
-	return require("mason-registry").get_package(adapter_name):get_install_path()
-		.. "/"
-		.. (custom_path or adapter_name)
+	return require("mason-registry").get_package(adapter_name):get_install_path() .. "/" .. (custom_path or adapter_name)
 end
 
 dap.adapters.codelldb = {
@@ -62,18 +54,3 @@ dap.configurations.cpp = {
 	},
 }
 dap.configurations.c = dap.configurations.cpp
-
-dap.configurations.rust = {
-	{
-		type = "codelldb",
-		name = "Debug Rust",
-		request = "launch",
-		program = function()
-			local root = require("utils").find_root()
-			return root and (root .. "/target/debug/" .. fn.fnamemodify(root, ":p:h:t"))
-				or fn.input("path to executable: ", fn.getcwd(), "file")
-		end,
-		cwd = "${workspaceFolder}",
-		stopOnEntry = false,
-	},
-}
