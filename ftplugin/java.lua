@@ -56,6 +56,15 @@ end
 local extendedClientCapabilities = jdtls.extendedClientCapabilities
 extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
+local bundles = {}
+if jdebug_path ~= "" then
+	vim.list_extend(
+		bundles,
+		fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true)
+	)
+end
+if jtest_path ~= "" then vim.list_extend(bundles, fn.glob(jtest_path .. "/extension/server/*.jar", true, true)) end
+
 local config = {
 	cmd = {
 		java_path,
@@ -81,11 +90,16 @@ local config = {
 	capabilities = require("config.lsp.default").capabilities,
 	on_attach = function(client, bufnr)
 		jdtls.setup_dap { hotcodereplace = "auto" }
+		require("jdtls.dap").setup_dap_main_class_configs()
 
 		require("jdtls.setup").add_commands()
 		require("config.lsp.default").on_attach(client, bufnr)
 	end,
 	root_dir = root_dir,
+	init_options = { -- dap
+		extendedClientCapabilities = extendedClientCapabilities,
+		bundles = bundles,
+	},
 	settings = {
 		java = {
 			eclipse = {
@@ -172,13 +186,6 @@ local config = {
 		flags = {
 			debounce_text_changes = 150,
 			allow_incremental_sync = true,
-		},
-		init_options = {
-			extendedClientCapabilities = extendedClientCapabilities,
-			bundles = (jdebug_path ~= "" and jtest_path ~= "" and vim.list_extend(
-				fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true),
-				fn.glob(jtest_path .. "/extension/server/*.jar", true, true)
-			)) or nil,
 		},
 	},
 }
