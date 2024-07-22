@@ -553,17 +553,22 @@ local plugins = {
 
 	--------------------------------------------------- Debugger  ---------------------------------------------------
 	{
-		"rcarriga/nvim-dap-ui",
+		"mfussenegger/nvim-dap",
 		dependencies = {
 			{
-				"mfussenegger/nvim-dap",
-				config = function() require("config.dap") end,
+				"rcarriga/nvim-dap-ui",
+				dependencies = {
+					"nvim-neotest/nvim-nio",
+				},
+				main = "dapui",
+				opts = function() require("config.dap.dapui") end,
 			},
-			"theHamsta/nvim-dap-virtual-text",
-			"nvim-neotest/nvim-nio",
+			{
+				"theHamsta/nvim-dap-virtual-text",
+				opts = {},
+			},
 		},
-		main = "dapui",
-		opts = function() require("config.dap.dapui") end,
+		config = function() require("config.dap") end,
 	},
 }
 
