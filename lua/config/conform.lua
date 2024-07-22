@@ -29,7 +29,7 @@ local options = {
 		jsonc = prettier_eslint,
 		css = prettier_eslint,
 		html = prettier_eslint,
-		markdown = function(bufnr) return { prettier_eslint(bufnr), "codespell" } end,
+		markdown = function(bufnr) return { first(bufnr, "prettierd", "prettier"), "eslint_d", "codespell" } end,
 		yaml = prettier_eslint,
 
 		-- ["*"] = { "codespell" },

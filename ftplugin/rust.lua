@@ -1,3 +1,6 @@
+-- https://github.com/mrcjkb/rustaceanvim/blob/master/lua/rustaceanvim/config/internal.lua
+--
+local executors = require("rustaceanvim.executors")
 vim.g.rustaceanvim = {
 	-- Plugin configuration
 	-- tools = {},
@@ -12,6 +15,17 @@ vim.g.rustaceanvim = {
 		-- 	-- rust-analyzer language server configuration
 		-- 	["rust-analyzer"] = {},
 		-- },
+	},
+
+	tools = {
+		--- how to execute terminal commands
+		--- options right now: termopen / quickfix / toggleterm / vimux
+		executor = executors.toggleterm,
+		hover_actions = {
+			--- whether to replace Neovim's built-in `vim.lsp.buf.hover`.
+			---@type boolean
+			replace_builtin_hover = false,
+		},
 	},
 	-- DAP configuration
 	-- dap = {},
