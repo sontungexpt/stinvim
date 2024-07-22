@@ -76,6 +76,7 @@ vim.schedule(function()
 	-- map("c", "<C-j>", "has('wilder') && wilder#in_context() ? wilder#next() : '<C-j>'", 6)
 	-- map("c", "<C-k>", "has('wilder') && wilder#in_context() ? wilder#previous() : '<C-k>'", 6)
 	--
+
 	--------------------------------------- dap ---------------------------------------
 	local continue_debugging = require("config.dap.utils").continue_debugging
 
@@ -185,28 +186,6 @@ autocmd("LspAttach", {
 		-- map("n", "<Leader>co", "<cmd>Lspsaga outgoing_calls<CR>")
 	end,
 })
-
-M.terminal = function(bufnr)
-	local map = require("utils.mapper").map
-
-	local close_buf = function() vim.api.nvim_buf_delete(bufnr, { force = true }) end
-	local map1 = function(mode, key, map_to) map(mode, key, map_to, { buffer = bufnr }) end
-
-	map1("n", "q", close_buf)
-	map1("n", "Q", close_buf)
-	map1({ "n", "t" }, "<C-q>", close_buf)
-	map1({ "n", "t" }, "<A-q>", close_buf)
-
-	map1("t", "<esc>", [[<C-\><C-n>]])
-
-	map1("t", "<C-h>", [[<Cmd>wincmd h<CR>]])
-	map1("t", "<C-j>", [[<Cmd>wincmd j<CR>]])
-	map1("t", "<C-k>", [[<Cmd>wincmd k<CR>]])
-	map1("t", "<C-l>", [[<Cmd>wincmd l<CR>]])
-	map1("t", "<C-w>", [[<C-\><C-n><C-w>]])
-
-	map1({ "n", "t" }, "<C-t>", [[<Cmd>exe v:count1 . "ToggleTerm"<CR>]])
-end
 
 M.gitsigns = function(bufnr)
 	local map = require("utils.mapper").map

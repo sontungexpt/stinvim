@@ -2,7 +2,7 @@ local ok, jdtls = pcall(require, "jdtls")
 if not ok then return end
 
 local vim = vim
-local fn, uv, fs = vim.fn, (vim.uv or vim.loop), vim.fs
+local fn, fs = vim.fn, vim.fs
 local mason_registry_get_package = require("mason-registry").get_package
 
 local jdtls_path = mason_registry_get_package("jdtls"):get_install_path()
@@ -16,7 +16,7 @@ end
 local jdebug_path = mason_registry_get_package("java-debug-adapter"):get_install_path()
 local jtest_path = mason_registry_get_package("java-test"):get_install_path()
 
-local uname = uv.os_uname().sysname
+local uname = (vim.uv or vim.loop).os_uname().sysname
 uname = uname == "Linux" and "linux" or uname == "Darwin" and "mac" or "win"
 
 local root_dir = fs.root(0, { ".git", "pom.xml", "build.gradle" })
