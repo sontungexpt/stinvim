@@ -42,10 +42,6 @@ cmp.setup {
 				copilot = " ",
 				Copilot = " ",
 			})[entry.source.name]
-			if color_item.abbr_hl_group then
-				vim_item.kind_hl_group = color_item.abbr_hl_group
-				vim_item.kind = color_item.abbr
-			end
 			return vim_item
 		end,
 	},
