@@ -1,6 +1,6 @@
 local autocmd = vim.api.nvim_create_autocmd
 
-vim.schedule(function()
+vim.schedule(function() -- any maps should work after neovim open
 	local uv = vim.uv or vim.loop
 	local api = vim.api
 	local map = require("utils.mapper").map
@@ -190,36 +190,61 @@ vim.schedule(function()
 	--Swap down one row
 	map("n", "<A-Down>", "<cmd>m .+1<CR>==")
 	map("v", "<A-Down>", "<cmd>m '>+1<CR>gv=gv")
+
+	autocmd("TermOpen", {
+		callback = function(args)
+			local bufnr = args.buf
+
+			-- local map = require("utils.mapper").map
+			local close_buf = function() api.nvim_buf_delete(bufnr, { force = true }) end
+			local map1 = function(mode, key, map_to) map(mode, key, map_to, { buffer = bufnr }) end
+
+			map1("n", "q", close_buf)
+			map1("n", "Q", close_buf)
+			map1({ "n", "t" }, "<C-q>", close_buf)
+			map1({ "n", "t" }, "<A-q>", close_buf)
+
+			map1("n", "i", "<cmd>startinsert<CR>")
+
+			map1("t", "<esc>", [[<C-\><C-n>]])
+
+			map1("t", "<C-h>", [[<Cmd>wincmd h<CR>]])
+			map1("t", "<C-j>", [[<Cmd>wincmd j<CR>]])
+			map1("t", "<C-k>", [[<Cmd>wincmd k<CR>]])
+			map1("t", "<C-l>", [[<Cmd>wincmd l<CR>]])
+			map1("t", "<C-w>", [[<C-\><C-n><C-w>]])
+		end,
+	})
+
+	autocmd("CmdlineEnter", {
+		once = true,
+		desc = "Make autoclose brackets, quotes in command mode",
+		callback = function()
+			-- local map = require("utils.mapper").map
+			local bracket_pairs = {
+				{ "(", ")" },
+				{ "[", "]" },
+				{ "{", "}" },
+				{ "<", ">" },
+				{ "'", "'" },
+				{ '"', '"' },
+				{ "`", "`" },
+			}
+
+			local feedks = api.nvim_feedkeys
+			local replace_termcodes = api.nvim_replace_termcodes
+
+			for _, pair in ipairs(bracket_pairs) do
+				map(
+					"c",
+					pair[1],
+					function() feedks(replace_termcodes(pair[1] .. pair[2] .. "<left>", true, true, true), "n", true) end,
+					7
+				)
+			end
+		end,
+	})
 end)
-
-autocmd("CmdlineEnter", {
-	once = true,
-	desc = "Make autoclose brackets, quotes in command mode",
-	callback = function()
-		local map = require("utils.mapper").map
-		local bracket_pairs = {
-			{ "(", ")" },
-			{ "[", "]" },
-			{ "{", "}" },
-			{ "<", ">" },
-			{ "'", "'" },
-			{ '"', '"' },
-			{ "`", "`" },
-		}
-
-		local feedks = vim.api.nvim_feedkeys
-		local replace_termcodes = vim.api.nvim_replace_termcodes
-
-		for _, pair in ipairs(bracket_pairs) do
-			map(
-				"c",
-				pair[1],
-				function() feedks(replace_termcodes(pair[1] .. pair[2] .. "<left>", true, true, true), "n", true) end,
-				7
-			)
-		end
-	end,
-})
 
 autocmd({ "BufWinEnter", "CmdwinEnter" }, {
 	desc = "Make q close special buffers",

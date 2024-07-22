@@ -7,9 +7,42 @@ local options = {
 		end
 	end,
 	open_mapping = [[<C-t>]],
-	on_create = function(term) require("core.plugmap").terminal(term.bufnr) end,
+	on_create = function(term)
+		local map = require("utils.mapper").map
+		local api = vim.api
+
+		local term_id = term.id
+		local bufnr = term.bufnr
+
+		local map1 = function(mode, key, map_to, expr) map(mode, key, map_to, { buffer = bufnr, expr = expr }) end
+
+		local new_term_id = term_id
+		local pressed_time = 0
+
+		map1({ "n", "t" }, "<C-t>", function()
+			if new_term_id ~= term_id and (vim.uv or vim.loop).now() - pressed_time < 1500 then
+				vim.defer_fn(function()
+					api.nvim_command(new_term_id .. "ToggleTerm")
+					new_term_id = term_id
+				end, 20)
+				api.nvim_input("<BS>")
+			else
+				new_term_id = term_id
+				api.nvim_command(term_id .. "ToggleTerm")
+			end
+		end)
+
+		for i = 1, 9, 1 do
+			local istr = tostring(i)
+			map1({ "n", "t" }, istr, function()
+				pressed_time = (vim.uv or vim.loop).now()
+				new_term_id = i
+				return istr
+			end, true)
+		end
+	end,
 	on_open = function(term)
-		require("utils.notify").info("Terminal " .. term.id .. " opened", "ToggleTerm")
+		require("utils.notify").info("Terminal " .. term.id .. " opened")
 		vim.api.nvim_command("startinsert")
 	end,
 	on_close = function(term) vim.api.nvim_command("stopinsert") end,
