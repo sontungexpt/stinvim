@@ -99,11 +99,10 @@ end
 ---
 --- @param matches string|table The filetypes or buffer types to close.
 --- @param condition_name string Can be "filetype" or "buftype".
-M.close_buffers_matching_fast = function(matches, condition_name)
+M.close_buffers_matching_in_visible_windows = function(matches, condition_name)
 	local wins = api.nvim_list_wins()
 	for _, win in ipairs(wins) do
-		local buf = api.nvim_win_get_buf(win)
-		if api.nvim_buf_is_loaded(buf) then M.close_buffer_matching(buf, matches, condition_name) end
+		M.close_buffer_matching(api.nvim_win_get_buf(win), matches, condition_name)
 	end
 end
 
