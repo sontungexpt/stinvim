@@ -251,7 +251,10 @@ local plugins = {
 	{
 		"iamcco/markdown-preview.nvim",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-		build = function() vim.fn["mkdp#util#install"]() end,
+		build = function()
+			require("lazy").load { plugins = { "markdown-preview.nvim" } }
+			vim.fn["mkdp#util#install"]()
+		end,
 		config = function() vim.g.mkdp_auto_close = 1 end,
 	},
 

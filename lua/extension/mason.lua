@@ -1,4 +1,4 @@
-local vim = vim
+local vim, require = vim, require
 local api, fn, schedule = vim.api, vim.fn, vim.schedule
 
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
@@ -71,37 +71,38 @@ local caculate_pkgs = function()
 end
 
 --- Update all packages
---- @param exclued table<string,boolean> packages to be excluded from updating process. Key is package name and value is true
+--- @param exclued table<string,true> packages to be excluded from updating process. Key is package name and value is true
 local update_pkgs = function(exclued)
 	schedule(function()
-		local registry = require("mason-registry")
-		registry.update(vim.schedule_wrap(function(success, _)
-			if success then
-				local installed_pkgs = registry.get_installed_packages()
-				for _, pkg in ipairs(installed_pkgs) do
-					local pkg_name = pkg.name
-					if not exclued or not exclued[pkg_name] then
-						pkg:check_new_version(function(update_available, version)
-							if update_available then
-								local latest_version = version.latest_version
-								require("utils.notify").info("Updating" .. pkg_name .. "to" .. latest_version)
-								pkg:install():on(
-									"closed",
-									function()
-										require("utils.notify").info(
-											"Mason: Update package " .. pkg_name .. "to version " .. latest_version .. " completed"
-										)
-									end
-								)
-								return
-							end
-						end)
+		require("utils").load_mod("mason-registry", function(registry)
+			registry.update(vim.schedule_wrap(function(success, _)
+				if success then
+					local installed_pkgs = registry.get_installed_packages()
+					for _, pkg in ipairs(installed_pkgs) do
+						local pkg_name = pkg.name
+						if not exclued or not exclued[pkg_name] then
+							pkg:check_new_version(function(update_available, version)
+								if update_available then
+									local latest_version = version.latest_version
+									require("utils.notify").info("Updating" .. pkg_name .. "to" .. latest_version)
+									pkg:install():on(
+										"closed",
+										function()
+											require("utils.notify").info(
+												"Mason: Update package " .. pkg_name .. "to version " .. latest_version .. " completed"
+											)
+										end
+									)
+									return
+								end
+							end)
+						end
 					end
+				else
+					require("utils.notify").error("Failed to update registries")
 				end
-			else
-				require("utils.notify").error("Failed to update registries")
-			end
-		end))
+			end))
+		end)
 	end)
 end
 
@@ -116,26 +117,99 @@ local clean_pkgs = function()
 	end)
 end
 
+--- @param package_names string[]
+--- @return string[] valid package names
+--- @return number size of valid packages
+local filter_valid_packages = function(package_names)
+	local registry = require("mason-registry")
+	local Func = require("mason-core.functional")
+	local Package = require("mason-core.package")
+
+	local size = 0
+
+	return Func.filter(function(pkg_specifier)
+		local package_name = Package.Parse(pkg_specifier)
+		local ok = pcall(registry.get_package, package_name)
+		if ok then
+			size = size + 1
+			return true
+		end
+		require("utils.notify").error("Mason: " .. pkg_specifier .. " is not a valid package.", { title = "Mason" })
+		return false
+	end)(package_names),
+		size
+end
+
+--- Install packagges without any ui open
+--- @param package_names string[] packages to be installed
+--- @param cb function Args: name, all_completed The callback function will be called when each package is installed successfully
+local MasonInstall = function(package_names, cb)
+	return require("utils").load_mod("mason-registry", function(registry)
+		local Func = require("mason-core.functional")
+		local Package = require("mason-core.package")
+
+		local install_packages = Func.map(function(pkg_specifier)
+			local package_name, version = Package.Parse(pkg_specifier)
+			local pkg = registry.get_package(package_name)
+			return pkg:install {
+				version = version,
+				force = true,
+				strict = true,
+				debug = false,
+			}
+		end)
+
+		local valid_packages, valid_packages_size
+		registry.refresh(function()
+			valid_packages, valid_packages_size = filter_valid_packages(package_names)
+			install_packages(valid_packages)
+		end)
+
+		registry:on("package:install:success", function(pkg)
+			local pkg_name = pkg.name
+			require("utils.notify").info("Mason: Install package " .. pkg_name .. " completed")
+			valid_packages_size = valid_packages_size - 1
+			if type(cb) == "function" then cb(pkg_name, valid_packages_size == 0) end
+			cb(pkg_name, valid_packages_size == 0)
+		end)
+	end)
+end
+
+--- Uninstall packagges without any ui open
+--- @param package_names string[] packages to be uninstalled
+--- @param cb ? function Args: name, all_completed The callback function will be called when each package is uninstalled
+local function MasonUninstall(package_names, cb)
+	return require("utils").load_mod("mason-registry", function(registry)
+		local Func = require("mason-core.functional")
+		local valid_packages, valid_packages_size = filter_valid_packages(package_names)
+		if valid_packages_size > 0 then
+			Func.each(function(package_name)
+				local pkg = registry.get_package(package_name)
+				pkg:uninstall()
+			end, valid_packages)
+
+			registry:on("package:uninstall:success", function(pkg)
+				local pkg_name = pkg.name
+				require("utils.notify").info("Mason: Uninstall package " .. pkg_name .. " completed")
+				valid_packages_size = valid_packages_size - 1
+				if type(cb) == "function" then cb(pkg_name, valid_packages_size == 0) end
+			end)
+		end
+	end)
+end
+
 local sync_pkgs = function()
 	schedule(function()
 		local pkgs_to_remove, pkgs_to_remove_size, pkgs_to_install, pkgs_to_install_size = caculate_pkgs()
 
-		if pkgs_to_remove_size > 0 and require("mason.settings").current.auto_sync then
-			pcall(api.nvim_command, "MasonUninstall " .. table.concat(pkgs_to_remove, " "))
-			require("utils").close_buffers_matching_fast("mason", "filetype")
-		end
+		if pkgs_to_remove_size > 0 and require("mason.settings").current.auto_sync then MasonUninstall(pkgs_to_remove) end
 
 		schedule(function()
 			if pkgs_to_install_size > 0 then
-				pcall(api.nvim_command, "MasonInstall " .. table.concat(pkgs_to_install, " "))
-				require("utils").close_buffers_matching_fast("mason", "filetype")
 				local exclued_update_pkgs = {}
-				require("mason-registry"):on("package:install:success", function(pkg)
-					local pkg_name = pkg.name
-					require("utils.notify").info("Mason: Install package " .. pkg_name .. " completed")
-					pkgs_to_install_size = pkgs_to_install_size - 1
+				MasonInstall(pkgs_to_install, function(pkg_name, all_completed)
 					exclued_update_pkgs[pkg_name] = true
-					if pkgs_to_install_size == 0 then update_pkgs(exclued_update_pkgs) end
+					if all_completed then update_pkgs(exclued_update_pkgs) end
 				end)
 			end
 		end)
