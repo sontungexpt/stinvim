@@ -58,10 +58,28 @@ end
 M.load_mod = function(name, cb)
 	local status_ok, module = pcall(require, name)
 	if status_ok then
-		cb(module)
+		return cb(module)
 	else
 		require("utils.notify").error("Module " .. name .. " not found")
 	end
+end
+
+--- Attempts to load multiple modules and calls a provided callback function with the loaded modules if successful. If a module fails to load, an error message is printed, and the function returns nil.
+---
+--- @param cb function A function to be executed with the loaded module as an argument.
+--- @param ... string The names of the modules to load.
+M.load_mods = function(cb, ...)
+	local modules = { ... }
+	for i, name in ipairs(modules) do
+		local status_ok, module = pcall(require, name)
+		if status_ok then
+			modules[i] = module
+		else
+			require("utils.notify").error("Module " .. name .. " not found")
+			return
+		end
+	end
+	return cb(unpack(modules))
 end
 
 --- Close a buffer matching the specified filetypes or buftypes.
@@ -70,17 +88,19 @@ end
 --- @param matches string|table The filetypes or buffer types to close.
 --- @param condition_name string|nil Can be "filetype" or "buftype" (default: "filetype").
 M.close_buffer_matching = function(bufnr, matches, condition_name)
-	local condition = api.nvim_get_option_value(condition_name or "filetype", { buf = bufnr })
-	if type(matches) == "string" and condition == matches then
-		api.nvim_buf_delete(bufnr, { force = true })
-	elseif type(matches) == "table" then
-		for _, match in ipairs(matches) do
-			if type(match) == "string" and condition == match then
-				api.nvim_buf_delete(bufnr, { force = true })
-				return
+	vim.schedule(function()
+		local condition = api.nvim_get_option_value(condition_name or "filetype", { buf = bufnr })
+		if type(matches) == "string" and condition == matches then
+			api.nvim_buf_delete(bufnr, { force = true })
+		elseif type(matches) == "table" then
+			for _, match in ipairs(matches) do
+				if type(match) == "string" and condition == match then
+					api.nvim_buf_delete(bufnr, { force = true })
+					return
+				end
 			end
 		end
-	end
+	end)
 end
 
 --- Close all buffers matching the specified filetypes or buffer types.
@@ -88,11 +108,9 @@ end
 --- @param matches string|table The filetypes or buffer types to close.
 --- @param condition_name string Can be "filetype" or "buftype".
 M.close_buffers_matching = function(matches, condition_name)
-	vim.schedule(function()
-		for _, buf in ipairs(api.nvim_list_bufs()) do
-			if api.nvim_buf_is_loaded(buf) then M.close_buffer_matching(buf, matches, condition_name) end
-		end
-	end)
+	for _, buf in ipairs(api.nvim_list_bufs()) do
+		if api.nvim_buf_is_valid(buf) then M.close_buffer_matching(buf, matches, condition_name) end
+	end
 end
 
 --- Fast close all buffers matching the specified filetypes or buffer types.
@@ -110,21 +128,21 @@ end
 ---
 --- @param matches number|table The buffer numbers or table with filetypes/buftypes.
 M.close_buffers = function(matches)
-	vim.schedule(function()
-		if type(matches) == "number" and api.nvim_buf_is_loaded(matches) then
-			api.nvim_buf_delete(matches, { force = true })
-		elseif type(matches) == "table" then
-			for _, buf in ipairs(matches) do
-				if type(buf) == "number" and api.nvim_buf_is_loaded(buf) then api.nvim_buf_delete(buf, { force = true }) end
-			end
-			for _, buf in ipairs(api.nvim_list_bufs()) do
-				if api.nvim_buf_is_loaded(buf) then
-					M.close_buffer_matching(buf, matches, "filetype")
-					M.close_buffer_matching(buf, matches, "buftype")
-				end
+	if type(matches) == "number" and api.nvim_buf_is_valid(matches) then
+		vim.schedule(function() api.nvim_buf_delete(matches, { force = true }) end)
+	elseif type(matches) == "table" then
+		for _, buf in ipairs(matches) do
+			if type(buf) == "number" and api.nvim_buf_is_valid(buf) then
+				vim.schedule(function() api.nvim_buf_delete(buf, { force = true }) end)
 			end
 		end
-	end)
+		for _, buf in ipairs(api.nvim_list_bufs()) do
+			if api.nvim_buf_is_valid(buf) then
+				M.close_buffer_matching(buf, matches, "filetype")
+				M.close_buffer_matching(buf, matches, "buftype")
+			end
+		end
+	end
 end
 
 return setmetatable(M, {
