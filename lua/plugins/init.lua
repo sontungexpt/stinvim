@@ -270,12 +270,6 @@ local plugins = {
 	},
 
 	{
-		"vinnymeller/swagger-preview.nvim",
-		build = "npm install -g swagger-ui-watcher",
-		cmd = { "SwaggerPreview", "SwaggerPreviewStop", "SwaggerPreviewToggle" },
-	},
-
-	{
 		"aklt/plantuml-syntax",
 		ft = "plantuml",
 	},
