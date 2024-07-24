@@ -129,21 +129,19 @@ do
 
 				if num_wins > 1 then
 					local curr_vim_width = vim.o.columns
-					local curr_vim_height = vim.o.lines
-						- vim.o.cmdheight
-						- (vim.o.laststatus ~= 0 and 1 or 0)
-						- (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)
+					local curr_vim_height = vim.o.lines - vim.o.cmdheight
 
 					if args.event == "VimResized" then
 						vim_resized_trigger = true
 						for i = 1, num_wins, 1 do
 							local id = win_ids[i]
 							local last_widths, last_heights = vim.w[id].last_widths, vim.w[id].last_heights
+							local ceil_or_floor = i % 2 == 1 and math.ceil or math.floor
 							if type(last_widths) == "table" then
-								api.nvim_win_set_width(id, math.floor(curr_vim_width / last_widths[2] * last_widths[1]))
+								api.nvim_win_set_width(id, ceil_or_floor(curr_vim_width / last_widths[2] * last_widths[1]))
 							end
 							if type(last_heights) == "table" then
-								api.nvim_win_set_height(id, math.floor(curr_vim_height / last_heights[2] * last_heights[1]))
+								api.nvim_win_set_height(id, ceil_or_floor(curr_vim_height / last_heights[2] * last_heights[1]))
 							end
 						end
 					elseif not vim_resized_trigger then
