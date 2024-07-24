@@ -15,23 +15,25 @@ autocmd("BufWritePre", {
 	desc = "Remove trailing whitespace and create parent directory if not exists",
 })
 
-autocmd("FileType", {
+autocmd("BufEnter", {
 	group = group,
 	desc = "Do filetype specific work",
 	callback = function(args)
-		local work = ({
-			help = "wincmd L", -- Open help in vertical split
-			qf = "set nobuflisted", -- Don't show quickfix in buffer list
-			sh = function()
-				if args.file:match("%.env$") then vim.diagnostic.enable(false, { bufnr = args.buf }) end
-			end, -- Disable diagnostic for .env files
-		})[args.match]
+		vim.defer_fn(function()
+			local work = ({
+				help = "wincmd L", -- Open help in vertical split
+				qf = "set nobuflisted", -- Don't show quickfix in buffer list
+				sh = function()
+					if args.file:match("%.env$") then vim.diagnostic.enable(false, { bufnr = args.buf }) end
+				end, -- Disable diagnostic for .env files
+			})[vim.bo[args.buf].filetype]
 
-		if type(work) == "string" then
-			cmd(work)
-		elseif type(work) == "function" then
-			work()
-		end
+			if type(work) == "string" then
+				cmd(work)
+			elseif type(work) == "function" then
+				work()
+			end
+		end, 3)
 	end,
 })
 
@@ -115,37 +117,46 @@ autocmd("BufHidden", {
 	end,
 })
 
-autocmd({ "VimResized", "WinResized", "WinNew" }, {
-	group = group,
-	desc = "Preserve window ratios on VimResized",
-	callback = function(args)
-		vim.schedule(function()
-			local win_ids = api.nvim_list_wins()
-			if #win_ids > 1 then
-				local vim_width = api.nvim_get_option("columns")
-				local vim_height = api.nvim_get_option("lines")
-					- vim.o.cmdheight
-					- (vim.o.laststatus ~= 0 and 1 or 0)
-					- (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)
+do
+	local vim_resized_trigger = false
+	autocmd({ "VimResized", "WinScrolled" }, {
+		group = group,
+		desc = "Preserve window ratios on VimResized",
+		callback = function(args)
+			vim.schedule(function()
+				local win_ids = api.nvim_tabpage_list_wins(0)
+				local num_wins = #win_ids
 
-				if args.event == "VimResized" then
-					for index, id in ipairs(win_ids) do
-						local ratio_x = vim.w[id].ratio_x
-						if type(ratio_x) == "table" then
-							api.nvim_win_set_width(id, math.floor(vim_width / ratio_x[2] * ratio_x[1]))
+				if num_wins > 1 then
+					local curr_vim_width = vim.o.columns
+					local curr_vim_height = vim.o.lines
+						- vim.o.cmdheight
+						- (vim.o.laststatus ~= 0 and 1 or 0)
+						- (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)
+
+					if args.event == "VimResized" then
+						vim_resized_trigger = true
+						for i = 1, num_wins, 1 do
+							local id = win_ids[i]
+							local last_widths, last_heights = vim.w[id].last_widths, vim.w[id].last_heights
+							if type(last_widths) == "table" then
+								api.nvim_win_set_width(id, math.floor(curr_vim_width / last_widths[2] * last_widths[1]))
+							end
+							if type(last_heights) == "table" then
+								api.nvim_win_set_height(id, math.floor(curr_vim_height / last_heights[2] * last_heights[1]))
+							end
 						end
-						local ratio_y = vim.w[id].ratio_y
-						if type(ratio_y) == "table" then
-							api.nvim_win_set_height(id, math.floor(vim_height / ratio_y[2] * ratio_y[1]))
+					elseif not vim_resized_trigger then
+						for i = 1, num_wins, 1 do
+							local id = win_ids[i]
+							api.nvim_win_set_var(id, "last_widths", { api.nvim_win_get_width(id), curr_vim_width })
+							api.nvim_win_set_var(id, "last_heights", { api.nvim_win_get_height(id), curr_vim_height })
 						end
-					end
-				else
-					for index, id in ipairs(win_ids) do
-						api.nvim_win_set_var(id, "ratio_x", { api.nvim_win_get_width(id), vim_width })
-						api.nvim_win_set_var(id, "ratio_y", { api.nvim_win_get_height(id), vim_height })
+					else
+						vim_resized_trigger = false
 					end
 				end
-			end
-		end)
-	end,
-})
+			end)
+		end,
+	})
+end
