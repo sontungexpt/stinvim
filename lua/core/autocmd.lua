@@ -15,25 +15,26 @@ autocmd("BufWritePre", {
 	desc = "Remove trailing whitespace and create parent directory if not exists",
 })
 
-autocmd("FileType", {
+autocmd("BufEnter", {
 	group = group,
 	desc = "Do filetype specific work",
 	callback = function(args)
-		local work = ({
-			help = "wincmd L", -- Open help in vertical split
-			qf = "set nobuflisted", -- Don't show quickfix in buffer list
-			sh = function()
-				if args.file:match("%.env$") then vim.diagnostic.enable(false, {
-					bufnr = args.buf,
-				}) end
-			end, -- Disable diagnostic for .env files
-		})[args.match]
-
-		if type(work) == "string" then
-			cmd(work)
-		elseif type(work) == "function" then
-			work()
-		end
+		vim.defer_fn(function()
+			local work = ({
+				help = "wincmd L", -- Open help in vertical split
+				qf = "set nobuflisted", -- Don't show quickfix in buffer list
+				sh = function()
+					if args.file:match("%.env$") then vim.diagnostic.enable(false, {
+						bufnr = args.buf,
+					}) end
+				end, -- Disable diagnostic for .env files
+			})[vim.bo[args.buf].filetype]
+			if type(work) == "string" then
+				cmd(work)
+			elseif type(work) == "function" then
+				work()
+			end
+		end, 3)
 	end,
 })
 
