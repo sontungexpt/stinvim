@@ -1,15 +1,33 @@
 local require = require
 
 local plugins = {
+	--------------------------------------------------- Tools ---------------------------------------------------
+	{
+		"kawre/leetcode.nvim",
+		build = ":TSUpdate html",
+		lazy = "leetcode.nvim" ~= vim.fn.argv()[1],
+		dependencies = {
+			"nvim-telescope/telescope.nvim",
+			"nvim-lua/plenary.nvim", -- required by telescope
+			"MunifTanjim/nui.nvim",
+
+			-- optional
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-tree/nvim-web-devicons",
+		},
+		opts = {
+			-- configuration goes here
+		},
+	},
 	--------------------------------------------------- Theme ---------------------------------------------------
 	---
 	{
 		"sontungexpt/witch",
 		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/witch",
-		priority = 1000,
 		-- branch = "develop",
+		priority = 1000,
 		lazy = false,
-		-- opts = require("config.witch"),
+		main = "witch",
 		opts = {},
 	},
 
