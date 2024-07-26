@@ -20,13 +20,14 @@ autocmd("BufEnter", {
 	desc = "Do filetype specific work",
 	callback = function(args)
 		vim.defer_fn(function()
+			local bufnr = api.nvim_get_current_buf()
 			local work = ({
 				help = "wincmd L", -- Open help in vertical split
 				qf = "set nobuflisted", -- Don't show quickfix in buffer list
 				sh = function()
-					if args.file:match("%.env$") then vim.diagnostic.enable(false, { bufnr = args.buf }) end
+					if args.file:match("%.env$") then vim.diagnostic.enable(false, { bufnr = bufnr }) end
 				end, -- Disable diagnostic for .env files
-			})[vim.bo[args.buf].filetype]
+			})[vim.bo[bufnr].filetype]
 
 			if type(work) == "string" then
 				cmd(work)
