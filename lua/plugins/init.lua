@@ -494,7 +494,7 @@ local plugins = {
 
 	-- {
 	-- 	"pmizio/typescript-tools.nvim",
-	-- 	ft = { "javascript", "typescript", "jsx", "tsx", "typescriptreact", "javascriptreact", "vue", "svelte" },
+	-- 	ft = { "javascript", "typescript", "jsx", "tsx", "typescriptreact", "javascriptreact" },
 	-- 	dependencies = {
 	-- 		"nvim-lua/plenary.nvim",
 	-- 		"neovim/nvim-lspconfig",

@@ -10,15 +10,19 @@ local function first(bufnr, ...)
 	return select(1, ...)
 end
 
-local prettier_eslint = function(bufnr) return { first(bufnr, "prettierd", "prettier"), "eslint_d" } end
+local prettier_eslint = function(bufnr) return { first(bufnr, "biome", "prettierd", "prettier"), "eslint_d" } end
 
 local slow_format_filetypes = {}
 
 local options = {
 	formatters_by_ft = {
 		lua = { "stylua" },
-		python = { "autopep8" },
+
+		python = { "ruff_format", "autopep8", stop_after_first = true },
+
 		xml = { "xmlformat" },
+
+		go = { "goimports", "gofumpt" },
 
 		-- webdev
 		javascript = prettier_eslint,
@@ -29,7 +33,7 @@ local options = {
 		jsonc = prettier_eslint,
 		css = prettier_eslint,
 		html = prettier_eslint,
-		markdown = function(bufnr) return { first(bufnr, "prettierd", "prettier"), "eslint_d", "codespell" } end,
+		markdown = function(bufnr) return { first(bufnr, "biome", "prettierd", "prettier"), "eslint_d", "codespell" } end,
 		yaml = prettier_eslint,
 
 		-- ["*"] = { "codespell" },

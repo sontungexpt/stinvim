@@ -8,7 +8,12 @@ local lsp_servers = {
 
 	-- python
 	{
-		name = "pyright",
+		name = "pylyzer",
+	},
+
+	-- go
+	{
+		name = "gopls",
 	},
 
 	-- bash
@@ -30,7 +35,7 @@ local lsp_servers = {
 		name = "zls",
 	},
 
-	-- dev
+	-- web
 	{
 		name = "cssls",
 	},
@@ -50,7 +55,7 @@ local lsp_servers = {
 		name = "tailwindcss",
 	},
 	{
-		name = "tsserver",
+		name = "vtsls",
 	},
 	{
 		name = "emmet_ls",
