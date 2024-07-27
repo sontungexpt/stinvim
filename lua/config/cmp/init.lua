@@ -12,6 +12,10 @@ cmp.setup {
 	},
 	sources = {
 		{ name = "nvim_lsp" },
+		{
+			name = "lazydev",
+			group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+		},
 		{ name = "luasnip", keyword_length = 4 },
 		{ name = "path", keyword_length = 3 },
 		{ name = "buffer", keyword_length = 3 },

@@ -492,6 +492,18 @@ local plugins = {
 		-- config is in ftplugin/rust.lua
 	},
 
+	-- {
+	-- 	"pmizio/typescript-tools.nvim",
+	-- 	ft = { "javascript", "typescript", "jsx", "tsx", "typescriptreact", "javascriptreact", "vue", "svelte" },
+	-- 	dependencies = {
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		"neovim/nvim-lspconfig",
+	-- 	},
+	-- 	opts = {
+	-- 		on_attach = function(client, bufnr) require("config.lsp.default").on_attach(client, bufnr) end,
+	-- 	},
+	-- },
+
 	{
 		"akinsho/flutter-tools.nvim",
 		ft = "dart",
@@ -501,7 +513,7 @@ local plugins = {
 			"stevearc/dressing.nvim", -- optional for vim.ui.select
 		},
 		main = "flutter-tools",
-		opts = function() return require("config.flutter-tools") end,
+		opts = function() return require("config.lsp.flutter-tools") end,
 	},
 
 	{
@@ -510,7 +522,6 @@ local plugins = {
 		dependencies = {
 			"neovim/nvim-lspconfig",
 			"nvim-tree/nvim-web-devicons",
-
 			--Please make sure you install markdown and markdown_inline parser
 			"nvim-treesitter/nvim-treesitter",
 		},
@@ -541,7 +552,7 @@ local plugins = {
 				-- snippet plugin
 				"L3MON4D3/LuaSnip",
 				build = "make install_jsregexp",
-				dependencies = "rafamadriz/friendly-snippets",
+				dependencies = { "rafamadriz/friendly-snippets" },
 				config = function() require("config.cmp.LuaSnip") end,
 			},
 
