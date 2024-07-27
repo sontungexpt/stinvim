@@ -12,7 +12,16 @@ vim.schedule(function() -- any maps should work after neovim open
 	map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 7)
 
 	-- When you press i, automatically indent to the appropriate position
-	map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
+	-- map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
+	map("n", "i", function()
+		if api.nvim_get_current_line() == "" then
+			local modified = api.nvim_get_option_value("modified", { buf = 0 })
+			api.nvim_input(api.nvim_replace_termcodes("_cc", true, true, true))
+			if not modified then vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1) end
+		else
+			api.nvim_command("startinsert")
+		end
+	end)
 
 	-- Delete empty lines without writing to registers
 	map("n", "dd", [[match(getline('.'), '^\s*$') != -1 ? '"_dd' : "dd"]], 7)
@@ -35,33 +44,43 @@ vim.schedule(function() -- any maps should work after neovim open
 	map("n", "<S-Tab>", "<<_")
 
 	-- Better escape by jj
-	local waiting = false
-	local first_pressed_time = 0
-	map({ "i", "c", "t" }, "j", function()
-		local mode = api.nvim_get_mode().mode
-		local now = uv.now()
-		if not waiting then
-			waiting = true
-			first_pressed_time = now
-		elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
-			waiting = false
-			if mode == "c" then
-				api.nvim_input("<esc>")
-				return ""
-			elseif mode == "t" then
-				return [[<bs><C-\><C-n>]]
-			end
-			return "<bs><esc>"
-		else -- waiting
-			first_pressed_time = now -- new waiting
-		end
+	do
+		local waiting = false
+		local first_pressed_time = 0
+		local modified = false
 
-		if mode == "c" then
-			api.nvim_feedkeys("j", "n", true)
-			return ""
-		end
-		return "j"
-	end, 7)
+		map({ "i", "c", "t" }, "j", function()
+			local mode = api.nvim_get_mode().mode
+			local now = uv.now()
+			if not waiting then
+				waiting = true
+				first_pressed_time = now
+			elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
+				waiting = false
+				if mode == "c" then
+					api.nvim_input("<esc>")
+					return ""
+				elseif mode == "t" then
+					return [[<bs><C-\><C-n>]]
+				end
+				api.nvim_feedkeys(api.nvim_replace_termcodes("<bs><esc>", true, true, true), "n", false)
+				if not modified then
+					vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1)
+				end
+				return ""
+			else -- waiting
+				first_pressed_time = now -- new waiting
+			end
+
+			if mode == "c" then
+				api.nvim_feedkeys("j", "n", true)
+				return ""
+			end
+
+			modified = api.nvim_get_option_value("modified", { buf = 0 })
+			return "j"
+		end, 7)
+	end
 
 	--Save file as the traditional way
 	map({ "n", "i", "v", "c" }, "<C-s>", "<cmd>w<cr>", 2)
