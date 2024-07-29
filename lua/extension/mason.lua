@@ -86,7 +86,7 @@ local update_pkgs = function(exclued, ui)
 							pkg:check_new_version(function(update_available, version)
 								if update_available then
 									local latest_version = version.latest_version
-									require("utils.notify").info("Updating" .. pkg_name .. "to" .. latest_version)
+									require("utils.notify").info("Updating " .. pkg_name .. "to" .. latest_version)
 									pkg:install():on(
 										"install:success",
 										function()

@@ -10,7 +10,9 @@ local function first(bufnr, ...)
 	return select(1, ...)
 end
 
-local prettier_eslint = function(bufnr) return { first(bufnr, "biome", "prettierd", "prettier"), "eslint_d" } end
+local biome_prettier_eslint = function(bufnr) return { first(bufnr, "biome", "prettierd", "prettier"), "eslint_d" } end
+
+local prettier_eslint = function(bufnr) return { first(bufnr, "prettierd", "prettier"), "eslint_d" } end
 
 local slow_format_filetypes = {}
 
@@ -25,21 +27,20 @@ local options = {
 		go = { "goimports", "gofumpt" },
 
 		-- webdev
-		javascript = prettier_eslint,
-		typescript = prettier_eslint,
-		javascriptreact = prettier_eslint,
-		typescriptreact = prettier_eslint,
-		json = prettier_eslint,
-		jsonc = prettier_eslint,
+		javascript = biome_prettier_eslint,
+		typescript = biome_prettier_eslint,
+		javascriptreact = biome_prettier_eslint,
+		typescriptreact = biome_prettier_eslint,
+		json = biome_prettier_eslint,
+		jsonc = biome_prettier_eslint,
 		css = prettier_eslint,
 		html = prettier_eslint,
-		markdown = function(bufnr) return { first(bufnr, "biome", "prettierd", "prettier"), "eslint_d", "codespell" } end,
+		markdown = prettier_eslint,
 		yaml = prettier_eslint,
 
 		-- ["*"] = { "codespell" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
-		cmake = { "clang_format" },
 		rust = { "rustfmt" },
 		zig = { "zigfmt" },
 

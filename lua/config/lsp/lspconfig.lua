@@ -37,6 +37,9 @@ local lsp_servers = {
 
 	-- web
 	{
+		name = "biome",
+	},
+	{
 		name = "cssls",
 	},
 	{
