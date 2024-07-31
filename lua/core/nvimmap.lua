@@ -14,7 +14,7 @@ vim.schedule(function() -- any maps should work after neovim open
 	-- When you press i, automatically indent to the appropriate position
 	-- map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
 	map("n", "i", function()
-		if api.nvim_get_current_line() == "" then
+		if not api.nvim_get_option_value("buftype", { buf = 0 }) and api.nvim_get_current_line() == "" then
 			local modified = api.nvim_get_option_value("modified", { buf = 0 })
 			api.nvim_input(api.nvim_replace_termcodes("_cc", true, true, true))
 			if not modified then vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1) end
