@@ -130,7 +130,10 @@ do
 
 				if num_wins > 1 then
 					local curr_vim_width = vim.o.columns
-					local curr_vim_height = vim.o.lines - vim.o.cmdheight
+					local curr_vim_height = vim.o.lines
+						- vim.o.cmdheight
+						- (vim.o.laststatus ~= 0 and 1 or 0)
+						- (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)
 
 					if args.event == "VimResized" then
 						vim_resized_trigger = true
