@@ -336,6 +336,7 @@ local plugins = {
 
 	{
 		"zbirenbaum/copilot.lua",
+		-- 	dir = "/home/stilux/Data/Workspace/neovim-plugins/copilot.lua",
 		cmd = "Copilot",
 		event = "InsertEnter",
 		opts = function() return require("config.copilot") end,

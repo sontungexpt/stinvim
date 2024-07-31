@@ -33,7 +33,7 @@ vim.schedule(function()
 		if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
 			vim.cmd.normal { "<C-b>", bang = true }
 		else
-			api.nvim_command("NvimTreeToggle")
+			pcall(api.nvim_command, "NvimTreeToggle")
 		end
 	end)
 
