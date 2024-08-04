@@ -121,11 +121,9 @@ vim.schedule(function() -- any maps should work after neovim open
 			return ":vertical resize -1<CR>"
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
+		elseif api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2 < vim.o.columns / 2 then
+			return ":vertical resize +1<CR>"
 		else
-			local win_width = api.nvim_win_get_width(0)
-			if win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
-				return ":vertical resize +1<CR>"
-			end
 			return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
 		end
 	end, 7)
@@ -137,7 +135,10 @@ vim.schedule(function() -- any maps should work after neovim open
 			return ":vertical resize -1<CR>"
 		else
 			local win_width = api.nvim_win_get_width(0)
-			if win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
+			if
+				win_width > vim.o.winminwidth
+				and api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2 > vim.o.columns / 2
+			then
 				return ":vertical resize -1<CR>"
 			end
 			return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
