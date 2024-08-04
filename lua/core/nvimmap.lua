@@ -117,19 +117,16 @@ vim.schedule(function() -- any maps should work after neovim open
 	--Resize Buffer
 	map("n", "<A-l>", function()
 		local winnr = vim.fn.winnr()
-		-- local num = api.nvim_win_get_number(0)
 		if winnr == vim.fn.winnr("l") then
 			return ":vertical resize -1<CR>"
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
 		else
-			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
-			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
-			if win_center_x < vim_center_x then
+			local win_width = api.nvim_win_get_width(0)
+			if win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
 				return ":vertical resize +1<CR>"
-			else
-				return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
 			end
+			return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
 		end
 	end, 7)
 	map("n", "<A-h>", function()
@@ -139,13 +136,11 @@ vim.schedule(function() -- any maps should work after neovim open
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize -1<CR>"
 		else
-			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
-			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
-			if win_center_x > vim_center_x then
+			local win_width = api.nvim_win_get_width(0)
+			if win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
 				return ":vertical resize -1<CR>"
-			else
-				return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
 			end
+			return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
 		end
 	end, 7)
 	map("n", "<A-k>", function()
@@ -155,13 +150,15 @@ vim.schedule(function() -- any maps should work after neovim open
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize -1<CR>"
 		else
-			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
-			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
-			if win_center_y > vim_center_y then
+			local win_height = api.nvim_win_get_height(0)
+			if
+				win_height > vim.o.winminheight
+				and api.nvim_win_get_position(0)[1] + win_height / 2
+					> (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
+			then
 				return ":resize -1<CR>"
-			else
-				return ":wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
 			end
+			return ":wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
 		end
 	end, 7)
 	map("n", "<A-j>", function()
@@ -171,13 +168,15 @@ vim.schedule(function() -- any maps should work after neovim open
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize +1<CR>"
 		else
-			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
-			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
-			if win_center_y < vim_center_y then
+			local win_height = api.nvim_win_get_height(0)
+			if
+				win_height > vim.o.winminheight
+				and api.nvim_win_get_position(0)[1] + win_height / 2
+					< (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
+			then
 				return ":resize +1<CR>"
-			else
-				return ":wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
 			end
+			return ":wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
 		end
 	end, 7)
 
