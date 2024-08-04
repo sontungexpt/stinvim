@@ -1,6 +1,7 @@
----@param bufnr integer
----@param ... string
+---@param bufnr integer @param ... string
 ---@return string
+---@diagnostic disable: unused-local
+---@diagnostic disable-next-line: unused-function
 local function first(bufnr, ...)
 	local conform = require("conform")
 	for i = 1, select("#", ...) do
@@ -10,9 +11,9 @@ local function first(bufnr, ...)
 	return select(1, ...)
 end
 
-local biome_prettier_eslint = function(bufnr) return { first(bufnr, "biome", "prettierd", "prettier"), "eslint_d" } end
+local biome_prettier = { "biome", "prettierd", "prettier", stop_after_first = true }
 
-local prettier_eslint = function(bufnr) return { first(bufnr, "prettierd", "prettier"), "eslint_d" } end
+local prettier = { "prettierd", "prettier", stop_after_first = true }
 
 local slow_format_filetypes = {}
 
@@ -27,21 +28,21 @@ local options = {
 		go = { "goimports", "gofumpt" },
 
 		-- webdev
-		javascript = biome_prettier_eslint,
-		typescript = biome_prettier_eslint,
-		javascriptreact = biome_prettier_eslint,
-		typescriptreact = biome_prettier_eslint,
-		json = biome_prettier_eslint,
-		jsonc = biome_prettier_eslint,
-		css = prettier_eslint,
-		html = prettier_eslint,
-		markdown = prettier_eslint,
-		yaml = prettier_eslint,
+		javascript = biome_prettier,
+		typescript = biome_prettier,
+		javascriptreact = biome_prettier,
+		typescriptreact = biome_prettier,
+		json = biome_prettier,
+		jsonc = biome_prettier,
+		css = prettier,
+		html = prettier,
+		markdown = prettier,
+		yaml = prettier,
 
 		-- ["*"] = { "codespell" },
 		c = { "clang_format" },
 		cpp = { "clang_format" },
-		rust = { "rustfmt" },
+		rust = { "rustfmt", "leptosfmt" },
 		zig = { "zigfmt" },
 
 		sh = { "shfmt", "shellcheck" },
@@ -63,7 +64,6 @@ local options = {
 		end
 		return { timeout_ms = 500, lsp_format = "fallback" }, on_format
 	end,
-
 	format_after_save = function(bufnr)
 		if not slow_format_filetypes[vim.bo[bufnr].filetype] then return end
 		return { lsp_format = "fallback" }

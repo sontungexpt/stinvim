@@ -2,7 +2,7 @@ local vim, require = vim, require
 local api, fn, schedule = vim.api, vim.fn, vim.schedule
 
 local MASONRC_FILE = fn.stdpath("config") .. "/.masonrc.json"
-local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages/"
+local PACKAGE_DIR = fn.stdpath("data") .. "/mason/packages"
 
 local M = {
 	enabled = true,
@@ -21,11 +21,18 @@ end
 
 local get_installed_packages = function()
 	local installed_packages = {}
-	if fn.isdirectory(PACKAGE_DIR) == 1 then
-		local package_paths = fn.glob(PACKAGE_DIR .. "/*", true, true)
-		for i, path in ipairs(package_paths) do
-			installed_packages[i] = fn.fnamemodify(path, ":t")
-		end
+
+	local package_paths = fn.glob(
+		(
+			fn.isdirectory(PACKAGE_DIR) == 1 and PACKAGE_DIR
+			or require("mason.settings").current.install_root_dir .. "/packages"
+		) .. "/*",
+		true,
+		true
+	)
+
+	for i, path in ipairs(package_paths) do
+		installed_packages[i] = fn.fnamemodify(path, ":t")
 	end
 	return installed_packages
 end
@@ -86,12 +93,13 @@ local update_pkgs = function(exclued, ui)
 							pkg:check_new_version(function(update_available, version)
 								if update_available then
 									local latest_version = version.latest_version
-									require("utils.notify").info("Updating " .. pkg_name .. "to" .. latest_version)
+									require("utils.notify").info("Updating " .. pkg_name .. "to" .. latest_version, { title = "Mason" })
 									pkg:install():on(
 										"install:success",
 										function()
 											require("utils.notify").info(
-												"Mason: Update package " .. pkg_name .. "to version " .. latest_version .. " completed"
+												"Mason: Update package " .. pkg_name .. "to version " .. latest_version .. " completed",
+												{ title = "Mason" }
 											)
 										end
 									)
@@ -101,7 +109,7 @@ local update_pkgs = function(exclued, ui)
 						end
 					end
 				else
-					require("utils.notify").error("Failed to update registries")
+					require("utils.notify").error("Failed to update registries", { title = "Mason" })
 				end
 			end))
 		end)
@@ -145,7 +153,7 @@ local MasonInstall = function(package_names, cb, ui)
 
 		registry:on("package:install:success", function(pkg)
 			local pkg_name = pkg.name
-			require("utils.notify").info("Mason: Install package " .. pkg_name .. " completed")
+			require("utils.notify").info("Mason: Install package " .. pkg_name .. " completed", { title = "Mason" })
 			valid_packages_size = valid_packages_size - 1
 			if type(cb) == "function" then cb(pkg_name, valid_packages_size == 0) end
 		end)
@@ -178,7 +186,7 @@ local function MasonUninstall(package_names, cb, ui)
 		if valid_packages_size > 0 then
 			registry:on("package:uninstall:success", function(pkg)
 				local pkg_name = pkg.name
-				require("utils.notify").info("Mason: Uninstall package " .. pkg_name .. " completed")
+				require("utils.notify").info("Mason: Uninstall package " .. pkg_name .. " completed", { title = "Mason" })
 				valid_packages_size = valid_packages_size - 1
 				if type(cb) == "function" then cb(pkg_name, valid_packages_size == 0) end
 			end)
@@ -197,7 +205,7 @@ local clean_pkgs = function(ui)
 		MasonUninstall(
 			require("utils.tbl").find_unique_array_items(get_installed_packages(), get_ensured_packages()),
 			function(_, all_completed)
-				if all_completed then require("utils.notify").info("Mason: Cleaned packages") end
+				if all_completed then require("utils.notify").info("Mason: Cleaned packages", { title = "Mason" }) end
 			end,
 			ui ~= false
 		)

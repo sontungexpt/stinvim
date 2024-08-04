@@ -1,4 +1,4 @@
-local set_keymap = vim.keymap.set
+local set_keymap, extend = vim.keymap.set, require("utils.tbl").extend
 
 local M = {}
 
@@ -29,15 +29,13 @@ M.map = function(mode, key, map_to, opts, extend_opts)
 		options = OPTIONS[1]
 		options.desc = opts
 	else
-		options = opts_type == "table" and require("utils.tbl").extend(OPTIONS[1], opts, true)
-			or OPTIONS[opts or 1]
-			or OPTIONS[1]
+		options = opts_type == "table" and extend(OPTIONS[1], opts, true) or OPTIONS[opts or 1] or OPTIONS[1]
 		if extend_opts then
 			local extend_opts_type = type(extend_opts)
 			if extend_opts_type == "string" then
 				options.desc = extend_opts
 			elseif extend_opts_type == "table" then
-				options = require("utils.tbl").extend(options, extend_opts, true)
+				options = extend(options, extend_opts, true)
 			end
 		end
 	end
