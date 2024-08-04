@@ -22,8 +22,8 @@ local plugins = {
 	--------------------------------------------------- Theme ---------------------------------------------------
 	---
 	{
-		"sontungexpt/witch",
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/witch",
+		-- "sontungexpt/witch",
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/witch",
 		-- branch = "develop",
 		priority = 1000,
 		lazy = false,
