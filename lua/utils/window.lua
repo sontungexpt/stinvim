@@ -9,7 +9,9 @@ local winid = function(direction) return direction and fn.win_getid(fn.winnr(dir
 local debounce = function(func, timeout, max_delay, adjustment_factor)
 	local timer = uv.new_timer()
 	local last_call = -1
-	adjustment_factor = adjustment_factor or 4
+	adjustment_factor = adjustment_factor or 5
+	timeout = timeout or 120
+	max_delay = max_delay or 150
 
 	return function(step)
 		local now = uv.now()
@@ -80,7 +82,7 @@ M.increase_current_win_width = debounce(function(step)
 			if i > 1 then widths[i - 1].width = widths[i - 1].width + adjust_width end
 		end
 	end
-end, 120, 150)
+end)
 
 ---Decrease the width of the current window flexibly
 ---@param step uinteger The step of decreasing
@@ -97,7 +99,7 @@ M.decrease_current_win_width = debounce(function(step)
 		local left_win_id = winid("h")
 		api.nvim_win_set_width(left_win_id, api.nvim_win_get_width(left_win_id) + step)
 	end
-end, 120, 150)
+end)
 
 ---Decrease the height of the current window flexibly
 ---@param step uinteger The step of decreasing
@@ -118,7 +120,7 @@ M.decrease_current_win_height = debounce(function(step)
 		local left_win_id = winid("k")
 		api.nvim_win_set_height(left_win_id, api.nvim_win_get_height(left_win_id) + step)
 	end
-end, 120, 150)
+end)
 
 ---Increase the height of the current window flexibly
 ---@param step uinteger The step of increasing
@@ -164,6 +166,6 @@ M.increase_current_win_height = debounce(function(step)
 			if i > 1 then heights[i - 1].height = heights[i - 1].height + adjust_height end
 		end
 	end
-end, 120, 150)
+end)
 
 return M
