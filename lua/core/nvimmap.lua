@@ -115,11 +115,11 @@ vim.schedule(function() -- any maps should work after neovim open
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
 
 	--Resize Buffer
-	map("n", "<A-l>", function() require("utils.window").increase_win_width(1) end)
-	map("n", "<A-h>", function() require("utils.window").decrease_current_win_width(1) end, 7)
+	map("n", "<A-l>", function() require("utils.window").increase_current_win_width(1) end)
+	map("n", "<A-h>", function() require("utils.window").decrease_current_win_width(1) end)
 
-	map("n", "<A-k>", function() require("utils.window").decrease_current_win_height(1) end, 7)
-	map("n", "<A-j>", function() require("utils.window").increase_win_height(1) end, 7)
+	map("n", "<A-k>", function() require("utils.window").decrease_current_win_height(1) end)
+	map("n", "<A-j>", function() require("utils.window").increase_current_win_height(1) end)
 
 	--Make all windows (almost) equally high and wide
 	map("n", "=", "<C-W>=")

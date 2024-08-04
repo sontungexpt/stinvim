@@ -5,7 +5,10 @@ local M = {}
 
 local winid = function(direction) return direction and fn.win_getid(fn.winnr(direction)) or api.nvim_get_current_win() end
 
-M.increase_win_width = function(step)
+---Increase the width of the current window flexibly
+---
+---@param step uinteger The step of increasing
+M.increase_current_win_width = function(step)
 	vim.schedule(function()
 		local winnr = fn.winnr()
 		local win_width = api.nvim_win_get_width(0)
@@ -22,6 +25,8 @@ M.increase_win_width = function(step)
 	end)
 end
 
+---Decrease the width of the current window flexibly
+---@param step uinteger The step of decreasing
 M.decrease_current_win_width = function(step)
 	vim.schedule(function()
 		local win_width = api.nvim_win_get_width(0)
@@ -39,6 +44,8 @@ M.decrease_current_win_width = function(step)
 	end)
 end
 
+---Decrease the height of the current window flexibly
+---@param step uinteger The step of decreasing
 M.decrease_current_win_height = function(step)
 	vim.schedule(function()
 		local win_height = api.nvim_win_get_height(0)
@@ -60,6 +67,8 @@ M.decrease_current_win_height = function(step)
 	end)
 end
 
+---Increase the height of the current window flexibly
+---@param step uinteger The step of increasing
 M.increase_win_height = function(step)
 	vim.schedule(function()
 		local winnr = fn.winnr()
