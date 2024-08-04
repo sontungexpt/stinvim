@@ -115,71 +115,11 @@ vim.schedule(function() -- any maps should work after neovim open
 	map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
 
 	--Resize Buffer
-	map("n", "<A-l>", function()
-		local winnr = vim.fn.winnr()
-		if winnr == vim.fn.winnr("l") then
-			return ":vertical resize -1<CR>"
-		elseif winnr == vim.fn.winnr("h") then
-			return ":vertical resize +1<CR>"
-		elseif api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2 < vim.o.columns / 2 then
-			return ":vertical resize +1<CR>"
-		else
-			return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
-		end
-	end, 7)
-	map("n", "<A-h>", function()
-		local winnr = vim.fn.winnr()
-		if winnr == vim.fn.winnr("l") then
-			return ":vertical resize +1<CR>"
-		elseif winnr == vim.fn.winnr("h") then
-			return ":vertical resize -1<CR>"
-		else
-			local win_width = api.nvim_win_get_width(0)
-			if
-				win_width > vim.o.winminwidth
-				and api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2 > vim.o.columns / 2
-			then
-				return ":vertical resize -1<CR>"
-			end
-			return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
-		end
-	end, 7)
-	map("n", "<A-k>", function()
-		local winnr = vim.fn.winnr()
-		if winnr == vim.fn.winnr("j") then
-			return ":resize +1<CR>"
-		elseif winnr == vim.fn.winnr("k") then
-			return ":resize -1<CR>"
-		else
-			local win_height = api.nvim_win_get_height(0)
-			if
-				win_height > vim.o.winminheight
-				and api.nvim_win_get_position(0)[1] + win_height / 2
-					> (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
-			then
-				return ":resize -1<CR>"
-			end
-			return ":wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
-		end
-	end, 7)
-	map("n", "<A-j>", function()
-		local winnr = vim.fn.winnr()
-		if winnr == vim.fn.winnr("j") then
-			return ":resize -1<CR>"
-		elseif winnr == vim.fn.winnr("k") then
-			return ":resize +1<CR>"
-		else
-			local win_height = api.nvim_win_get_height(0)
-			if
-				win_height > vim.o.winminheight
-				and api.nvim_win_get_position(0)[1] + win_height / 2
-					< (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
-			then
-				return ":resize +1<CR>"
-			end
-			return ":wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
-		end
-	end, 7)
+	map("n", "<A-l>", function() require("utils.window").increase_win_width(1) end)
+	map("n", "<A-h>", function() require("utils.window").decrease_current_win_width(1) end, 7)
+
+	map("n", "<A-k>", function() require("utils.window").decrease_current_win_height(1) end, 7)
+	map("n", "<A-j>", function() require("utils.window").increase_win_height(1) end, 7)
 
 	--Make all windows (almost) equally high and wide
 	map("n", "=", "<C-W>=")
