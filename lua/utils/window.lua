@@ -57,8 +57,8 @@ M.decrease_current_win_width = function(step)
 			api.nvim_win_set_width(0, win_width + step)
 		elseif winnr == fn.winnr("h") then
 			api.nvim_win_set_width(0, win_width - step)
-		elseif win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
-			api.nvim_win_set_width(0, win_width - step)
+		elseif api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
+			if win_width > vim.o.winminwidth then api.nvim_win_set_width(0, win_width - step) end
 		else
 			local left_win_id = winid("h")
 			api.nvim_win_set_width(left_win_id, api.nvim_win_get_width(left_win_id) + step)
@@ -77,11 +77,16 @@ M.decrease_current_win_height = function(step)
 		elseif winnr == fn.winnr("k") then
 			api.nvim_win_set_height(0, win_height - step)
 		elseif
-			win_height > vim.o.winminheight
-			and api.nvim_win_get_position(0)[1] + win_height / 2
-				> (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
+			api.nvim_win_get_position(0)[1] + win_height / 2
+			> (
+					vim.o.lines
+					- vim.o.cmdheight
+					- (vim.o.laststatus ~= 0 and 1 or 0)
+					- (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)
+				)
+				/ 2
 		then
-			api.nvim_win_set_height(0, win_height - step)
+			if win_height > vim.o.winminheight then api.nvim_win_set_height(0, win_height - step) end
 		else
 			local left_win_id = winid("k")
 			api.nvim_win_set_height(left_win_id, api.nvim_win_get_height(left_win_id) + step)
