@@ -12,7 +12,16 @@ vim.schedule(function() -- any maps should work after neovim open
 	map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 7)
 
 	-- When you press i, automatically indent to the appropriate position
-	map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
+	-- map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
+	map("n", "i", function()
+		if not api.nvim_get_option_value("buftype", { buf = 0 }) and api.nvim_get_current_line() == "" then
+			local modified = api.nvim_get_option_value("modified", { buf = 0 })
+			api.nvim_input(api.nvim_replace_termcodes("_cc", true, true, true))
+			if not modified then vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1) end
+		else
+			api.nvim_command("startinsert")
+		end
+	end)
 
 	-- Delete empty lines without writing to registers
 	map("n", "dd", [[match(getline('.'), '^\s*$') != -1 ? '"_dd' : "dd"]], 7)
@@ -35,33 +44,43 @@ vim.schedule(function() -- any maps should work after neovim open
 	map("n", "<S-Tab>", "<<_")
 
 	-- Better escape by jj
-	local waiting = false
-	local first_pressed_time = 0
-	map({ "i", "c", "t" }, "j", function()
-		local mode = api.nvim_get_mode().mode
-		local now = uv.now()
-		if not waiting then
-			waiting = true
-			first_pressed_time = now
-		elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
-			waiting = false
-			if mode == "c" then
-				api.nvim_input("<esc>")
-				return ""
-			elseif mode == "t" then
-				return [[<bs><C-\><C-n>]]
-			end
-			return "<bs><esc>"
-		else -- waiting
-			first_pressed_time = now -- new waiting
-		end
+	do
+		local waiting = false
+		local first_pressed_time = 0
+		local modified = false
 
-		if mode == "c" then
-			api.nvim_feedkeys("j", "n", true)
-			return ""
-		end
-		return "j"
-	end, 7)
+		map({ "i", "c", "t" }, "j", function()
+			local mode = api.nvim_get_mode().mode
+			local now = uv.now()
+			if not waiting then
+				waiting = true
+				first_pressed_time = now
+			elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
+				waiting = false
+				if mode == "c" then
+					api.nvim_input("<esc>")
+					return ""
+				elseif mode == "t" then
+					return [[<bs><C-\><C-n>]]
+				end
+				api.nvim_feedkeys(api.nvim_replace_termcodes("<bs><esc>", true, true, true), "n", false)
+				if not modified then
+					vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1)
+				end
+				return ""
+			else -- waiting
+				first_pressed_time = now -- new waiting
+			end
+
+			if mode == "c" then
+				api.nvim_feedkeys("j", "n", true)
+				return ""
+			end
+
+			modified = api.nvim_get_option_value("modified", { buf = 0 })
+			return "j"
+		end, 7)
+	end
 
 	--Save file as the traditional way
 	map({ "n", "i", "v", "c" }, "<C-s>", "<cmd>w<cr>", 2)
@@ -98,19 +117,16 @@ vim.schedule(function() -- any maps should work after neovim open
 	--Resize Buffer
 	map("n", "<A-l>", function()
 		local winnr = vim.fn.winnr()
-		-- local num = api.nvim_win_get_number(0)
 		if winnr == vim.fn.winnr("l") then
 			return ":vertical resize -1<CR>"
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize +1<CR>"
 		else
-			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
-			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
-			if win_center_x < vim_center_x then
+			local win_width = api.nvim_win_get_width(0)
+			if win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
 				return ":vertical resize +1<CR>"
-			else
-				return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
 			end
+			return ":wincmd h<CR>|:vertical resize -1<CR>|:wincmd l<CR>"
 		end
 	end, 7)
 	map("n", "<A-h>", function()
@@ -120,13 +136,11 @@ vim.schedule(function() -- any maps should work after neovim open
 		elseif winnr == vim.fn.winnr("h") then
 			return ":vertical resize -1<CR>"
 		else
-			local vim_center_x = math.floor(api.nvim_get_option("columns") / 2)
-			local win_center_x = math.floor(api.nvim_win_get_position(0)[2] + api.nvim_win_get_width(0) / 2)
-			if win_center_x > vim_center_x then
+			local win_width = api.nvim_win_get_width(0)
+			if win_width > vim.o.winminwidth and api.nvim_win_get_position(0)[2] + win_width / 2 > vim.o.columns / 2 then
 				return ":vertical resize -1<CR>"
-			else
-				return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
 			end
+			return ":wincmd h<CR>|:vertical resize +1<CR>|:wincmd l<CR>"
 		end
 	end, 7)
 	map("n", "<A-k>", function()
@@ -136,13 +150,15 @@ vim.schedule(function() -- any maps should work after neovim open
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize -1<CR>"
 		else
-			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
-			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
-			if win_center_y > vim_center_y then
+			local win_height = api.nvim_win_get_height(0)
+			if
+				win_height > vim.o.winminheight
+				and api.nvim_win_get_position(0)[1] + win_height / 2
+					> (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
+			then
 				return ":resize -1<CR>"
-			else
-				return ":wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
 			end
+			return ":wincmd k<CR>|:resize +1<CR>|:wincmd j<CR>"
 		end
 	end, 7)
 	map("n", "<A-j>", function()
@@ -152,13 +168,15 @@ vim.schedule(function() -- any maps should work after neovim open
 		elseif winnr == vim.fn.winnr("k") then
 			return ":resize +1<CR>"
 		else
-			local vim_center_y = (api.nvim_get_option("lines") - api.nvim_get_option("cmdheight")) / 2
-			local win_center_y = math.floor(api.nvim_win_get_position(0)[1] + api.nvim_win_get_height(0) / 2)
-			if win_center_y < vim_center_y then
+			local win_height = api.nvim_win_get_height(0)
+			if
+				win_height > vim.o.winminheight
+				and api.nvim_win_get_position(0)[1] + win_height / 2
+					< (vim.o.lines - vim.o.cmdheight - (vim.o.laststatus ~= 0 and 1 or 0) - (vim.o.showtabline ~= 0 and #api.nvim_list_tabpages() > 1 and 1 or 0)) / 2
+			then
 				return ":resize +1<CR>"
-			else
-				return ":wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
 			end
+			return ":wincmd k<CR>|:resize -1<CR>|:wincmd j<CR>"
 		end
 	end, 7)
 
