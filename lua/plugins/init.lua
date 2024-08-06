@@ -75,8 +75,8 @@ local plugins = {
 	-- },
 
 	{
-		"sontungexpt/smart-resizing",
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/smart-resizing",
+		-- "sontungexpt/smart-resizing",
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/smart-resizing",
 	},
 
 	--------------------------------------------------- Syntax ---------------------------------------------------
@@ -273,6 +273,7 @@ local plugins = {
 
 	{
 		"iamcco/markdown-preview.nvim",
+		ft = "markdown",
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
 		build = function()
 			require("lazy").load { plugins = { "markdown-preview.nvim" } }
