@@ -20,6 +20,10 @@ local plugins = {
 		},
 	},
 	--------------------------------------------------- Theme ---------------------------------------------------
+	{
+		"sontungexpt/smart-resizing",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/smart-resizing",
+	},
 	---
 	{
 		-- "sontungexpt/witch",
