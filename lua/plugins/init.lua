@@ -21,6 +21,10 @@ local plugins = {
 		opts = {},
 	},
 
+	{
+		"sontungexpt/smart-resizing",
+	},
+
 	-- {
 	-- 	"akinsho/bufferline.nvim",
 	-- 	dependencies = {
