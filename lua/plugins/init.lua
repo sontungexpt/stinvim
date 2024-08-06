@@ -20,10 +20,6 @@ local plugins = {
 		},
 	},
 	--------------------------------------------------- Theme ---------------------------------------------------
-	{
-		"sontungexpt/smart-resizing",
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/smart-resizing",
-	},
 	---
 	{
 		-- "sontungexpt/witch",
@@ -77,6 +73,11 @@ local plugins = {
 	-- 	opts = require("config.bufferline"),
 	-- 	config = function(_, opts) require("bufferline").setup(opts) end,
 	-- },
+
+	{
+		"sontungexpt/smart-resizing",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/smart-resizing",
+	},
 
 	--------------------------------------------------- Syntax ---------------------------------------------------
 	{
