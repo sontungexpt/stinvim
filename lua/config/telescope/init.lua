@@ -6,8 +6,8 @@ local actions = require("telescope.actions")
 
 local options = {
 	extension_list = {
+		-- "fzf",
 		-- "media_files",
-		"fzy_native",
 		-- "projects",
 		-- "zoxide",
 		-- "neoclip",
@@ -107,9 +107,12 @@ local options = {
 		},
 	},
 	extensions = {
-		fzy_native = {
-			override_generic_sorter = true,
-			override_file_sorter = true,
+		fzf = {
+			-- NOTE: uncomment any option to override the default options
+			-- fuzzy = true, -- false will only do exact matching
+			-- override_generic_sorter = true, -- override the generic sorter
+			-- override_file_sorter = true, -- override the file sorter
+			-- case_mode = "smart_case", -- or "ignore_case" or "respect_case"
 		},
 		media_files = {
 			filetypes = { "png", "webp", "jpg", "jpeg", "webm", "pdf", "mp4" },
