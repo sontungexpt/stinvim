@@ -406,6 +406,7 @@ local plugins = {
 
 			-- extensions
 			-- "nvim-telescope/telescope-media-files.nvim",
+			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
 		},
 		opts = function() return require("config.telescope") end,
 		config = function(_, opts)

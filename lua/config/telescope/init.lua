@@ -6,7 +6,7 @@ local actions = require("telescope.actions")
 
 local options = {
 	extension_list = {
-		-- "fzf",
+		"fzf",
 		-- "media_files",
 		-- "projects",
 		-- "zoxide",
