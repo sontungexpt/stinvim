@@ -1,4 +1,5 @@
----@param bufnr integer @param ... string
+---@param bufnr integer
+---@param ... string
 ---@return string
 ---@diagnostic disable: unused-local
 ---@diagnostic disable-next-line: unused-function
