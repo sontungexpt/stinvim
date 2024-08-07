@@ -1,5 +1,8 @@
+-- Check if android or iphone device
+local is_mobile = vim.fn.isdirectory("/system") == 1 or vim.fn.isdirectory("/var/mobile")
+
 local options = {
-	ensure_installed = "all",
+	ensure_installed = not is_mobile and "all",
 	ignore_install = {
 		"comment", -- i don't need comment url highlight because i use url-open plugin
 	},
