@@ -1,4 +1,6 @@
-local options = {
+local options
+
+options = {
 	size = function(term) ---@type number|function
 		if term.direction == "horizontal" then
 			return 15
@@ -19,7 +21,7 @@ local options = {
 		local new_term_id = term_id
 		local pressed_time = 0
 
-		map1({ "n", "t" }, "<C-t>", function()
+		map1({ "n", "t" }, options.open_mapping, function()
 			if new_term_id ~= term_id and (vim.uv or vim.loop).now() - pressed_time < 1500 then
 				vim.defer_fn(function()
 					api.nvim_command(new_term_id .. "ToggleTerm")
