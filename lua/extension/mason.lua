@@ -186,7 +186,12 @@ local function MasonUninstall(package_names, cb, ui)
 		if valid_packages_size > 0 then
 			registry:on("package:uninstall:success", function(pkg)
 				local pkg_name = pkg.name
-				require("utils.notify").info("Mason: Uninstall package " .. pkg_name .. " completed", { title = "Mason" })
+				vim.defer_fn(
+					function()
+						require("utils.notify").info("Mason: Uninstall package " .. pkg_name .. " completed", { title = "Mason" })
+					end,
+					valid_packages_size * 500
+				)
 				valid_packages_size = valid_packages_size - 1
 				if type(cb) == "function" then cb(pkg_name, valid_packages_size == 0) end
 			end)
