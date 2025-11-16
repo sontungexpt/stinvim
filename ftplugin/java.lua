@@ -19,7 +19,7 @@ local jtest_path = mason_registry_get_package("java-test"):get_install_path()
 local uname = (vim.uv or vim.loop).os_uname().sysname
 uname = uname == "Linux" and "linux" or uname == "Darwin" and "mac" or "win"
 
-local root_dir = fs.root(0, { ".git", "pom.xml", "build.gradle" })
+local root_dir = fs.root(0, { ".git", "pom.xml", "build.gradle", "gradlew" })
 if not root_dir then return end
 
 local project_name = fs.basename(root_dir)
@@ -189,5 +189,8 @@ local config = {
 		},
 	},
 }
+
+-- terminal to check the hot reload in gradle project
+-- ./gradlew compileJava --continuous --parallel --build-cache --configuration-cache
 
 jdtls.start_or_attach(config)

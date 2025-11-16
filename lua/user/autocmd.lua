@@ -11,7 +11,8 @@ autocmd("VimEnter", {
 	desc = "Auto change directory to config folder - support for nvimconfig alias",
 })
 
-if vim.env.TERM == "alacritty" then
+local TERM = vim.env.TERM or "unknown"
+if TERM == "alacritty" or TERM == "ghostty" then
 	autocmd({ "VimEnter", "VimLeave", "FocusLost", "FocusGained" }, {
 		group = group,
 		desc = "Switch ibus engine",

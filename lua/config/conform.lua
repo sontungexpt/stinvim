@@ -28,6 +28,8 @@ local options = {
 
 		go = { "goimports", "gofumpt" },
 
+		kt = { "ktlint" },
+
 		-- webdev
 		javascript = biome_prettier,
 		typescript = biome_prettier,

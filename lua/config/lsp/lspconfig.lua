@@ -6,6 +6,11 @@ local on_init = default.on_init
 
 local lsp_servers = {
 
+	-- kotlin
+	-- {
+	-- 	name = "kotlin_language_server",
+	-- },
+
 	-- python
 	{
 		name = "pylyzer",
@@ -87,6 +92,9 @@ local lsp_servers = {
 		config = {
 			settings = {
 				Lua = {
+					runtime = {
+						version = "LuaJIT",
+					},
 					diagnostics = {
 						globals = { "vim" },
 					},
@@ -95,6 +103,7 @@ local lsp_servers = {
 							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
 							[vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
 							[vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy"] = true,
+							["${3rd}/luv/library"] = true,
 						},
 						maxPreload = 100000,
 						preloadFileSize = 10000,

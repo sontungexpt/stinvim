@@ -2,6 +2,20 @@ local require = require
 
 local plugins = {
 	--------------------------------------------------- Tools ---------------------------------------------------
+	-- {
+	-- 	"folke/lazydev.nvim",
+	-- 	ft = "lua",
+	-- 	opts = {
+	-- 		library = {
+	-- 			{
+	-- 				oath = "{3rd/luv/library}",
+	-- 				words = {
+	-- 					"vim%.uv",
+	-- 				},
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
 	{
 		"kawre/leetcode.nvim",
 		build = ":TSUpdate html",
@@ -19,7 +33,30 @@ local plugins = {
 			-- configuration goes here
 		},
 	},
-	--------------------------------------------------- Theme ---------------------------------------------------
+	------------------------------------------------- Theme ---------------------------------------------------
+	{
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/witch-line",
+		-- event = "UIEnter",
+		dependencies = {
+			"nvim-tree/nvim-web-devicons",
+		},
+		event = "User FilePostLazyLoaded",
+		opts = {},
+	},
+	{
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/bim.nvim",
+		branch = "develop",
+		event = "InsertEnter",
+		opts = {},
+	},
+	{
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/vietnamese.nvim",
+		-- branch = "develop",
+		priority = 1000,
+		lazy = false,
+		opts = {},
+	},
+
 	---
 	{
 		-- "sontungexpt/witch",
@@ -52,17 +89,17 @@ local plugins = {
 	-- 	config = function(_, opts) require("witch-line").setup(opts) end,
 	-- },
 
-	{
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline",
-		-- event = "UIEnter",
-		"sontungexpt/sttusline",
-		branch = "develop",
-		dependencies = {
-			"nvim-tree/nvim-web-devicons",
-		},
-		event = "User FilePostLazyLoaded",
-		opts = {},
-	},
+	-- {
+	-- 	-- dir = "/home/stilux/Data/Workspace/neovim-plugins/sttusline",
+	-- 	-- event = "UIEnter",
+	-- 	"sontungexpt/sttusline",
+	-- 	branch = "develop",
+	-- 	dependencies = {
+	-- 		"nvim-tree/nvim-web-devicons",
+	-- 	},
+	-- 	event = "User FilePostLazyLoaded",
+	-- 	opts = {},
+	-- },
 
 	-- {
 	-- 	"akinsho/bufferline.nvim",
@@ -349,36 +386,31 @@ local plugins = {
 	},
 
 	{
-		"zbirenbaum/copilot.lua",
-		-- 	dir = "/home/stilux/Data/Workspace/neovim-plugins/copilot.lua",
-		cmd = "Copilot",
+		"Exafunction/windsurf.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"hrsh7th/nvim-cmp",
+		},
+		cmd = "Codeium",
 		event = "InsertEnter",
-		opts = function() return require("config.copilot") end,
-		config = function(_, opts)
-			require("copilot").setup(opts)
-			vim.schedule(function()
-				if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.config/github-copilot/hosts.json") == 0 then
-					vim.notify("Waiting for Copilot to authenticate", vim.log.levels.INFO, { title = "Copilot" })
-					vim.api.nvim_command("Copilot auth")
-				end
-			end)
-		end,
+		opts = function() return require("config.windsurf") end,
+		config = function(_, opts) require("codeium").setup(opts) end,
 	},
 
 	-- {
-	-- 	"Exafunction/codeium.vim",
-	-- 	keys = "<A-CR>",
+	-- 	"zbirenbaum/copilot.lua",
+	-- 	-- 	dir = "/home/stilux/Data/Workspace/neovim-plugins/copilot.lua",
+	-- 	cmd = "Copilot",
 	-- 	event = "InsertEnter",
-	-- 	cmd = "Codeium",
-	-- 	config = function()
-	-- 		if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.codeium/config.json") == 0 then
-	-- 			vim.api.nvim_command("Codeium Auth")
-	-- 		end
-
-	-- 		vim.g.codeium_no_map_tab = true
-	-- 		local map = require("utils.mapper").map
-	-- 		map("i", "<A-Tab>", "codeium#Accept()", 7)
-	-- 		map({ "n", "i" }, "<A-CR>", "codeium#Chat()", 7)
+	-- 	opts = function() return require("config.copilot") end,
+	-- 	config = function(_, opts)
+	-- 		require("copilot").setup(opts)
+	-- 		vim.schedule(function()
+	-- 			if vim.fn.filereadable(vim.fn.expand("$HOME") .. "/.config/github-copilot/hosts.json") == 0 then
+	-- 				vim.notify("Waiting for Copilot to authenticate", vim.log.levels.INFO, { title = "Copilot" })
+	-- 				vim.api.nvim_command("Copilot auth")
+	-- 			end
+	-- 		end)
 	-- 	end,
 	-- },
 
@@ -492,7 +524,7 @@ local plugins = {
 
 	{
 		"sontungexpt/better-diagnostic-virtual-text",
-		dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
 	},
 
 	{
@@ -600,6 +632,7 @@ local plugins = {
 				"rcarriga/nvim-dap-ui",
 				dependencies = {
 					"nvim-neotest/nvim-nio",
+					"jbyuki/one-small-step-for-vimkind",
 				},
 				main = "dapui",
 				opts = function() require("config.dap.dapui") end,

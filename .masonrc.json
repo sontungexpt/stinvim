@@ -33,5 +33,7 @@
 	"yaml-language-server",
 	"gopls",
 	"goimports",
-	"gofumpt"
+	"gofumpt",
+	"kotlin-language-server",
+	"ktlint"
 ]

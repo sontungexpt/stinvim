@@ -31,6 +31,9 @@ g.loaded_netrwPlugin = 1
 
 g.skip_ts_context_commentstring_module = true
 
+-- disable text keymap
+-- o.keymap = "vietnamese-telex_utf-8"
+
 -- cmp
 o.completeopt = "menu,menuone,noselect"
 

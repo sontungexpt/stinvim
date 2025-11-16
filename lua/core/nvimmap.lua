@@ -43,13 +43,14 @@ vim.schedule(function() -- any maps should work after neovim open
 	map("n", "<Tab>", ">>_")
 	map("n", "<S-Tab>", "<<_")
 
+	map({ "i" }, "jk", "<esc>")
+
 	-- Better escape by jj
 	do
 		local waiting = false
 		local first_pressed_time = 0
 		local modified = false
-
-		map({ "i", "c", "t" }, "j", function()
+		map({ "c", "t" }, "j", function()
 			local mode = api.nvim_get_mode().mode
 			local now = uv.now()
 			if not waiting then
