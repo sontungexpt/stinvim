@@ -175,6 +175,35 @@ vim.schedule(function() -- any maps should work after neovim open
 			map1("t", "<C-w>", [[<C-\><C-n><C-w>]])
 		end,
 	})
+
+	autocmd("CmdlineEnter", {
+		once = true,
+		desc = "Make autoclose brackets, quotes in command mode",
+		callback = function()
+			-- local map = require("utils.mapper").map
+			local bracket_pairs = {
+				{ "(", ")" },
+				{ "[", "]" },
+				{ "{", "}" },
+				{ "<", ">" },
+				{ "'", "'" },
+				{ '"', '"' },
+				{ "`", "`" },
+			}
+
+			local feedks = api.nvim_feedkeys
+			local replace_termcodes = api.nvim_replace_termcodes
+
+			for _, pair in ipairs(bracket_pairs) do
+				map(
+					"c",
+					pair[1],
+					function() feedks(replace_termcodes(pair[1] .. pair[2] .. "<left>", true, true, true), "n", true) end,
+					7
+				)
+			end
+		end,
+	})
 end)
 
 autocmd({ "BufWinEnter", "CmdwinEnter" }, {
