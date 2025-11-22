@@ -118,6 +118,11 @@ for _, server in ipairs(lsp_servers) do
 	local config = server.config or {}
 	config.on_init = on_init
 	config.on_attach = config.on_attach or on_attach
-	config.capabilities = config.capabilities or capabilities
+	capabilities = vim.tbl_deep_extend(
+		"force",
+		config.capabilities or capabilities,
+		require("blink.cmp").get_lsp_capabilities({}, false)
+	)
+	config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
 	lspconfig[server.name].setup(config)
 end

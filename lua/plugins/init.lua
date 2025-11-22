@@ -17,6 +17,24 @@ local plugins = {
 	-- 	},
 	-- },
 	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = { "nvim-tree/nvim-web-devicons" },
+	},
+	{
+		"rebelot/heirline.nvim",
+		dependencies = { "Zeioth/heirline-components.nvim" },
+		-- config = function(_, opts)
+		-- 	local heirline = require("heirline")
+		-- 	local heirline_components = require("heirline-components.all")
+
+		-- 	-- Setup
+		-- 	heirline_components.init.subscribe_to_events()
+		-- 	heirline.load_colors(heirline_components.hl.get_colors())
+		-- 	heirline.setup(opts)
+		-- end,
+	},
+
+	{
 		"kawre/leetcode.nvim",
 		build = ":TSUpdate html",
 		lazy = "leetcode.nvim" ~= vim.fn.argv()[1],
@@ -36,12 +54,17 @@ local plugins = {
 	------------------------------------------------- Theme ---------------------------------------------------
 	{
 		dir = "/home/stilux/Data/Workspace/neovim-plugins/witch-line",
-		-- event = "UIEnter",
+		event = "UIEnter",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
-		event = "User FilePostLazyLoaded",
-		opts = {},
+		opts = {
+			auto_theme = false,
+			-- cache = {
+			-- 	-- func_strip = true,
+			-- 	enabled = false,
+			-- },
+		},
 	},
 	{
 		dir = "/home/stilux/Data/Workspace/neovim-plugins/bim.nvim",
@@ -51,9 +74,8 @@ local plugins = {
 	},
 	{
 		dir = "/home/stilux/Data/Workspace/neovim-plugins/vietnamese.nvim",
+		event = "InsertEnter",
 		-- branch = "develop",
-		priority = 1000,
-		lazy = false,
 		opts = {},
 	},
 
@@ -243,6 +265,24 @@ local plugins = {
 	},
 
 	-- {
+	-- 	"saghen/blink.pairs",
+	-- 	event = { "InsertEnter", "CmdlineEnter" },
+	-- 	version = "*", -- (recommended) only required with prebuilt binaries
+
+	-- 	-- download prebuilt binaries from github releases
+	-- 	dependencies = "saghen/blink.download",
+	-- 	-- OR build from source, requires nightly:
+	-- 	-- https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+	-- 	-- build = 'cargo build --release',
+	-- 	-- If you use nix, you can build from source using latest nightly rust with:
+	-- 	-- build = 'nix run .#build-plugin',
+
+	-- 	--- @module 'blink.pairs'
+	-- 	--- @type blink.pairs.Config
+	-- 	opts = {},
+	-- },
+
+	-- {
 	-- 	"gelguy/wilder.nvim",
 	-- 	dependencies = {
 	-- 		"romgrk/fzy-lua-native",
@@ -282,6 +322,29 @@ local plugins = {
 			}
 		end,
 	},
+	-- {
+	-- 	"saghen/blink.indent",
+	-- 	event = { "CursorHold", "CursorMoved" },
+	-- 	--- @module 'blink.indent'
+	-- 	--- @type blink.indent.Config
+	-- 	opts = {
+	-- 		static = {
+	-- 			char = "│",
+	-- 		},
+	-- 		scope = {
+	-- 			char = "│",
+	-- 			highlights = {
+	-- 				"RainbowDelimiterRed",
+	-- 				"RainbowDelimiterYellow",
+	-- 				"RainbowDelimiterBlue",
+	-- 				"RainbowDelimiterOrange",
+	-- 				"RainbowDelimiterGreen",
+	-- 				"RainbowDelimiterViolet",
+	-- 				"RainbowDelimiterCyan",
+	-- 			},
+	-- 		},
+	-- 	},
+	-- },
 
 	{
 		"brenoprata10/nvim-highlight-colors",
@@ -386,7 +449,8 @@ local plugins = {
 	},
 
 	{
-		"Exafunction/windsurf.nvim",
+		dir = "/home/stilux/Data/Workspace/neovim-plugins/windsurf.nvim",
+		-- "Exafunction/windsurf.nvim",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
 			"hrsh7th/nvim-cmp",
@@ -591,29 +655,45 @@ local plugins = {
 		opts = function() return require("config.mason") end,
 	},
 
-	{
-		"hrsh7th/nvim-cmp",
-		event = "InsertEnter",
-		dependencies = {
-			{
-				-- snippet plugin
-				"L3MON4D3/LuaSnip",
-				build = "make install_jsregexp",
-				dependencies = { "rafamadriz/friendly-snippets" },
-				config = function() require("config.cmp.LuaSnip") end,
-			},
+	-- {
+	-- 	"hrsh7th/nvim-cmp",
+	-- 	event = "InsertEnter",
+	-- 	dependencies = {
+	-- 		{
+	-- 			-- snippet plugin
+	-- 			"L3MON4D3/LuaSnip",
+	-- 			build = "make install_jsregexp",
+	-- 			dependencies = { "rafamadriz/friendly-snippets" },
+	-- 			config = function() require("config.cmp.LuaSnip") end,
+	-- 		},
 
-			-- cmp sources plugins
-			{
-				"hrsh7th/cmp-path",
-				"hrsh7th/cmp-buffer",
-				"hrsh7th/cmp-nvim-lsp",
-				"hrsh7th/cmp-nvim-lua",
-				"saadparwaiz1/cmp_luasnip",
-				"SergioRibera/cmp-dotenv",
-			},
-		},
-		config = function() require("config.cmp") end,
+	-- 		-- cmp sources plugins
+	-- 		{
+	-- 			"hrsh7th/cmp-path",
+	-- 			"hrsh7th/cmp-buffer",
+	-- 			"hrsh7th/cmp-nvim-lsp",
+	-- 			"hrsh7th/cmp-nvim-lua",
+	-- 			"saadparwaiz1/cmp_luasnip",
+	-- 			"SergioRibera/cmp-dotenv",
+	-- 		},
+	-- 	},
+	-- 	config = function() require("config.cmp") end,
+	-- },
+	{
+		"saghen/blink.cmp",
+		-- optional: provides snippets for the snippet source
+		dependencies = { "rafamadriz/friendly-snippets" },
+		-- use a release tag to download pre-built binaries
+		version = "1.*",
+		-- AND/OR build from source, requires nightly: https://rust-lang.github.io/rustup/concepts/channels.html#working-with-nightly-rust
+		-- build = 'cargo build --release',
+		-- If you use nix, you can build from source using latest nightly rust with:
+		-- build = 'nix run .#build-plugin',
+
+		---@module 'blink.cmp'
+		---@type blink.cmp.Config
+		opts = require("config.blink"),
+		opts_extend = { "sources.default" },
 	},
 
 	{
