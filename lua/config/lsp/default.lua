@@ -19,7 +19,9 @@ vim.diagnostic.config {
 	underline = true,
 	severity_sort = true,
 	update_in_insert = true,
+	-- virtual_text = true,
 	virtual_text = false,
+	virtual_lines = { current_line = true },
 	float = {
 		source = "if_many",
 	},
@@ -36,8 +38,6 @@ handlers["textDocument/hover"] = lsp.with(handlers.hover, {
 })
 
 local capabilities = lsp.protocol.make_client_capabilities()
-	or require("lspconfig").util.default_config.capabilities
-	or require("cmp_nvim_lsp").default_capabilities()
 
 capabilities.textDocument.completion.completionItem = {
 	snippetSupport = true,
@@ -72,10 +72,10 @@ capabilities.textDocument.foldingRange = {
 -- end
 
 M.on_attach = function(client, bufnr)
-	require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
-		inline = true,
-		ui = { above = true },
-	})
+	-- require("better-diagnostic-virtual-text.api").setup_buf(bufnr, {
+	-- 	inline = true,
+	-- 	ui = { above = true },
+	-- })
 end
 M.capabilities = capabilities
 

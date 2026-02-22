@@ -9,5 +9,6 @@ vim.filetype.add {
 		wsd = "plantuml",
 		pu = "plantuml",
 		puml = "plantuml",
+		http = "http",
 	},
 }

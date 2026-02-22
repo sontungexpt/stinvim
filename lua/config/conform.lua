@@ -24,9 +24,12 @@ local options = {
 
 		python = { "ruff_format", "autopep8", stop_after_first = true },
 
-		xml = { "xmlformat" },
+		xml = { "xmlformatter" },
 
 		go = { "goimports", "gofumpt" },
+
+		http = { "kulala-fmt" },
+		rest = { "kulala-fmt" },
 
 		kt = { "ktlint" },
 

@@ -3,18 +3,16 @@ if not ok then return end
 
 local vim = vim
 local fn, fs = vim.fn, vim.fs
-local mason_registry_get_package = require("mason-registry").get_package
 
-local jdtls_path = mason_registry_get_package("jdtls"):get_install_path()
-
-local jar_path = fn.glob(jdtls_path .. "/plugins/org.eclipse.equinox.launcher_*.jar", true, true)[1]
-if not jar_path then
-	require("utils.notify").error("JDTLS not found")
+local MASON_PACKAGES_DIR_PATH = require("mason.settings").current.install_root_dir .. "/packages"
+local JDTLS_PATH = MASON_PACKAGES_DIR_PATH .. "/jdtls"
+local JAR_PATH = fn.glob(JDTLS_PATH .. "/plugins/org.eclipse.equinox.launcher_*.jar", true, true)[1]
+if not JAR_PATH then
+	require("utils.notify").error("jdtls not found")
 	return
 end
-
-local jdebug_path = mason_registry_get_package("java-debug-adapter"):get_install_path()
-local jtest_path = mason_registry_get_package("java-test"):get_install_path()
+local JDEBUG_PATH = MASON_PACKAGES_DIR_PATH .. "/java-debug-adapter"
+local JTEST_PATH = MASON_PACKAGES_DIR_PATH .. "/java-test"
 
 local uname = (vim.uv or vim.loop).os_uname().sysname
 uname = uname == "Linux" and "linux" or uname == "Darwin" and "mac" or "win"
@@ -29,9 +27,8 @@ if fn.isdirectory(workspace_dir) == 0 then fn.mkdir(workspace_dir, "p") end
 
 local function find_java()
 	local java_priority_paths = {
-		"/usr/lib/jvm/java-17-openjdk/bin/java",
-		"/usr/lib/jvm/java-11-openjdk/bin/java",
-		"/usr/lib/jvm/java-8-openjdk/bin/java",
+		"/usr/lib/jvm/java-21-openjdk/bin/java",
+		"/usr/lib/jvm/java-23-openjdk/bin/java",
 	}
 	for i, path in ipairs(java_priority_paths) do
 		if fn.filereadable(path) == 1 then return path, {
@@ -57,13 +54,13 @@ local extendedClientCapabilities = jdtls.extendedClientCapabilities
 extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
 local bundles = {}
-if jdebug_path ~= "" then
+if JDEBUG_PATH ~= "" then
 	vim.list_extend(
 		bundles,
-		fn.glob(jdebug_path .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true)
+		fn.glob(JDEBUG_PATH .. "/extension/server/com.microsoft.java.debug.plugin-*.jar", true, true)
 	)
 end
-if jtest_path ~= "" then vim.list_extend(bundles, fn.glob(jtest_path .. "/extension/server/*.jar", true, true)) end
+if JTEST_PATH ~= "" then vim.list_extend(bundles, fn.glob(JTEST_PATH .. "/extension/server/*.jar", true, true)) end
 
 local config = {
 	cmd = {
@@ -73,7 +70,7 @@ local config = {
 		"-Declipse.product=org.eclipse.jdt.ls.core.product",
 		"-Dlog.protocol=true",
 		"-Dlog.level=ALL",
-		"-javaagent:" .. jdtls_path .. "/lombok.jar",
+		"-javaagent:" .. JDTLS_PATH .. "/lombok.jar",
 		"-Xmx1g",
 		"--add-modules=ALL-SYSTEM",
 		"--add-opens",
@@ -81,13 +78,19 @@ local config = {
 		"--add-opens",
 		"java.base/java.lang=ALL-UNNAMED",
 		"-jar",
-		jar_path,
+		JAR_PATH,
 		"-configuration",
-		jdtls_path .. "/config_" .. uname,
+		JDTLS_PATH .. "/config_" .. uname,
 		"-data",
 		workspace_dir,
 	},
-	capabilities = require("config.lsp.default").capabilities,
+	capabilities = require("blink.cmp").get_lsp_capabilities(
+		vim.tbl_deep_extend(
+			"force",
+			require("config.lsp.default").capabilities,
+			require("lsp-file-operations").default_capabilities()
+		)
+	),
 	on_attach = function(client, bufnr)
 		jdtls.setup_dap { hotcodereplace = "auto" }
 		require("jdtls.dap").setup_dap_main_class_configs()
@@ -125,10 +128,10 @@ local config = {
 			},
 			format = {
 				enabled = true,
-				settings = {
-					url = fn.stdpath("config") .. "/lang-servers/intellij-java-google-style.xml",
-					profile = "GoogleStyle",
-				},
+				-- settings = {
+				-- 	url = fn.stdpath("config") .. "/lang-servers/intellij-java-google-style.xml",
+				-- 	profile = "GoogleStyle",
+				-- },
 			},
 			completion = {
 				favoriteStaticMembers = {

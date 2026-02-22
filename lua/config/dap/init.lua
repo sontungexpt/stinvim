@@ -31,17 +31,13 @@ if ok then
 	end
 end
 
-local function get_bin_path(adapter_name, custom_path)
-	return require("mason-registry").get_package(adapter_name):get_install_path() .. "/" .. (custom_path or adapter_name)
-end
-
 dap.adapters.codelldb = {
 	type = "server",
 	host = "127.0.0.1",
 	port = 13000,
 	executable = {
 		-- CHANGE THIS to your path!
-		command = get_bin_path("codelldb"),
+		command = vim.fn.exepath("codelldb"),
 		args = { "--port", 13000 },
 	},
 }

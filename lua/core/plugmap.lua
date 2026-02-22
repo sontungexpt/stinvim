@@ -6,6 +6,10 @@ vim.schedule(function()
 	local map = require("utils.mapper").map
 	local load_mod = require("utils").load_mod
 
+	-------------------------------- kulala ------------------------------
+	vim.api.nvim_create_user_command("KulalaRun", function(args) require("kulala").run() end, {})
+	map("n", "<leader>kr", "<cmd>KulalaRun<cr>", "Kulala run")
+
 	------------------------------ Conform ------------------------------
 	vim.api.nvim_create_user_command("ConformFormat", function(args)
 		local range = nil

@@ -2,6 +2,7 @@ local options = {
 	ensure_installed = "all",
 	ignore_install = {
 		"comment", -- i don't need comment url highlight because i use url-open plugin
+		"ipkg",
 	},
 	highlight = {
 		enable = true,

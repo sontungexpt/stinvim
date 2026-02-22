@@ -17,22 +17,39 @@ local plugins = {
 	-- 	},
 	-- },
 	{
+		"mistweaverco/kulala.nvim",
+		-- cmd = "KulalaRun",
+		ft = { "http", "rest" },
+		opts = {
+			ui = {
+				-- display mode: possible values: "split", "float"
+				--
+				display_mode = "float",
+			},
+			-- your configuration comes here
+			-- global_keymaps = false,
+			-- global_keymaps_prefix = "<leader>R",
+			-- kulala_keymaps_prefix = "",
+		},
+	},
+	{
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
-	{
-		"rebelot/heirline.nvim",
-		dependencies = { "Zeioth/heirline-components.nvim" },
-		-- config = function(_, opts)
-		-- 	local heirline = require("heirline")
-		-- 	local heirline_components = require("heirline-components.all")
+	{ "catppuccin/nvim", name = "catppuccin" },
+	-- {
+	-- 	"rebelot/heirline.nvim",
+	-- 	dependencies = { "Zeioth/heirline-components.nvim" },
+	-- 	-- config = function(_, opts)
+	-- 	-- 	local heirline = require("heirline")
+	-- 	-- 	local heirline_components = require("heirline-components.all")
 
-		-- 	-- Setup
-		-- 	heirline_components.init.subscribe_to_events()
-		-- 	heirline.load_colors(heirline_components.hl.get_colors())
-		-- 	heirline.setup(opts)
-		-- end,
-	},
+	-- 	-- 	-- Setup
+	-- 	-- 	heirline_components.init.subscribe_to_events()
+	-- 	-- 	heirline.load_colors(heirline_components.hl.get_colors())
+	-- 	-- 	heirline.setup(opts)
+	-- 	-- end,
+	-- },
 
 	{
 		"kawre/leetcode.nvim",
@@ -53,8 +70,9 @@ local plugins = {
 	},
 	------------------------------------------------- Theme ---------------------------------------------------
 	{
-		dir = "/home/stilux/Data/Workspace/neovim-plugins/witch-line",
-		event = "UIEnter",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/witch-line",
+		"sontungexpt/witch-line",
+		lazy = false,
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
 		},
@@ -62,18 +80,18 @@ local plugins = {
 			auto_theme = false,
 			-- cache = {
 			-- 	-- func_strip = true,
-			-- 	enabled = false,
+			-- 	-- enabled = true,
 			-- },
 		},
 	},
 	{
-		dir = "/home/stilux/Data/Workspace/neovim-plugins/bim.nvim",
-		branch = "develop",
-		event = "InsertEnter",
-		opts = {},
-	},
-	{
 		dir = "/home/stilux/Data/Workspace/neovim-plugins/vietnamese.nvim",
+		dependencies = {
+			{
+				dir = "/home/stilux/Data/Workspace/neovim-plugins/bim.nvim",
+				opts = {},
+			},
+		},
 		event = "InsertEnter",
 		-- branch = "develop",
 		opts = {},
@@ -329,6 +347,7 @@ local plugins = {
 	-- 	--- @type blink.indent.Config
 	-- 	opts = {
 	-- 		static = {
+	--        enabled = false,
 	-- 			char = "│",
 	-- 		},
 	-- 		scope = {
@@ -448,17 +467,45 @@ local plugins = {
 		end,
 	},
 
+	-- {
+	-- 	-- dir = "/home/stilux/Data/Workspace/neovim-plugins/windsurf.nvim",
+	-- 	"sontungexpt/windsurf.nvim",
+	-- 	dependencies = {
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		"hrsh7th/nvim-cmp",
+	-- 	},
+	-- 	cmd = "Codeium",
+	-- 	event = "InsertEnter",
+	-- 	opts = function() return require("config.windsurf") end,
+	-- 	config = function(_, opts) require("codeium").setup(opts) end,
+	-- },
+
+	-- add this to the file where you setup your other plugins:
 	{
-		dir = "/home/stilux/Data/Workspace/neovim-plugins/windsurf.nvim",
-		-- "Exafunction/windsurf.nvim",
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"hrsh7th/nvim-cmp",
-		},
-		cmd = "Codeium",
+		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/neocodeium",
+		"monkoose/neocodeium",
 		event = "InsertEnter",
-		opts = function() return require("config.windsurf") end,
-		config = function(_, opts) require("codeium").setup(opts) end,
+		cmd = "NeoCodeium",
+		config = function()
+			local neocodeium = require("neocodeium")
+			vim.keymap.set("i", "<A-Tab>", neocodeium.accept)
+			local opts = {
+				filetypes = {
+					TelescopePrompt = false,
+					["dap-repl"] = false,
+				},
+			}
+
+			local ok_blink, blink = pcall(require, "blink.cmp")
+			if ok_blink then
+				vim.api.nvim_create_autocmd("User", {
+					pattern = "BlinkCmpMenuOpen",
+					callback = neocodeium.clear,
+				})
+				opts.filter = function() return not blink.is_visible() end
+			end
+			neocodeium.setup(opts)
+		end,
 	},
 
 	-- {
@@ -483,6 +530,17 @@ local plugins = {
 		"nvim-tree/nvim-tree.lua",
 		dependencies = {
 			"nvim-tree/nvim-web-devicons",
+			{
+				"antosha417/nvim-lsp-file-operations",
+				dependencies = {
+					"nvim-lua/plenary.nvim",
+					-- Uncomment whichever supported plugin(s) you use
+					-- "nvim-tree/nvim-tree.lua",
+					-- "nvim-neo-tree/neo-tree.nvim",
+					-- "simonmclean/triptych.nvim"
+				},
+				opts = {},
+			},
 		},
 		cmd = {
 			"NvimTreeToggle",
@@ -582,14 +640,15 @@ local plugins = {
 	--------------------------------------------------- LSP ---------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
+		-- dependencies = {},
 		event = "User FilePostLazyLoaded",
 		config = function() require("config.lsp.lspconfig") end,
 	},
 
-	{
-		"sontungexpt/better-diagnostic-virtual-text",
-		-- dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
-	},
+	-- {
+	-- 	"sontungexpt/better-diagnostic-virtual-text",
+	-- 	-- dir = "/home/stilux/Data/Workspace/neovim-plugins/better-diagnostic-virtual-text",
+	-- },
 
 	{
 		-- config is in ftplugin/java.lua
@@ -690,10 +749,9 @@ local plugins = {
 		-- If you use nix, you can build from source using latest nightly rust with:
 		-- build = 'nix run .#build-plugin',
 
-		---@module 'blink.cmp'
-		---@type blink.cmp.Config
-		opts = require("config.blink"),
+		opts = function() return require("config.blink") end,
 		opts_extend = { "sources.default" },
+		event = { "InsertEnter", "CmdlineEnter" },
 	},
 
 	{

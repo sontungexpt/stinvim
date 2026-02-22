@@ -1,4 +1,5 @@
-return {
+---@type blink.cmp.Config
+local options = {
 	-- 'default' (recommended) for mappings similar to built-in completions (C-y to accept)
 	-- 'super-tab' for mappings similar to vscode (tab to accept)
 	-- 'enter' for enter to accept
@@ -34,8 +35,11 @@ return {
 
 	-- (Default) Only show the documentation popup when manually triggered
 	completion = {
-		documentation = { auto_show = true },
+		documentation = {
+			auto_show = true,
+		},
 		menu = {
+			-- auto_show = function(ctx) return ctx.mode ~= "default" end,
 			draw = {
 				components = {
 					-- customize the drawing of kind icons
@@ -88,3 +92,5 @@ return {
 
 	signature = { enabled = true },
 }
+
+return options

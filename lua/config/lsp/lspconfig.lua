@@ -1,4 +1,3 @@
-local lspconfig = require("lspconfig")
 local default = require("config.lsp.default")
 local on_attach = default.on_attach
 local capabilities = default.capabilities
@@ -7,9 +6,9 @@ local on_init = default.on_init
 local lsp_servers = {
 
 	-- kotlin
-	-- {
-	-- 	name = "kotlin_language_server",
-	-- },
+	{
+		name = "kotlin_language_server",
+	},
 
 	-- python
 	{
@@ -118,11 +117,13 @@ for _, server in ipairs(lsp_servers) do
 	local config = server.config or {}
 	config.on_init = on_init
 	config.on_attach = config.on_attach or on_attach
-	capabilities = vim.tbl_deep_extend(
-		"force",
-		config.capabilities or capabilities,
-		require("blink.cmp").get_lsp_capabilities({}, false)
+	config.capabilities = require("blink.cmp").get_lsp_capabilities(
+		vim.tbl_deep_extend(
+			"force",
+			config.capabilities or capabilities,
+			require("lsp-file-operations").default_capabilities()
+		)
 	)
-	config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
-	lspconfig[server.name].setup(config)
+	vim.lsp.config(server.name, config)
+	vim.lsp.enable(server.name)
 end
