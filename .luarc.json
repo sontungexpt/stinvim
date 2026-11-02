@@ -1,3 +1,29 @@
 {
-  "diagnostics.disable": ["undefined-field", "different-requires"]
+  "Lua": {
+    "runtime": {
+      "version": "LuaJIT",
+      "path": "?.lua;?/init.lua"
+    },
+    "diagnostics": {
+      "globals": ["vim"],
+      "disable": ["different-requires", "trailing-space"],
+      "neededFileStatus": {
+        "codestyle-check": "None"
+      }
+    },
+    "workspace": {
+      "library": [
+        "${3rd}/luv/library",
+        "/usr/share/nvim/runtime/lua",
+        "/usr/share/nvim/runtime/lua/vim/lsp",
+        "/home/stilux/.local/share/nvim/lazy/lazy.nvim/lua/lazy"
+      ],
+      "maxPreload": 100000,
+      "preloadFileSize": 10000,
+      "checkThirdParty": false
+    },
+    "telemetry": {
+      "enable": false
+    }
+  }
 }

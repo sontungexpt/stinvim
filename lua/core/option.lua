@@ -1,7 +1,7 @@
 local vim = vim
 local opt, o, g, fn = vim.opt, vim.o, vim.g, vim.fn
 
--- Disable all providers by default, If we need a provider we can enable it by comment the line
+-- Disable all providers by default
 g.loaded_node_provider = 0
 g.loaded_perl_provider = 0
 g.loaded_python3_provider = 0
@@ -64,30 +64,19 @@ o.relativenumber = false
 -- o.numberwidth = 2
 -- o.cmdheight = 1 -- default
 
---Encoding
-o.encoding = "utf-8"
-o.mouse = fn.isdirectory("/system") == 1 and "v" or "a" -- Enable mouse support on android system
-o.mousemoveevent = true
-
--- o.incsearch = true -- default
--- o.hlsearch = true -- default
-
 --Tabs & indentation
 o.tabstop = 2
 o.softtabstop = 2
 o.shiftwidth = 2
 o.expandtab = true
--- o.autoindent = true -- default
 o.smartindent = true
--- o.smarttab = true -- default
--- o.backspace = "indent,eol,start" -- default
 
 --Undo file
 o.undofile = true
 
 --Update time
-o.updatetime = 300 --default 4000ms
-o.timeoutlen = 500 --default 1000ms (Shorten key timeout length a little bit for which-key)
+o.updatetime = 300 -- default 4000ms
+o.timeoutlen = 500 -- default 1000ms
 
 --No backup files
 o.swapfile = false
@@ -96,7 +85,6 @@ o.writebackup = false
 
 --Search settings
 o.ignorecase = true
---o.smartcase = true
 
 --Cursor line
 o.cursorline = true
@@ -121,4 +109,4 @@ o.splitright = true
 o.winminwidth = 5
 
 o.wildignore =
-	"*.pyc,*.o,*.class,*.obj,*.svn,*.swp,*.swo,*.exe,*.dll,*.so,*.dylib,*.jar,*.zip,*.tar.gz,*.tar.bz2,*.rar,*.tar.xz,*.tar.zst,*.tar.lz,*.hg,*.DS_Store,*.min.*,node_modules"
+	"*.pyc,*.pyo,*.o,*.obj,*.class,*.exe,*.dll,*.so,*.dylib,*.jar,*.swp,*.swo,*.DS_Store,.git,.svn,.hg,node_modules"

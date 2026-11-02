@@ -1,102 +1,125 @@
 local vim = vim
-local api, fn = vim.api, vim.fn
+local api, uv = vim.api, vim.uv
 
 if vim.version().minor < 10 then
-	api.nvim_err_writeln("Error: Bootstrap requires at least nvim 0.10")
+    api.nvim_echo({ { "Error: Bootstrap requires at least nvim 0.10", "Error" } }, false, { err = true })
 	return
 end
 
 local M = {}
 
-local function echo(str)
+local function echo(str, opts)
 	vim.cmd.redraw()
-	api.nvim_echo({ { str, "Bold" } }, true, {})
+	api.nvim_echo({ { str, "Bold" } }, false, opts)
 end
 
-function M.lazy(install_path)
-	--------- lazy.nvim ---------------
-	echo("  Installing lazy.nvim and plugins ...")
-
-	local repo = "https://github.com/folke/lazy.nvim.git"
-
-	vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable", repo, install_path }, nil, function(out)
-		vim.schedule(function()
-			if out.code == 0 then
-				api.nvim_create_autocmd("User", {
-					once = true,
-					pattern = "LazyDone",
-					callback = function()
-						echo("󰏔 Plugins installed successfully!")
-						require("utils").close_buffers_matching("lazy", "filetype")
-					end,
-				})
-
-				echo(" lazy.nvim installed successfully!. Loading plugins ...")
-				M.boot(install_path)
-			else
-				api.nvim_err_writeln("Error: Unable to install lazy.nvim and plugins")
-			end
-		end)
-	end)
-end
-
-M.load_plugin_extensions = function()
-	local plug_extension_dir = vim.g.stinvim_plugin_extension_dir or fn.stdpath("config") .. "/lua/extension"
-
-	local files = fn.glob(plug_extension_dir .. "/*.lua", true, true)
-
-	for _, file in ipairs(files) do
-		local module = dofile(file)
-		if module.enabled ~= false and type(module.entry) == "function" then module.entry() end
-	end
-end
-
-function M.boot(install_path)
-	local autocmd, augroup, schedule = api.nvim_create_autocmd, api.nvim_create_augroup, vim.schedule
-
-	autocmd("CmdlineEnter", {
-		once = true,
-		callback = function() require("core.command") end,
-	})
-
-	autocmd({ "UIEnter", "BufEnter", "BufNewFile" }, {
-		group = augroup("StinvimLazyEvents", {}),
-		callback = function(args)
-			if args.event == "UIEnter" then vim.g.ui_entered = true end
-
-			if
-				vim.g.ui_entered
-				and args.file ~= ""
-				and api.nvim_get_option_value("buftype", { buf = args.buf }) ~= "nofile"
-			then
-				api.nvim_del_augroup_by_name("StinvimLazyEvents")
-				schedule(function()
-					api.nvim_exec_autocmds("User", { pattern = "FilePostLazyLoaded" })
-					schedule(function() api.nvim_exec_autocmds("Filetype", { buffer = args.buf }) end)
-				end)
-			end
-		end,
-	})
-
-	autocmd("BufEnter", {
-		group = augroup("StinvimGitLazyLoad", {}),
-		callback = function(args)
-			if args.file ~= "" and api.nvim_get_option_value("buftype", { buf = args.buf }) ~= "nofile" then
-				api.nvim_del_augroup_by_name("StinvimGitLazyLoad")
-				vim.system({ "git", "-C", vim.fs.dirname(args.file), "rev-parse" }, nil, function(out)
-					if out.code == 0 then
-						schedule(function() api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded" }) end)
-					end
-				end)
-			end
-		end,
-	})
-
+local function do_boot(install_path)
 	vim.opt.rtp:prepend(install_path)
 
-	M.load_plugin_extensions()
+	require("lazy").setup("plugins", {
+		defaults = {
+			lazy = true,
+			version = false,
+		},
+		ui = {
+			size = { width = 0.8, height = 0.8 },
+			wrap = true,
+			border = "single",
+		},
+		performance = {
+			rtp = {
+				disabled_plugins = {
+					"2html_plugin", "tohtml", "getscript", "getscriptPlugin", "gzip", "logipat",
+					"netrw", "netrwPlugin", "netrwSettings", "netrwFileHandlers", "matchit",
+					"tar", "tarPlugin", "rrhelper", "spellfile_plugin", "vimball", "vimballPlugin",
+					"zip", "zipPlugin", "tutor", "rplugin", "syntax", "synmenu", "optwin",
+					"compiler", "bugreport", "ftplugin",
+				},
+			},
+		},
+	})
 
-	require("plugins")
+	-- Trigger lazy loading events after UI is ready
+	local boot_lazy_grp = api.nvim_create_augroup("__lazy_boot__", { clear = true })
+
+	local file_post_handler
+	file_post_handler = api.nvim_create_autocmd({ "UIEnter", "BufEnter", "BufNewFile" }, {
+		group = boot_lazy_grp,
+		callback = function(args)
+
+			if not api.nvim_buf_is_valid(args.buf) then
+				args.buf = api.nvim_get_current_buf()
+			end
+
+			local file = api.nvim_buf_get_name(args.buf)
+			local buftype = api.nvim_get_option_value("buftype", { buf = args.buf })
+
+			if args.event == "UIEnter" then
+				vim.g.ui_entered = true
+			end
+
+			if vim.g.ui_entered and file ~= "" and buftype ~= "nofile" then
+			    api.nvim_del_autocmd(file_post_handler)
+			    api.nvim_exec_autocmds("User", { pattern = "FileLazyLoaded" })
+				vim.schedule(function()
+					api.nvim_exec_autocmds("FileType", { buffer = args.buf })
+				end)
+			end
+		end,
+	})
+
+	-- Detect git repositories for lazy loading
+	local git_detect_handler
+	git_detect_handler = api.nvim_create_autocmd("BufEnter", {
+		group = boot_lazy_grp,
+		callback = function(args)
+			local buf_name = vim.api.nvim_buf_get_name(args.buf)
+			if buf_name == "" or vim.bo[args.buf].buftype == "nofile" then
+				return
+			end
+			api.nvim_del_autocmd(git_detect_handler)
+			uv.spawn("git", {
+				args = { "-C", vim.fs.dirname(buf_name), "rev-parse" },
+				env = nil,
+				cwd = nil,
+				uid = nil,
+				gid = nil,
+				verbatim = false,
+				detached = false,
+				hide = false,
+				stdio = nil,
+				-- stdio = { nil, nil, nil },
+			}, function(exit_code)
+				if exit_code == 0 then
+					vim.schedule(function()
+						api.nvim_exec_autocmds("User", { pattern = "GitLazyLoaded" })
+					end)
+				end
+			end)
+		end,
+	})
+end
+
+function M.boot()
+	local install_path = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+
+	if not uv.fs_stat(install_path) then
+		echo("  Installing lazy.nvim and plugins ...")
+
+		vim.system({ "git", "clone", "--filter=blob:none", "--branch=stable",
+			"https://github.com/folke/lazy.nvim.git", install_path }, nil, function(out)
+			vim.schedule(function()
+				if out.code == 0 then
+					echo(" lazy.nvim installed successfully!. Loading plugins ...")
+					do_boot(install_path)
+				else
+					echo("Error: Unable to install lazy.nvim and plugins", { err = true })
+				end
+			end)
+		end)
+	else
+		do_boot(install_path)
+	end
 end
 
 return M

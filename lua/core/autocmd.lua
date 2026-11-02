@@ -1,7 +1,16 @@
-local api, type = vim.api, type
+local vim = vim
+local api, fn = vim.api, vim.fn
 local cmd, autocmd = api.nvim_command, api.nvim_create_autocmd
 
-local group = api.nvim_create_augroup("STINVIM_CORE_AUTOCMD", { clear = true })
+local group = api.nvim_create_augroup("__core_autocmd__", { clear = true })
+
+local config_dir = fn.stdpath("config")
+autocmd("VimEnter", {
+	group = group,
+	pattern = config_dir .. "/**",
+	command = "cd " .. config_dir,
+	desc = "Auto change directory to config folder - support for nvimconfig alias",
+})
 
 autocmd({ "VimEnter", "VimLeave" }, {
 	group = group,

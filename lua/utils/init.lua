@@ -1,3 +1,4 @@
+local vim = vim
 local api, fn, pcall = vim.api, vim.fn, pcall
 
 local M = {}
@@ -144,6 +145,33 @@ M.close_buffers = function(matches)
 		end
 	end
 end
+
+--- Reload core modules and notify the user of the result.
+--- @param quiet boolean|nil Whether to suppress notifications.
+M.hot_reload = function(quiet)
+	local core_modules = { "core.command", "core.option", "core.keymaps", "core.autocmd" }
+	local failed_modules = {}
+
+	for _, module in ipairs(core_modules) do
+		package.loaded[module] = nil
+		local ok, mod = pcall(require, module)
+		if not ok then
+			table.insert(failed_modules, tostring(mod))
+		end
+	end
+
+	api.nvim_exec_autocmds("ColorScheme", {})
+
+	if not quiet then
+		if next(failed_modules) then
+			require("utils.notify").error("Error while reloading core modules: " .. table.concat(failed_modules, "\n"))
+		else
+			require("utils.notify").info("Reloaded options and keymaps successfully")
+		end
+	end
+end
+
+vim.api.nvim_create_user_command("NvimHotReload", M.hot_reload, { nargs = 0 })
 
 return setmetatable(M, {
 	__index = function(_, key) return require("utils." .. key) end,
