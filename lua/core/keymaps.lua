@@ -284,6 +284,13 @@ M.setup = vim.schedule_wrap(function()
         load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
     end, "Dap scopes")
 
+    ------------------------------ MasonScout ------------------------------
+    map("n", "<leader>ms", function()
+        load_mod("mason-scout", function(ms)
+            ms.open_ui()
+        end)
+    end, "MasonScout: open suggestion UI")
+
     ------------------------------ Snacks ------------------------------
     M.snacks()
 end)

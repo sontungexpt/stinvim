@@ -148,8 +148,12 @@ return {
             TS.install(lang, {})
             installed[lang] = true -- optimistic mark to avoid re-triggering
           end
-          -- enable syntax highlighting for the buffer
-          vim.treesitter.start()
+
+          -- enable syntax highlighting for the buffer (pass explicit buffer to avoid
+          -- targeting buffer 0 where language cannot be determined)
+          if not vim.treesitter.highlighter.active[ev.buf] then
+            vim.treesitter.start(ev.buf)
+          end
           -- enable indentation via treesitter (only set once per buffer)
           vim.bo[ev.buf].indentexpr = "v:lua.vim.treesitter.indentexpr()"
         end,

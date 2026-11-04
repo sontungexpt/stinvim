@@ -71,7 +71,8 @@ end
 --- @param ... string The names of the modules to load.
 M.load_mods = function(cb, ...)
 	local modules = { ... }
-	for i, name in ipairs(modules) do
+	for i = 1, #modules do
+		local name = modules[i]
 		local status_ok, module = pcall(require, name)
 		if status_ok then
 			modules[i] = module

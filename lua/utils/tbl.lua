@@ -166,11 +166,13 @@ M.same_set = function(table1, table2) -- O(n)
 	local tbl1_hash = {} -- to check that all elements are in table2
 	local tbl2_hash = {} -- to check for duplicates in table2
 
-	for _, value in ipairs(table1) do
+	for i = 1, #table1 do
+		local value = table1[i]
 		tbl1_hash[value] = true
 	end
 
-	for _, value in ipairs(table2) do
+	for i = 1, #table2 do
+		local value = table2[i]
 		if not tbl1_hash[value] and not tbl2_hash[value] then return false end
 		tbl1_hash[value] = nil
 		tbl2_hash[value] = true
@@ -217,12 +219,13 @@ M.find_unique_array_items = function(source, target)
 	local founds = {}
 	local unique_items = {}
 
-	for _, value in ipairs(target) do
-		founds[value] = true
+	for i = 1, #target do
+		founds[target[i]] = true
 	end
 
 	local index = 0
-	for _, value in ipairs(source) do
+	for i = 1, #source do
+		local value = source[i]
 		if not founds[value] then
 			index = index + 1
 			unique_items[index] = value

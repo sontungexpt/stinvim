@@ -8,9 +8,6 @@ return {
   {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "mason-org/mason.nvim",
-    },
     opts = {
       servers = {
         -- kotlin
@@ -169,16 +166,12 @@ return {
     end,
   },
   {
-    dir = "/home/stilux/.config/nvim/lua/plugs/mason-recommender.nvim",
-    dependencies = { "williamboman/mason.nvim" },
+    dir = "/home/stilux/Data/workspace/neovim-plugins/mason-scout",
     lazy = false,
     cmd = {
-      "MasonRecommender",
-      "MasonRecommenderAll",
-      "MasonRecommenderInstall",
-      "MasonRecommenderReset",
+      "MasonScout",
     },
-    opts = { }   -- see Configuration section
+    opts = {} -- see Configuration section
   },
   -- {
   --   "Saecki/crates.nvim",
