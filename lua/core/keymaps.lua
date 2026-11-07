@@ -284,12 +284,8 @@ M.setup = vim.schedule_wrap(function()
         load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
     end, "Dap scopes")
 
-    ------------------------------ MasonScout ------------------------------
-    map("n", "<leader>ms", function()
-        load_mod("mason-scout", function(ms)
-            ms.open_ui()
-        end)
-    end, "MasonScout: open suggestion UI")
+    ------------------------------ Neocodeium ------------------------------
+    map("i", "<A-Tab>", function() require("neocodeium").accept() end, "Accept AI suggestion")
 
     ------------------------------ Snacks ------------------------------
     M.snacks()
@@ -467,6 +463,9 @@ M.gitsigns = function(bufnr)
     buf_map("n", "<leader>gb", gs.toggle_current_line_blame, "Gitsigns blame line")
     buf_map("n", "<leader>gd", gs.diffthis, "Gitsigns diff this")
     buf_map("n", "<leader>gD", function() gs.diffthis("~") end, "Gitsigns diff this")
+end
+
+M.neocodeium = function()
 end
 
 return M
