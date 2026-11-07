@@ -55,7 +55,6 @@ o.fillchars = "eob: ,fold: ,foldopen:,foldsep: ,foldclose:"
 o.wrap = false
 opt.whichwrap:append("<>[]hl")
 o.linebreak = true
-o.formatexpr = "v:lua.require'conform'.formatexpr()"
 o.textwidth = 100
 
 --Line number
