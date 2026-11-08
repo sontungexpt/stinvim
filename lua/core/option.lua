@@ -14,6 +14,9 @@ g.loaded_ruby_provider = 0
 -- disable netrw for nvimtree
 g.loaded_netrw = 1
 g.loaded_netrwPlugin = 1
+g.loaded_netrwSettings = 1
+g.loaded_netrwFileHandlers = 1
+g.loaded_netrw_gitignore = 1
 
 g.skip_ts_context_commentstring_module = true
 
