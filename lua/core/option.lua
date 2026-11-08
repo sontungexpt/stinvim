@@ -1,5 +1,5 @@
 local vim = vim
-local opt, o, g, fn = vim.opt, vim.o, vim.g, vim.fn
+local opt, o, g = vim.opt, vim.o, vim.g
 
 -- Disable all providers by default
 g.loaded_node_provider = 0
@@ -10,20 +10,6 @@ g.loaded_ruby_provider = 0
 -- Uncomment the following lines to use a ruby and python provider
 -- g.ruby_host_prog = "~/.rbenv/versions/3.2.2/bin/neovim-ruby-host"
 -- g.python3_host_prog = "~/.venv/bin/python3"
-
--- File to identify project root
-g.stinvim_root_markers = {
-	".git",
-	"package.json", -- npm
-	"Cargo.toml", -- rust
-	"stylua.toml", -- lua
-	"lazy-lock.json", -- nvim config
-	"build.zig", -- zig
-	"gradlew", -- java
-	"mvnw", -- java
-}
-
-g.stinvim_plugin_extension_dir = fn.stdpath("config") .. "/lua/extension"
 
 -- disable netrw for nvimtree
 g.loaded_netrw = 1

@@ -129,10 +129,7 @@ return {
 	{
 		"stevearc/conform.nvim",
 		event = { "BufWritePre" },
-		cmd = { "ConformInfo" },
-
-		main = "conform",
-
+		cmd = { "ConformInfo", "ConformFormat", "ConformToggleAutoFormat" },
 		---@module "conform"
 		---@type conform.setupOpts
 		opts = {

@@ -40,7 +40,7 @@ local function do_boot(install_path)
 	})
 
 	-- Trigger lazy loading events after UI is ready
-	local boot_lazy_grp = api.nvim_create_augroup("__lazy_boot__", { clear = true })
+	local boot_lazy_grp = api.nvim_create_augroup("__core_lazy_boot__", { clear = true })
 
 	local file_post_handler
 	file_post_handler = api.nvim_create_autocmd({ "UIEnter", "BufEnter", "BufNewFile" }, {

@@ -74,6 +74,13 @@ return {
     opts = {},
   },
 
+  -- Smart window resizing: resize windows with arrow keys
+  {
+    dir = "/home/stilux/Data/workspace/neovim-plugins/smart-resizing",
+    -- "sontungexpt/smart-resizing",
+    opts = {},
+  },
+
   -- Flash: enhanced search and motion with labels (s, S, f, F, t, T, etc.)
   -- {
   --   "folke/flash.nvim",

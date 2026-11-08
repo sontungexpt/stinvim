@@ -1,390 +1,386 @@
 local vim = vim
-local api = vim.api
-local autocmd, augroup = api.nvim_create_autocmd, api.nvim_create_augroup
+local api, set = vim.api, vim.keymap.set
+local autocmd = api.nvim_create_autocmd
 
 local M = {}
 
-local group = augroup("__keymap__", { clear = true })
+local group = api.nvim_create_augroup("__core_keymap__", { clear = true })
 
-M.setup = vim.schedule_wrap(function()
-    local map = require("utils.mapper").map
-    local load_mod = require("utils.init").load_mod
+-- Reusable native keymap options.
+--- @type vim.keymap.set.Opts
+local expr = { expr = true }
+-- local nowait_expr = { expr = true, nowait = true }
+-- local nowait = { nowait = true }
+-- local remap = { remap = true }
+-- local silent = { silent = true }
 
-    -- Remap for dealing with word wrap
-    map({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 7)
-    map({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 7)
-    map({ "n", "v" }, "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', 7)
-    map({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', 7)
+local safe_require = function(name)
+    return require("utils").safe_require(name)
+end
 
-    -- When you press i, automatically indent to the appropriate position
-    -- map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
-    map("n", "i", function()
-        if not api.nvim_get_option_value("buftype", { buf = 0 }) and api.nvim_get_current_line() == "" then
-            local modified = api.nvim_get_option_value("modified", { buf = 0 })
-            api.nvim_input(api.nvim_replace_termcodes("_cc", true, true, true))
-            if not modified then vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1) end
-        else
-            api.nvim_command("startinsert")
-        end
-    end)
+M.setup = function()
+    vim.schedule(function()
+        --Save file as the traditional way
+        set({ "n", "i", "v", "c" }, "<C-s>", "<cmd>write<cr>", { desc = "Save file" })
 
-    -- Delete empty lines without writing to registers
-    map("n", "dd", [[match(getline('.'), '^\\s*$') != -1 ? '"_dd' : "dd"]], 7)
-    map("n", "dx", "x")
+        -- Remap for dealing with word wrap
+        set({ "n", "x" }, "k", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', expr)
+        set({ "n", "x" }, "j", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', expr)
+        set({ "n", "v" }, "<Up>", 'v:count || mode(1)[0:1] == "no" ? "k" : "gk"', expr)
+        set({ "n", "v" }, "<Down>", 'v:count || mode(1)[0:1] == "no" ? "j" : "gj"', expr)
 
-    -- inspect colors
-    map("n", "<M-C>", "<cmd>Inspect<cr>")
+        set("i", "<C-j>", "<Down>")
+        set("i", "<C-k>", "<Up>")
+        set("i", "<C-l>", "<Right>")
+        set("i", "<C-h>", "<Left>")
 
-    -- Delete empty lines without writing to registers
-    map("n", "x", [[col('.') == 1 && match(getline('.'), '^\\s*$') != -1 ? '"_dd$' : '"_x']], 7)
-    map("n", "X", [[col('.') == 1 && match(getline('.'), '^\\s*$') != -1 ? '"_dd$' : '"_X']], 7)
-
-    map("x", "P", "p")
-    map("x", "p", 'p:let @+=@0<CR>:let @"=@0<CR>')
-
-    -- Indent lines with tab in visual mode
-    map("x", "<Tab>", ">gv|")
-    map("x", "<S-Tab>", "<gv")
-    map("n", "<Tab>", ">>_")
-    map("n", "<S-Tab>", "<<_")
-
-    map({ "i" }, "jk", "<esc>")
-
-    -- Better escape by jj
-    do
-        local waiting = false
-        local first_pressed_time = 0
-        local modified = false
-        map({ "c", "t" }, "j", function()
-            local mode = api.nvim_get_mode().mode
-            local now = vim.uv.now()
-            if not waiting then
-                waiting = true
-                first_pressed_time = now
-            elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
-                waiting = false
-                if mode == "c" then
-                    api.nvim_input("<esc>")
-                    return ""
-                elseif mode == "t" then
-                    return [[<bs><C-\><C-n>]]
-                end
-                api.nvim_feedkeys(api.nvim_replace_termcodes("<bs><esc>", true, true, true), "n", false)
+        -- When you press i, automatically indent to the appropriate position
+        -- map("n", "i", [[strlen(getline('.')) == 0 ? '_cc' : 'i']], 7)
+        set("n", "i", function()
+            local bufnr = api.nvim_get_current_buf()
+            local opts = { buf = bufnr }
+            if not api.nvim_get_option_value("buftype", opts) and api.nvim_get_current_line() == "" then
+                local modified = api.nvim_get_option_value("modified", opts)
+                api.nvim_input(api.nvim_replace_termcodes("_cc", true, true, true))
                 if not modified then
-                    vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1)
+                    vim.defer_fn(function()
+                        if api.nvim_buf_is_valid(bufnr) then
+                            api.nvim_set_option_value("modified", false, opts)
+                        end
+                    end, 1)
                 end
-                return ""
-            else                         -- waiting
-                first_pressed_time = now -- new waiting
+            else
+                api.nvim_command("startinsert")
             end
+        end)
 
-            if mode == "c" then
-                api.nvim_feedkeys("j", "n", true)
-                return ""
-            end
+        -- Delete empty lines without writing to registers
+        set("n", "dd", [[match(getline('.'), '^\\s*$') != -1 ? '"_dd' : "dd"]], expr)
+        set("n", "dx", "x")
 
-            modified = api.nvim_get_option_value("modified", { buf = 0 })
-            return "j"
-        end, 7)
-    end
+        -- Delete empty lines without writing to registers
+        set("n", "x", [[col('.') == 1 && match(getline('.'), '^\\s*$') != -1 ? '"_dd$' : '"_x']], expr)
+        set("n", "X", [[col('.') == 1 && match(getline('.'), '^\\s*$') != -1 ? '"_dd$' : '"_X']], expr)
 
-    --Save file as the traditional way
-    map({ "n", "i", "v", "c" }, "<C-s>", "<cmd>w<cr>", 2)
+        -- -- inspect colors
+        -- map("n", "<M-C>", "<cmd>Inspect<cr>")
 
-    --ctrl a to selected all text in file
-    map({ "n", "i", "v" }, "<C-a>", "<cmd>normal! ggVG<cr>")
+        -- Preserve the yank register when pasting over a Visual selection.
+        set("x", "P", "P")
+        -- Delete the selection into the black-hole register before pasting,
+        -- preserving the previously yanked content for repeated pastes.
+        set("x", "p", '"_dP')
 
-    --The arrow keys in the insert mode
-    map("i", "<C-j>", "<Down>")
-    map("i", "<C-k>", "<Up>")
-    map("i", "<C-h>", "<Left>")
-    map("i", "<C-l>", "<Right>")
+        -- Indent lines with tab in visual mode
+        set("x", "<Tab>", ">gv|")
+        set("x", "<S-Tab>", "<gv")
+        set("n", "<Tab>", ">>_")
+        set("n", "<S-Tab>", "<<_")
 
-    --Change the buffer
-    map("n", "]b", "<cmd>bnext<cr>")
-    map("n", "[b", "<cmd>bNext<cr>")
+        set({ "i" }, "jk", "<esc>")
 
-    --Go to the current path
-    map({ "n", "v" }, "cd", "<cmd>cd %:p:h<cr>:pwd<cr>", 3)
+        -- Better escape by jj
+        do
+            local waiting = false
+            local first_pressed_time = 0
+            local modified = false
+            set({ "c", "t" }, "j", function()
+                local mode = api.nvim_get_mode().mode
+                local now = vim.uv.now()
+                if not waiting then
+                    waiting = true
+                    first_pressed_time = now
+                elseif now - first_pressed_time < vim.o.timeoutlen then -- waiting
+                    waiting = false
+                    if mode == "c" then
+                        api.nvim_input("<esc>")
+                        return ""
+                    elseif mode == "t" then
+                        return [[<bs><C-\><C-n>]]
+                    end
+                    api.nvim_feedkeys(api.nvim_replace_termcodes("<bs><esc>", true, true, true), "n", false)
+                    if not modified then
+                        vim.defer_fn(function() api.nvim_set_option_value("modified", false, { buf = 0 }) end, 1)
+                    end
+                    return ""
+                else                         -- waiting
+                    first_pressed_time = now -- new waiting
+                end
 
-    --Close Buffer
-    map({ "n", "v" }, "Q", function()
-        local buf = api.nvim_get_current_buf()
-        if api.nvim_buf_is_valid(buf) and api.nvim_get_option_value("modified", { buf = buf }) then
-            require("utils.notify").warn("Buffer is modified, please save it first.")
-        else
-            api.nvim_buf_delete(buf, {})
+                if mode == "c" then
+                    api.nvim_feedkeys("j", "n", true)
+                    return ""
+                end
+
+                modified = api.nvim_get_option_value("modified", { buf = 0 })
+                return "j"
+            end, expr)
         end
+
+
+        --Change the buffer
+        set("n", "]b", "<cmd>bnext<cr>")
+        set("n", "[b", "<cmd>bNext<cr>")
+
+        --Go to the current path
+        set({ "n", "v" }, "cd", "<cmd>cd %:p:h<cr>:pwd<cr>")
+
+        --Close Buffer
+        set({ "n", "v" }, "Q", function()
+            local buf = api.nvim_get_current_buf()
+            if api.nvim_buf_is_valid(buf) and api.nvim_get_option_value("modified", { buf = buf }) then
+                require("utils.notify").warn("Buffer is modified, please save it first.")
+            else
+                api.nvim_buf_delete(buf, {})
+            end
+        end)
+
+        --Clean searching
+        set({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
+
+        --Resize Buffer
+        set("n", "<A-l>", function() safe_require("smart-resizing").increase("width") end)
+        set("n", "<A-h>", function() safe_require("smart-resizing").decrease("width") end)
+
+        set("n", "<A-j>", function() safe_require("smart-resizing").increase("height") end)
+        set("n", "<A-k>", function() safe_require("smart-resizing").decrease("height") end)
+
+        --Make all windows (almost) equally high and wide
+        set("n", "=", "<C-W>=")
+
+        --Change the layout to horizontal
+        set("n", "gv", "<C-w>t<C-w>H", { desc = "Change the layout to vertical" })
+        --Change the layout to vertical
+        set("n", "gs", "<C-w>t<C-w>K", { desc = "Change the layout to horizontally" })
+
+        -- Split horizontally
+        set("n", "<A-s>", "<cmd>split<CR>")
+        -- Split vertically
+        set("n", "<A-v>", "<cmd>vsplit<CR>")
+
+        --Move between windows
+        set("n", "<C-h>", "<C-w>h")
+        set("n", "<C-j>", "<C-w>j")
+        set("n", "<C-k>", "<C-w>k")
+        set("n", "<C-l>", "<C-w>l")
+
+        --Swap up one row
+        set("n", "<A-Up>", "<cmd>m .-2<CR>==")
+        set("v", "<A-Up>", "<cmd>m '<-2<CR>gv=gv")
+
+        --Swap down one row
+        set("n", "<A-Down>", "<cmd>m .+1<CR>==")
+        set("v", "<A-Down>", "<cmd>m '>+1<CR>gv=gv")
+
+        ------------------------------ url-open ------------------------------
+        -- map({ "n", "x" }, "gx", "<cmd>URLOpenUnderCursor<cr>", "Open URL under cursor")
+
+        ------------------------------ nvimtree ------------------------------
+        -- map({ "n", "i", "x", "c" }, "<C-b>", function()
+        --     local filetype = api.nvim_get_option_value("filetype", { buf = 0 })
+        --     -- local buftype = api.nvim_buf_get_option(0, "buftype")
+        --     if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
+        --         vim.cmd.normal { "<C-b>", bang = true }
+        --     else
+        --         pcall(api.nvim_command, "NvimTreeToggle")
+        --     end
+        -- end)
+
+        --     ------------------------------ Telescope ------------------------------
+        --     map({ "n", "i", "x" }, "<C-p>", "<cmd>Telescope find_files<cr>")
+        --     map("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
+        --     map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>")
+        --
+        --     map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", "Telescope find string")
+        --     map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", "Telescope find string")
+        --     map("n", "<leader>fw", "<cmd>Telescope grep_string<cr>", "Find word under cursor")
+
+        --     ------------------------------ Todo-comments ------------------------------
+        --     map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", "Telescope find todo comments")
+        --
+        --     map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>")
+        --     map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", "Find command history")
+
+        --     ------------------------------ Todo-comments ------------------------------
+        --     map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", "Find todo comments")
+        --
+        ------------------------------ Git conflict ------------------------------
+        set("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", { desc = "Git conflict quickfix" })
+
+        --         set("n", "[t", function()
+        --             safe_require("todo-comments").jump_prev()
+        --         end, { desc = "Todo comment prev" })
+        --
+        --         set("n", "]t", function()
+        --             safe_require("todo-comments").jump_next()
+        --         end, { desc = "Todo comment next" })
+        --
+        --         set("n", "[T", function()
+        --             safe_require("todo-comments").jump_prev { keywords = { "ERROR", "WARNING" } }
+        --         end, { desc = "Todo comment prev error or warning" })
+        --
+        --         set("n", "]T", function()
+        --             safe_require("todo-comments").jump_next { keywords = { "ERROR", "WARNING" } }
+        --         end, { desc = "Todo comment next error or warning" })
+
+        ------------------------------ ccc ------------------------------
+        set({ "n", "i" }, "<A-c>", "<cmd>CccPick<cr>", { desc = "Color picker" })
+
+        ------------------------------ ufo ------------------------------
+        -- set("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>", { desc = "Open all folds" })
+        -- set("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>", { desc = "Open folds except kind" })
+        -- set("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>", { desc = "Close all folds" })
+        -- set("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>", { desc = "Close folds with kind" })
+
+        ------------------------------ Bufferline ------------------------------
+        -- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
+
+        ------------------------------ Markdown preview ------------------------------
+        -- map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", "Toggle markdown preview")
+
+
+        --------------------------------------- dap ---------------------------------------
+        set("n", "<leader>du", function() safe_require("dapui").toggle() end, { desc = "Dapui toggle" })
+        set("n", "<leader>db", function() safe_require("dap").toggle_breakpoint() end, { desc = "Dap toggle breakpoint" })
+        set("n", "<leader>di", function() safe_require("dap").step_into() end, { desc = "Dap step into" })
+        set("n", "<leader>do", function() safe_require("dap").step_over() end, { desc = "Dap step over" })
+        set("n", "<leader>dc", function() safe_require("dap").continue() end,
+            { desc = "Dap continue or start debugging" })
+        set("n", "<leader>dd", function() safe_require("dap").disconnect() end, { desc = "Dap disconnect from debugger" })
+        set("n", "<F11>", function() safe_require("dap").step_into() end, { desc = "Dap step into" })
+        set("n", "<F12>", function() safe_require("dap").step_over() end, { desc = "Dap step over" })
+        set("n", "<F5>", function() safe_require("dap").continue() end, { desc = "Dap continue or start debugging" })
+        set("n", "<F4>", function() safe_require("dap").disconnect() end, { desc = "Dap disconnect from debugger" })
+        set("n", "<Leader>dr", function() safe_require("dap").repl.open() end, { desc = "Dap open REPL" })
+        set("n", "<Leader>dl", function() safe_require("dap").run_last() end, { desc = "Dap run last" })
+        set({ "n", "v" }, "<Leader>dh",
+            function() safe_require("dap.ui.widgets").hover() end,
+            { desc = "Dap hover widgets" }
+        )
+        set({ "n", "v" }, "<Leader>dp",
+            function() safe_require("dap.ui.widgets").preview() end,
+            { desc = "Dap preview widgets" }
+        )
+        set("n", "<Leader>df",
+            function() safe_require("dap.ui.widgets").centered_float(safe_require("dap.ui.widgets").frames) end,
+            { desc = "Dap frames" }
+        )
+        set("n", "<Leader>ds",
+            function() safe_require("dap.ui.widgets").centered_float(safe_require("dap.ui.widgets").scopes) end,
+            { desc = "Dap scopes" }
+        )
+
+        ------------------------------ Neocodeium ------------------------------
+        set("i", "<A-Tab>", function() safe_require("neocodeium").accept() end, { desc = "Accept AI suggestion" })
+
+        ------------------------------ Snacks ------------------------------
+        --     -- Picker
+        --     map("n", "<leader>f", function() safe_require("snacks").picker.files() end, { desc = "Find files" })
+        --     map("n", "<leader>g", function() safe_require("snacks").picker.grep() end, { desc = "Grep" })
+        --     map("n", "<leader>b", function() safe_require("snacks").picker.buffers() end, { desc = "Buffers" })
+        --     map("n", "<leader>h", function() safe_require("snacks").picker.help() end, { desc = "Help" })
+        --     map("n", "<leader>c", function() safe_require("snacks").picker.commands() end, { desc = "Commands" })
+        --
+
+        -- Explorer
+        set("n", "<C-b>", function() safe_require("snacks").explorer() end, { desc = "File explorer" })
+        -- Terminal
+        set({ "n", "t" }, "<C-t>", function() safe_require("snacks").terminal() end, { desc = "Toggle terminal" })
+        --
+        --     -- Notifier
+        --     map("n", "<leader>n", function() safe_require("snacks").notifier.show_history() end, { desc = "Notification history" })
+        --
+        --     -- Lazygit
+        --     map("n", "<leader>gg", function() safe_require("snacks").lazygit() end, { desc = "Lazygit" })
+        --
     end)
-
-    --Clean searching
-    map({ "n", "v" }, "C", "<cmd>noh<cr>:set ignorecase<cr>")
-
-    --Resize Buffer
-    map("n", "<A-h>", function() require("smart-resizing").adjust_current_win_width(1, 2) end)
-    map("n", "<A-l>", function() require("smart-resizing").adjust_current_win_width(1, 1) end)
-
-    map("n", "<A-j>", function() require("smart-resizing").adjust_current_win_height(1, 2) end)
-    map("n", "<A-k>", function() require("smart-resizing").adjust_current_win_height(1, 1) end)
-
-    --Make all windows (almost) equally high and wide
-    map("n", "=", "<C-W>=")
-
-    --Change the layout to horizontal
-    map("n", "gv", "<C-w>t<C-w>H", "Change the layout to vertical")
-
-    --Change the layout to vertical
-    map("n", "gh", "<C-w>t<C-w>K", "Change the layout to horizontally")
-
-    -- Split horizontally
-    map("n", "<A-s>", "<cmd>split<CR>")
-
-    -- Split vertically
-    map("n", "<A-v>", "<cmd>vsplit<CR>")
-
-    --Move between windows
-    map("n", "<C-h>", "<C-w>h")
-    map("n", "<C-j>", "<C-w>j")
-    map("n", "<C-k>", "<C-w>k")
-    map("n", "<C-l>", "<C-w>l")
-
-    --Swap up one row
-    map("n", "<A-Up>", "<cmd>m .-2<CR>==")
-    map("v", "<A-Up>", "<cmd>m '<-2<CR>gv=gv")
-
-    --Swap down one row
-    map("n", "<A-Down>", "<cmd>m .+1<CR>==")
-    map("v", "<A-Down>", "<cmd>m '>+1<CR>gv=gv")
-
-    map({ "n", "x" }, "<leader>b", "<cmd>ConformFormat<cr>", "Conform format")
-
-    ------------------------------ url-open ------------------------------
-    -- map({ "n", "x" }, "gx", "<cmd>URLOpenUnderCursor<cr>", "Open URL under cursor")
-
-    ------------------------------ nvimtree ------------------------------
-    -- map({ "n", "i", "x", "c" }, "<C-b>", function()
-    --     local filetype = api.nvim_get_option_value("filetype", { buf = 0 })
-    --     -- local buftype = api.nvim_buf_get_option(0, "buftype")
-    --     if vim.tbl_contains({ "TelescopePrompt", "lazy", "mason" }, filetype) then
-    --         vim.cmd.normal { "<C-b>", bang = true }
-    --     else
-    --         pcall(api.nvim_command, "NvimTreeToggle")
-    --     end
-    -- end)
-
-    ------------------------------ Telescope ------------------------------
-    map({ "n", "i", "x" }, "<C-p>", "<cmd>Telescope find_files<cr>")
-    map("n", "<leader>fb", "<cmd>Telescope buffers<cr>")
-    map("n", "<leader>fh", "<cmd>Telescope help_tags<cr>")
-
-    map("n", "<leader>fg", "<cmd>Telescope live_grep<cr>", "Telescope find string")
-    map("n", "<C-f>", "<cmd>Telescope live_grep<cr>", "Telescope find string")
-    map("n", "<leader>fw", "<cmd>Telescope grep_string<cr>", "Find word under cursor")
-
-    ------------------------------ Todo-comments ------------------------------
-    map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", "Telescope find todo comments")
-
-    map("n", "<leader>fd", "<cmd>Telescope diagnostics<cr>")
-    map("n", "<leader>fc", "<cmd>Telescope command_history<cr>", "Find command history")
-
-    ------------------------------ Todo-comments ------------------------------
-    map("n", "<Leader>ft", "<cmd>TodoTelescope<cr>", "Find todo comments")
-
-    ------------------------------ Git conflict ------------------------------
-    map("n", "<Leader>qfc", "<cmd>GitConflictListQf<cr>", "Git conflict quickfix")
-
-    map("n", "[t", function()
-        load_mod("todo-comments", function(todo_comments) todo_comments.jump_prev() end)
-    end, "Todo comment prev")
-
-    map("n", "]t", function()
-        load_mod("todo-comments", function(todo_comments) todo_comments.jump_next() end)
-    end, "Todo comment next")
-
-    map("n", "[T", function()
-        load_mod("todo-comments",
-            function(todo_comments) todo_comments.jump_prev { keywords = { "ERROR", "WARNING" } } end)
-    end, "Todo comment prev error or warning")
-
-    map("n", "]T", function()
-        load_mod("todo-comments",
-            function(todo_comments) todo_comments.jump_next { keywords = { "ERROR", "WARNING" } } end)
-    end, "Todo comment next error or warning")
-
-    ------------------------------ ccc ------------------------------
-    map({ "n", "i" }, "<A-c>", "<cmd>CccPick<cr>", "Color picker")
-
-    ------------------------------ ufo ------------------------------
-    map("n", "zR", "<cmd>lua require('ufo').openAllFolds()<CR>", "Open all folds")
-    map("n", "zr", "<cmd>lua require('ufo').openFoldsExceptKinds()<CR>", "Open folds except kind")
-    map("n", "zM", "<cmd>lua require('ufo').closeAllFolds()<CR>", "Close all folds")
-    map("n", "zm", "<cmd>lua require('ufo').closeFoldsWith()<CR>", "Close folds with kind")
-
-    ------------------------------ Bufferline ------------------------------
-    -- map("n", "<Space>", "<Cmd>exe 'BufferLineGoToBuffer ' . v:count1<CR>")
-
-    ------------------------------ Markdown preview ------------------------------
-    map("n", "<Leader>pm", "<cmd>MarkdownPreviewToggle<CR>", "Toggle markdown preview")
-
-
-    --------------------------------------- dap ---------------------------------------
-    map("n", "<leader>du", function()
-        load_mod("dapui", function(dapui) dapui.toggle() end)
-    end, "Dapui toggle")
-    map("n", "<leader>db", function()
-        load_mod("dap", function(dap) dap.toggle_breakpoint() end)
-    end, "Dap toggle breakpoint")
-    map("n", "<leader>di", function()
-        load_mod("dap", function(dap) dap.step_into() end)
-    end, "Dap step into")
-    map("n", "<leader>do", function()
-        load_mod("dap", function(dap) dap.step_over() end)
-    end, "Dap step over")
-    map("n", "<leader>dc", function()
-        load_mod("dap", function(dap) dap.continue() end)
-    end, "Dap continue or start debugging")
-    map("n", "<leader>dd", function()
-        load_mod("dap", function(dap)
-            dap.disconnect()
-            dap.close()
-        end)
-    end, "Dap disconnect from debugger")
-    map("n", "<F11>", function()
-        load_mod("dap", function(dap) dap.step_into() end)
-    end, "Dap step into")
-    map("n", "<F12>", function()
-        load_mod("dap", function(dap) dap.step_over() end)
-    end, "Dap step over")
-    map("n", "<F5>", function()
-        load_mod("dap", function(dap) dap.continue() end)
-    end, "Dap continue or start debugging")
-    map("n", "<F4>", function()
-        load_mod("dap", function(dap)
-            dap.disconnect()
-            dap.close()
-        end)
-    end, "Dap disconnect from debugger")
-    map("n", "<Leader>dr", function()
-        load_mod("dap", function(dap) dap.repl.open() end)
-    end, "Dap open REPL")
-    map("n", "<Leader>dl", function()
-        load_mod("dap", function(dap) dap.run_last() end)
-    end, "Dap run last")
-
-    map({ "n", "v" }, "<Leader>dh", function()
-        load_mod("dap.ui.widgets", function(widgets) widgets.hover() end)
-    end, "Dap hover widgets")
-    map({ "n", "v" }, "<Leader>dp", function()
-        load_mod("dap.ui.widgets", function(widgets) widgets.preview() end)
-    end, "Dap preview widgets")
-    map("n", "<Leader>df", function()
-        load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.frames) end)
-    end, "Dap frames")
-    map("n", "<Leader>ds", function()
-        load_mod("dap.ui.widgets", function(widgets) widgets.centered_float(widgets.scopes) end)
-    end, "Dap scopes")
-
-    ------------------------------ Neocodeium ------------------------------
-    map("i", "<A-Tab>", function() require("neocodeium").accept() end, "Accept AI suggestion")
-
-    ------------------------------ Snacks ------------------------------
-    M.snacks()
-end)
+end
 
 autocmd("LspAttach", {
     group = group,
     desc = "LSP Keymaps",
-    callback = function(ev)
-        local map = require("utils.mapper").map
-        local load_mod = require("utils").load_mod
-
-        local buf = ev.buf
-        local client = vim.lsp.get_client_by_id(ev.data.client_id)
-
+    callback = function(args)
+        local lsp = vim.lsp
+        local client = lsp.get_client_by_id(args.data.client_id)
         if not client then
             return
         end
 
+        local bufnr = args.buf
         local function buf_map(mode, lhs, rhs, desc)
-            map(mode, lhs, rhs, {
-                buffer = buf,
-                desc = desc,
-            })
+            set(mode, lhs, rhs, { buffer = bufnr, desc = desc })
         end
 
         -- LSP navigation
-        buf_map("n", "gd", vim.lsp.buf.definition, "Goto Definition")
-        buf_map("n", "gD", vim.lsp.buf.declaration, "Goto Declaration")
-        buf_map("n", "gr", vim.lsp.buf.references, "References")
-        buf_map("n", "gI", vim.lsp.buf.implementation, "Goto Implementation")
-        buf_map("n", "gy", vim.lsp.buf.type_definition, "Goto Type Definition")
+        buf_map("n", "gd", lsp.buf.definition, "Goto Definition")
+        buf_map("n", "gD", lsp.buf.declaration, "Goto Declaration")
+        buf_map("n", "gr", lsp.buf.references, "References")
+        buf_map("n", "gI", lsp.buf.implementation, "Goto Implementation")
+        buf_map("n", "gy", lsp.buf.type_definition, "Goto Type Definition")
 
         -- LSP actions
-        buf_map("n", "K", vim.lsp.buf.hover, "Hover")
-        buf_map("n", "gK", vim.lsp.buf.signature_help, "Signature Help")
-        buf_map("n", "<leader>ca", vim.lsp.buf.code_action, "Code Action")
-        buf_map("n", "<leader>cr", vim.lsp.buf.rename, "Rename")
-        buf_map("n", "<leader>ss", vim.lsp.buf.document_symbol, "Document Symbols")
+        buf_map("n", "K", lsp.buf.hover, "Hover")
+        buf_map("n", "gK", lsp.buf.signature_help, "Signature Help")
+        buf_map("n", "<leader>ca", lsp.buf.code_action, "Code Action")
+        buf_map("n", "<leader>cr", lsp.buf.rename, "Rename")
+        buf_map("n", "<leader>ss", lsp.buf.document_symbol, "Document Symbols")
 
         -- Diagnostics
         buf_map("n", "<leader>cd", vim.diagnostic.open_float, "Line Diagnostics")
 
-        buf_map("n", "[d", function()
-            vim.diagnostic.jump({ count = -1 })
-        end, "Previous Diagnostic")
-
         buf_map("n", "]d", function()
             vim.diagnostic.jump({ count = 1 })
-        end, "Next Diagnostic")
-
-        buf_map("n", "[e", function()
-            vim.diagnostic.jump({
-                count = -1,
-                severity = vim.diagnostic.severity.ERROR,
-            })
-        end, "Previous Error")
+        end, "Diagnostic: Next")
+        buf_map("n", "[d", function()
+            vim.diagnostic.jump({ count = -1 })
+        end, "Diagnostic: Previous")
 
         buf_map("n", "]e", function()
             vim.diagnostic.jump({
                 count = 1,
                 severity = vim.diagnostic.severity.ERROR,
             })
-        end, "Next Error")
-
-        buf_map("n", "[w", function()
+        end, "Diagnostic: Next Error")
+        buf_map("n", "[e", function()
             vim.diagnostic.jump({
                 count = -1,
-                severity = vim.diagnostic.severity.WARN,
+                severity = vim.diagnostic.severity.ERROR,
             })
-        end, "Previous Warning")
+        end, "Diagnostic: Previous Error")
+
 
         buf_map("n", "]w", function()
             vim.diagnostic.jump({
                 count = 1,
                 severity = vim.diagnostic.severity.WARN,
             })
-        end, "Next Warning")
+        end, "Diagnostic: Next Warning")
+        buf_map("n", "[w", function()
+            vim.diagnostic.jump({
+                count = -1,
+                severity = vim.diagnostic.severity.WARN,
+            })
+        end, "Diagnostic: Previous Warning")
 
         -- JDTLS
-        if vim.bo[buf].filetype ~= "java" or client.name ~= "jdtls" then
+        if vim.bo[bufnr].filetype ~= "java" or client.name ~= "jdtls" then
             return
         end
 
-        local function jdtls_map(mode, lhs, method, desc)
-            buf_map(mode, lhs, function()
-                load_mod("jdtls", function(jdtls)
-                    jdtls[method]()
-                end)
-            end, desc)
+        local ok, jdtls = pcall(require, "jdtls")
+        if not ok then
+            return
         end
 
-        jdtls_map("n", "<leader>co", "organize_imports", "Organize Imports")
-        jdtls_map("v", "<leader>ev", "extract_variable", "Extract Variable")
-        jdtls_map("v", "<leader>ec", "extract_constant", "Extract Constant")
-        jdtls_map("v", "<leader>em", "extract_method", "Extract Method")
-        jdtls_map("n", "<leader>tc", "test_class", "Test Class")
-        jdtls_map("n", "<leader>tm", "test_nearest_method", "Test Nearest Method")
-        jdtls_map("n", "<leader>up", "update_project_config", "Update Project Config")
+        buf_map("n", "<leader>co", jdtls.organize_imports, "Organize Imports")
+
+        -- Rarely used so just comment for now
+        -- buf_map("v", "<leader>ev", jdtls.extract_variable, "Extract Variable")
+        -- buf_map("v", "<leader>ec", jdtls.extract_constant, "Extract Constant")
+        -- buf_map("v", "<leader>em", jdtls.extract_method, "Extract Method")
+        -- buf_map("n", "<leader>tc", jdtls.test_class, "Test Class")
+        -- buf_map("n", "<leader>tm", jdtls.test_nearest_method, "Test Nearest Method")
+        -- buf_map("n", "<leader>up", jdtls.update_project_config, "Update Project Config")
     end,
 })
 
@@ -392,80 +388,47 @@ autocmd({ "BufWinEnter", "CmdwinEnter" }, {
     group = group,
     desc = "Make q close special buffers",
     callback = function(args)
-        local buftype = vim.api.nvim_get_option_value("buftype", { buf = args.buf })
-        if args.event == "BufWinEnter" and not vim.list_contains({ "help", "nofile", "quickfix" }, buftype) then return end
-        require("utils.mapper").map("n", "q", "<cmd>close<cr>", { buffer = args.buf })
+        if args.event == "BufWinEnter" and not vim.list_contains({ "help", "nofile", "quickfix" }, vim.bo[args.buf].buftype) then
+            return
+        end
+        set("n", "q", "<cmd>close<cr>", { buffer = args.buf })
     end,
 })
 
-M.blink_cmp = {
-    ["<C-k>"] = { "select_prev", "fallback" },
-    ["<C-j>"] = { "select_next", "fallback" },
-    ["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
-    ["<C-e>"] = { "cancel", "fallback" },
-    ["<CR>"] = { "accept", "fallback" },
-    ["<Tab>"] = { "fallback" },
-    ["<S-Tab>"] = { "fallback" },
-}
-
-M.snacks = function()
-    local map = require("utils.mapper").map
-
-    -- Picker
-    map("n", "<leader>f", function() require("snacks").picker.files() end, "Find files")
-    map("n", "<leader>g", function() require("snacks").picker.grep() end, "Grep")
-    map("n", "<leader>b", function() require("snacks").picker.buffers() end, "Buffers")
-    map("n", "<leader>h", function() require("snacks").picker.help() end, "Help")
-    map("n", "<leader>c", function() require("snacks").picker.commands() end, "Commands")
-
-    -- Explorer
-    map("n", "<C-b>", function() require("snacks").explorer() end, "File explorer")
-
-    -- Notifier
-    map("n", "<leader>n", function() require("snacks").notifier.show_history() end, "Notification history")
-
-    -- Lazygit
-    map("n", "<leader>gg", function() require("snacks").lazygit() end, "Lazygit")
-
-    -- Terminal
-    map({ "n", "t" }, "<C-t>", function() require("snacks").terminal() end, "Toggle terminal")
-end
-
 M.gitsigns = function(bufnr)
-    local map = require("utils.mapper").map
-    local gs = require("gitsigns")
-
-    local buf_map = function(mode, key, map_to, desc) map(mode, key, map_to, { buffer = bufnr, desc = desc }) end
+    local buf_map = function(mode, key, map_to, desc)
+        set(mode, key, map_to, { buffer = bufnr, desc = desc })
+    end
 
     -- Navigation
     buf_map("n", "]g", function()
         if vim.wo.diff then
             vim.cmd.normal { "]g", bang = true }
         else
-            gs.nav_hunk("next")
+            safe_require("gitsigns").nav_hunk("next")
         end
     end, "Gitsigns next hunk")
     buf_map("n", "[g", function()
         if vim.wo.diff then
             vim.cmd.normal { "[g", bang = true }
         else
-            gs.nav_hunk("prev")
+            safe_require("gitsigns").nav_hunk("prev")
         end
     end, "Gitsigns previous hunk")
 
-    buf_map("n", "<leader>gs", gs.stage_hunk, "Gitsigns stage hunk")
-    buf_map("x", "<leader>gs", function() gs.stage_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns stage hunk")
-    buf_map("n", "<leader>gr", gs.reset_hunk, "Reset hunk")
-    buf_map("x", "<leader>gr", function() gs.reset_hunk { vim.fn.line("."), vim.fn.line("v") } end, "Gitsigns reset hunk")
-    buf_map("n", "<leader>gu", gs.undo_stage_hunk, "Gitsigns undo stage hunk")
-    buf_map("n", "<leader>gR", gs.reset_buffer, "Gitsigns reset buffer")
-    buf_map("n", "<leader>gp", gs.preview_hunk, "Gitsigns preview hunk")
-    buf_map("n", "<leader>gb", gs.toggle_current_line_blame, "Gitsigns blame line")
-    buf_map("n", "<leader>gd", gs.diffthis, "Gitsigns diff this")
-    buf_map("n", "<leader>gD", function() gs.diffthis("~") end, "Gitsigns diff this")
+    buf_map("n", "<leader>gs", function() safe_require("gitsigns").stage_hunk() end, "Gitsigns stage hunk")
+    buf_map("x", "<leader>gs", function() safe_require("gitsigns").stage_hunk { vim.fn.line("."), vim.fn.line("v") } end,
+        "Gitsigns stage hunk")
+    buf_map("n", "<leader>gr", function() safe_require("gitsigns").reset_hunk() end, "Reset hunk")
+    buf_map("x", "<leader>gr", function() safe_require("gitsigns").reset_hunk { vim.fn.line("."), vim.fn.line("v") } end,
+        "Gitsigns reset hunk")
+    buf_map("n", "<leader>gu", function() safe_require("gitsigns").undo_stage_hunk() end, "Gitsigns undo stage hunk")
+    buf_map("n", "<leader>gR", function() safe_require("gitsigns").reset_buffer() end, "Gitsigns reset buffer")
+    buf_map("n", "<leader>gp", function() safe_require("gitsigns").preview_hunk() end, "Gitsigns preview hunk")
+    buf_map("n", "<leader>gb", function() safe_require("gitsigns").toggle_current_line_blame() end, "Gitsigns blame line")
+    buf_map("n", "<leader>gd", function() safe_require("gitsigns").diffthis() end, "Gitsigns diff this")
+    buf_map("n", "<leader>gD", function() safe_require("gitsigns").diffthis("~") end, "Gitsigns diff this")
 end
 
-M.neocodeium = function()
-end
 
 return M

@@ -4,11 +4,11 @@ local levels, notify, schedule = vim.log.levels, vim.notify, vim.schedule
 local M = {}
 
 M.info = function(msg, opts)
-	schedule(function() notify(msg, levels.INFO, opts or { title = "Information" }) end)
+	schedule(function() notify(msg, levels.INFO, opts or { title = "Info" }) end)
 end
 
 M.warn = function(msg, opts)
-	schedule(function() notify(msg, levels.WARN, opts or { title = "Warning" }) end)
+	schedule(function() notify(msg, levels.WARN, opts or { title = "Warn" }) end)
 end
 
 M.error = function(msg, opts)
@@ -28,11 +28,11 @@ M.off = function(msg, opts)
 end
 
 M.info_after = function(msg, wait, opts)
-	vim.defer_fn(function() notify(msg, levels.INFO, opts or { title = "Information" }) end, wait)
+	vim.defer_fn(function() notify(msg, levels.INFO, opts or { title = "Info" }) end, wait)
 end
 
 M.warn_after = function(msg, wait, opts)
-	vim.defer_fn(function() notify(msg, levels.WARN, opts or { title = "Warning" }) end, wait)
+	vim.defer_fn(function() notify(msg, levels.WARN, opts or { title = "Warn" }) end, wait)
 end
 
 M.error_after = function(msg, wait, opts)

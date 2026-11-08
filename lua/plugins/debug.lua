@@ -67,16 +67,16 @@ return {
     config = function()
       local fn = vim.fn
       local dap = require("dap")
-      local icons = require("ui.icons")
+      local icons = require("core.ui.icons").Dap
 
       fn.sign_define("DapBreakpoint", {
-        text = icons.DapBreakpoint,
+        text = icons.Breakpoint,
         numhl = "DapBreakpoint",
         texthl = "DapBreakpoint",
       })
 
       fn.sign_define("DapStopped", {
-        text = icons.DapStopped,
+        text = icons.Stopped,
         numhl = "DapStopped",
         texthl = "DapStopped",
       })
