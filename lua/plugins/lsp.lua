@@ -89,6 +89,9 @@ return {
 				-- YAML
 				{ name = "yamlls" },
 
+				-- XML
+				{ name = "lemminx" },
+
 				-- lua
 				{
 					name = "lua_ls",

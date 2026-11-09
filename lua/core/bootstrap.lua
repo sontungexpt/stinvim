@@ -46,8 +46,11 @@ local function do_boot(install_path)
                     "tar",
                     "tarPlugin",
                     "rrhelper",
+
+                    -- spelling
                     "spellfile_plugin",
                     "spellfile",
+
                     "vimball",
                     "vimballPlugin",
                     "tutor_mode_plugin",

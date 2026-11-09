@@ -18,32 +18,64 @@ autocmd({ "VimEnter", "VimLeave" }, {
 	desc = "Update remote plugins",
 })
 
+
 autocmd("BufWritePre", {
 	group = group,
-	command = "silent! %s/\\s\\+$//e | silent! call mkdir(expand('%:p:h'), 'p')",
 	desc = "Remove trailing whitespace and create parent directory if not exists",
+	callback = function(event)
+	    -- Trailing whitespace
+		api.nvim_buf_call(event.buf, function()
+			cmd([[silent! keeppatterns %s/\s\+$//e]])
+		end)
+
+		-- Make parent directory if not exists
+		if event.match:match("^%w%w+:[\\/][\\/]") then
+			return
+		end
+		local file = vim.uv.fs_realpath(event.match) or event.match
+		vim.fn.mkdir(vim.fn.fnamemodify(file, ":p:h"), "p")
+  end,
 })
+
 
 autocmd("BufEnter", {
 	group = group,
 	desc = "Do filetype specific work",
 	callback = function(args)
+	    local bufnr  = args.buf
+
+	    -- delay a little to ensure the buffer and filetype are fully loaded before processing
 		vim.defer_fn(function()
-			local bufnr = api.nvim_get_current_buf()
-			local work = ({
-				help = "wincmd L", -- Open help in vertical split
-				qf = "set nobuflisted", -- Don't show quickfix in buffer list
+            if not api.nvim_buf_is_valid(bufnr) or not api.nvim_buf_is_loaded(bufnr) then
+				return
+			end
+			local filetype = api.nvim_get_option_value("filetype", { buf = bufnr })
+
+			--- @type table<string, string|function>
+            local tasks = {
+                help = "wincmd L", -- Open help in vertical split
+				qf = "setlocal nobuflisted", -- Don't show quickfix in buffer list
+				man = "setlocal nobuflisted",
+
+				-- Disable diagnostic for .env files
 				sh = function()
                     if args.file:match("%.env$") then
                         vim.diagnostic.enable(false, { bufnr = bufnr })
                     end
-				end, -- Disable diagnostic for .env files
-			})[vim.bo[bufnr].filetype]
+				end,
 
-			if type(work) == "string" then
-				cmd(work)
-			elseif type(work) == "function" then
-				work()
+				-- Fix conceallevel for json files
+				json = "setlocal conceallevel=0",
+                jsonc = "setlocal conceallevel=0",
+                json5 = "setlocal conceallevel=0",
+			}
+
+			local task = tasks[filetype]
+			local task_type = type(task)
+			if task_type == "string" then
+				cmd(task)
+			elseif task_type == "function" then
+				task()
 			end
 		end, 3)
 	end,
@@ -60,10 +92,17 @@ autocmd({ "WinLeave", "WinEnter" }, {
 	end,
 })
 
+
 autocmd("TextYankPost", {
 	group = group,
-	command = "silent! lua vim.highlight.on_yank({higroup='IncSearch', timeout=120})",
 	desc = "Highlight yanked text",
+  callback = function()
+    if vim.fn.has("nvim-0.13") == 1 then
+      vim.hl.hl_op()
+    else
+      (vim.hl or vim.highlight).on_yank()
+    end
+  end,
 })
 
 autocmd("ModeChanged", {
@@ -115,8 +154,16 @@ autocmd({ "InsertEnter", "InsertLeave", "TermEnter", "TermLeave" }, {
 -- https://vi.stackexchange.com/questions/13692/prevent-focusgained-autocmd-running-in-command-line-editing-mode
 autocmd({ "FocusGained", "TermResponse", "TermLeave" }, {
 	group = group,
-	command = [[silent! if mode() != 'c' && !bufexists("[Command Line]") | checktime | endif | lua if package.loaded['nvim-tree'] then vim.api.nvim_command('NvimTreeRefresh') end]],
 	desc = "Reload file if changed outside of nvim",
+	callback = function()
+		if vim.fn.mode() ~= "c" and not vim.fn.bufexists("[Command Line]") then
+			cmd("checktime")
+
+			if package.loaded["nvim-tree"] then
+				cmd("NvimTreeRefresh")
+			end
+		end
+	end,
 })
 
 autocmd("BufHidden", {

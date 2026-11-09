@@ -18,13 +18,18 @@ g.loaded_netrwSettings = 1
 g.loaded_netrwFileHandlers = 1
 g.loaded_netrw_gitignore = 1
 
-g.skip_ts_context_commentstring_module = true
+-- o.conceallevel = 2 -- Hide * markup for bold and italic, but not markers with substitutions
 
--- disable text keymap
--- o.keymap = "vietnamese-telex_utf-8"
+o.confirm = true -- Confirm to save changes before exiting modified buffer
 
 -- cmp
 o.completeopt = "menu,menuone,noselect"
+
+-- Virtual edit
+o.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
+
+-- Spell checking
+opt.spelllang = { "en" }
 
 -- disable nvim intro
 opt.shortmess:append("I")
@@ -38,7 +43,15 @@ o.foldenable = false -- Don't fold by default
 o.foldcolumn = "0"
 o.foldlevel = 99
 o.foldlevelstart = 99
-o.fillchars = "eob: ,fold: ,foldopen:,foldsep: ,foldclose:"
+opt.fillchars = {
+  foldopen = "",
+  foldclose = "",
+  fold = " ",
+  foldsep = " ",
+  diff = "╱",
+  eob = " ",
+}
+
 
 -- Text width and wrap
 o.wrap = false
@@ -56,11 +69,14 @@ o.relativenumber = false
 o.tabstop = 2
 o.softtabstop = 2
 o.shiftwidth = 2
-o.expandtab = true
+o.expandtab = true -- Use spaces instead of tabs
+o.smartcase = true -- Don't ignore case with capitals
 o.smartindent = true
+o.smoothscroll = true
 
 --Undo file
 o.undofile = true
+o.undolevels = 10000
 
 --Update time
 o.updatetime = 300 -- default 4000ms
@@ -89,9 +105,10 @@ o.list = true
 o.listchars = "tab:  ,trail:·"
 
 --Clipboard
-o.clipboard = "unnamedplus"
+o.clipboard = vim.env.SSH_CONNECTION and "" or "unnamedplus" -- Sync with system clipboard
 
 --Split window
+o.splitkeep = "screen"
 o.splitbelow = true
 o.splitright = true
 o.winminwidth = 5

@@ -47,7 +47,7 @@ end
 
 --- Configure vim.diagnostic with the project's default appearance.
 M.setup_diagnostics = function()
-	local sign_icons = require("core.ui.icons").DiagnosticSign
+	local sign_icons = require("core.ui.icons").Diagnostic
 	local diagnostic = vim.diagnostic
 	local severity = diagnostic.severity
 

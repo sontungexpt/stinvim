@@ -1,6 +1,6 @@
 return {
     -- diagnostics
-    DiagnosticSign = {
+    Diagnostic = {
         Error = "",
         Warn = "",
         Hint = "󰌵",
